@@ -2,7 +2,7 @@
 
 import { supabase } from "../lib/supabase";
 import { useState, useEffect, useMemo } from "react";
-import { Plus, Search } from "lucide-react";
+import { Plus, Search, LogOut } from "lucide-react";
 
 import { Transaction, CustomerSummary } from "@/types";
 import { getCurrentDateTime, formatCurrency } from "@/lib/utils";
@@ -13,9 +13,14 @@ import { TransactionForm } from "@/components/TransactionForm";
 import { CustomerList } from "@/components/CustomerList";
 import { RecentTransactions } from "@/components/RecentTransactions";
 import { CustomerDetail } from "@/components/CustomerDetail";
+import { Auth } from "@/components/Auth";
 
 export default function Home() {
-  // State
+  // Session State
+  const [session, setSession] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  // App State
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [formData, setFormData] = useState({
     name: "",
@@ -32,10 +37,37 @@ export default function Home() {
     string | null
   >(null);
 
-  // Load from Supabase on mount
+  // Load Session
   useEffect(() => {
-    fetchTransactions();
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setLoading(false);
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      setLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
+
+  // Load transactions when session exists
+  useEffect(() => {
+    if (session) {
+      fetchTransactions();
+    }
+  }, [session]);
+
+  const handleLogout = async () => {
+    if (confirm("আপনি কি নিশ্চিত যে লগআউট করতে চান?")) {
+      await supabase.auth.signOut();
+      setTransactions([]);
+      setSelectedCustomerName(null);
+    }
+  };
 
   const fetchTransactions = async () => {
     const { data, error } = await supabase
@@ -73,6 +105,7 @@ export default function Home() {
   // Add new transaction
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!session) return;
 
     const nameToUse = selectedCustomerName || formData.name.trim();
 
@@ -150,7 +183,7 @@ export default function Home() {
     const { error } = await supabase
       .from("transactions")
       .update({ is_paid: newStatus })
-      .eq("id", id);
+      .eq("id", id); // RLS ensures user only updates their own
 
     if (error) {
       console.error("Error updating transaction:", error);
@@ -278,8 +311,6 @@ export default function Home() {
       )
     );
 
-    // This is tricky with single SQL query if we only want to delete PAID ones for THIS customer
-    // We can use a match on both
     const { error } = await supabase
       .from("transactions")
       .delete()
@@ -448,7 +479,20 @@ export default function Home() {
     [transactions]
   );
 
-  // Render
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
+      </div>
+    );
+  }
+
+  // If not logged in, show Auth Screen
+  if (!session) {
+    return <Auth />;
+  }
+
+  // Render Dashboard
   if (selectedCustomerData && customerTotals) {
     return (
       <>
@@ -485,11 +529,20 @@ export default function Home() {
 
       {/* Header */}
       <header className="bg-gradient-to-r from-green-600 to-green-500 text-white py-6 px-4 shadow-lg">
-        <div className="max-w-4xl mx-auto">
-          <h1 className="text-3xl font-bold mb-2">📋 বাকি হিসাব</h1>
-          <p className="text-green-100">
-            আপনার গ্রাহকদের বাকির হিসাব সহজে রাখুন
-          </p>
+        <div className="max-w-4xl mx-auto flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold mb-2">📋 বাকি হিসাব</h1>
+            <p className="text-green-100">
+              {session.user.email} - এর হিসাব চলছে
+            </p>
+          </div>
+          <button
+            onClick={handleLogout}
+            className="p-2 bg-white/10 hover:bg-white/20 rounded-lg transition-all"
+            title="লগ আউট"
+          >
+            <LogOut className="w-6 h-6" />
+          </button>
         </div>
       </header>
 
