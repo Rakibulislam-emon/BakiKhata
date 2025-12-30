@@ -1,59 +1,104 @@
-# বাকি হিসাব - Customer Baki Tracker
+# 📋 Baki Khata (বাকি খাতা) - Digital Ledger SaaS
 
-আপনার গ্রাহকদের বাকির হিসাব সহজে রাখার জন্য একটি সহজ এবং দ্রুত অ্যাপ্লিকেশন।
+A modern, multi-user SaaS application for shopkeepers to track customer dues ("Baki") digitally. Built with **Next.js** and **Supabase**, this platform ensures data security and isolation for every shop owner.
 
-## 🌟 বৈশিষ্ট্যসমূহ
+![Project Status](https://img.shields.io/badge/Status-Active-success)
+![License](https://img.shields.io/badge/License-MIT-blue)
 
-- **নতুন গ্রাহক যোগ করুন**: গ্রাহকের নাম, বাকির পরিমাণ এবং তারিখ সহ সহজে যোগ করুন
-- **ট্র্যাক করুন**: প্রতিটি গ্রাহকের বাকির হিসাব দেখুন
-- **পরিশোধিত চিহ্নিত করুন**: চেকবক্সে টিক দিয়ে বাকি পরিশোধিত হিসেবে চিহ্নিত করুন
-- **সার্চ এবং ফিল্টার**: নাম দিয়ে খুঁজুন বা শুধু বাকি/পরিশোধিত দেখুন
-- **সম্পাদনা এবং মুছুন**: তথি আপডেট বা মুছে ফেলুন
-- **স্বয়ংক্রিয় সংরক্ষণ**: সব তথ্য আপনার ব্রাউজারে সংরক্ষিত হয়
+## 🌟 Key Features
 
-## 🚀 ব্যবহারের নিয়ম
+- **🔐 Secure Authentication**: Standard Email/Password login powered by Supabase Auth.
+- **🏢 Multi-User SaaS**: Every user gets their own private dashboard. Data is strictly isolated using Row Level Security (RLS).
+- **☁️ Cloud Sync**: Data is stored securely in the cloud, accessible from any device.
+- **💸 Transaction Tracking**: Record dues, mark as paid, and view transaction history.
+- **📊 Smart Summaries**: Dashboard insights on Total Dues, Total Collected, and Active Customers.
+- **📱 Responsive Design**: Works perfectly on Mobile, Tablet, and Desktop.
 
-1. **নতুন গ্রাহক যোগ করতে**: "নতুন গ্রাহক যোগ করুন" বাটনে ক্লিক করুন এবং তথ্য পূরণ করুন
-2. **বাকি পরিশোধিত করতে**: গ্রাহকের পাশের চেকবক্সে টিক দিন
-3. **সম্পাদনা করতে**: "সম্পাদনা" বাটনে ক্লিক করুন
-4. **মুছতে**: "মুছুন" বাটনে ক্লিক করুন
-5. **খুঁজতে**: সার্চ বক্সে গ্রাহকের নাম লিখুন
+## 🛠️ Tech Stack
 
-## 💻 ইনস্টলেশন
+- **Frontend**: Next.js 14 (App Router)
+- **Styling**: Tailwind CSS
+- **Icons**: Lucide React
+- **Backend / Database**: Supabase (PostgreSQL)
+- **Auth**: Supabase Auth
+
+## 🚀 Getting Started
+
+Follow these steps to run the project locally.
+
+### 1. Clone the Repository
 
 ```bash
-# ডিপেন্ডেন্সি ইনস্টল করুন
-npm install
-
-# ডেভেলপমেন্ট সার্ভার চালান
-npm run dev
-
-# ব্রাউজারে দেখুন
-# http://localhost:3000
+git clone https://github.com/Rakibulislam-emon/BakiKhata.git
+cd BakiKhata
 ```
 
-## 🛠️ প্রযুক্তি
+### 2. Install Dependencies
 
-- **Next.js 14** - React ফ্রেমওয়ার্ক
-- **Tailwind CSS** - স্টাইলিং
-- **Lucide React** - আইকন
-- **Local Storage** - ডেটা সংরক্ষণ
+```bash
+npm install
+```
 
-## 📱 ফিচার স্ক্রিনশট
+### 3. Environment Setup
 
-- ড্যাশবোর্ডে মোট বাকি, পরিশোধিত, গ্রাহক সংখ্যা দেখুন
-- সুন্দর Material Design ইন্টারফেস
-- সহজ এবং ব্যবহারকারী-বান্ধব ডিজাইন
+Create a `.env.local` file in the root directory:
 
-## 📝 নোট
+```env
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
 
-- সব তথ্য আপনার ডিভাইসে সংরক্ষিত থাকে (ক্লাউডে নয়)
-- অ্যাপটি অফলাইনেও কাজ করবে
-- পেজ রিফ্রেশ দিলে ডেটা থাকবে
+### 4. Database Setup (Supabase)
 
-## 📄 লাইসেন্স
+Run the following SQL in your Supabase SQL Editor to set up the table and security:
 
-MIT License
-# BakiKhata
-# BakiKhata
-# BakiKhata
+```sql
+-- 1. Create Table
+create table public.transactions (
+  id uuid default gen_random_uuid() primary key,
+  created_at timestamptz default now(),
+  customer_name text not null,
+  amount numeric not null,
+  is_paid boolean default false,
+  date text not null,
+  notes text,
+  is_hidden_from_recent boolean default false,
+  user_id uuid references auth.users(id) default auth.uid()
+);
+
+-- 2. Enable Security
+alter table public.transactions enable row level security;
+
+-- 3. Create Security Policies (RLS)
+create policy "Users can view their own transactions"
+on public.transactions for select using ( auth.uid() = user_id );
+
+create policy "Users can insert their own transactions"
+on public.transactions for insert with check ( auth.uid() = user_id );
+
+create policy "Users can update their own transactions"
+on public.transactions for update using ( auth.uid() = user_id );
+
+create policy "Users can delete their own transactions"
+on public.transactions for delete using ( auth.uid() = user_id );
+```
+
+### 5. Run the App
+
+```bash
+npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+## 🖼️ Screenshots
+
+_Add your screenshots here_
+
+## 🤝 Contributing
+
+Contributions are welcome! Please fork the repository and submit a pull request.
+
+## 📄 License
+
+This project is licensed under the MIT License.
