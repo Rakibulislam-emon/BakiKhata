@@ -3,7 +3,7 @@
 import { supabase } from "../lib/supabase";
 import { useState, useEffect, useMemo } from "react";
 import { Plus, Search, LogOut } from "lucide-react";
-
+import Footer from "@/components/Footer";
 import { Transaction, CustomerSummary } from "@/types";
 import { getCurrentDateTime, formatCurrency } from "@/lib/utils";
 
@@ -603,10 +603,7 @@ export default function Home() {
         onDeleteTransaction={deleteTransaction}
       />
 
-      {/* Footer */}
-      <footer className="max-w-4xl mx-auto px-4 mt-12 text-center text-gray-500 text-sm">
-        <p>© {new Date().getFullYear()} বাকি হিসাব</p>
-      </footer>
+      
     </div>
   );
 }
