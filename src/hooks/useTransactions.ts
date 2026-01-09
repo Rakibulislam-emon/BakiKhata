@@ -46,7 +46,7 @@ export const useTransactions = (session: any) => {
     if (!session?.user?.id) return { error: "No session" };
 
     const amount = parseFloat(amountValue);
-    if (isNaN(amount) || amount <= 0) {
+    if (isNaN(amount) || amount === 0) {
       return { error: "Invalid amount" };
     }
 
@@ -233,6 +233,49 @@ export const useTransactions = (session: any) => {
     return { success: true };
   };
 
+  const updateTransaction = async (
+    id: string,
+    updates: {
+      amount?: number;
+      notes?: string;
+      date?: string;
+      customer_name?: string;
+    }
+  ) => {
+    const previousTransactions = [...transactions];
+
+    // Optimistic update
+    setTransactions((prev) =>
+      prev.map((t) =>
+        t.id === id
+          ? {
+              ...t,
+              amount: updates.amount !== undefined ? updates.amount : t.amount,
+              notes: updates.notes !== undefined ? updates.notes : t.notes,
+              date: updates.date !== undefined ? updates.date : t.date,
+              customerName:
+                updates.customer_name !== undefined
+                  ? updates.customer_name
+                  : t.customerName,
+            }
+          : t
+      )
+    );
+
+    const { error } = await supabase
+      .from("transactions")
+      .update(updates)
+      .eq("id", id)
+      .eq("user_id", session?.user?.id);
+
+    if (error) {
+      console.error("Error updating transaction:", error);
+      setTransactions(previousTransactions); // Revert
+      return { error };
+    }
+    return { success: true };
+  };
+
   return {
     transactions,
     loading,
@@ -244,6 +287,7 @@ export const useTransactions = (session: any) => {
     toggleAllPaidForCustomer,
     deleteAllPaidForCustomer,
     clearRecent,
+    updateTransaction,
     setTransactions,
   };
 };

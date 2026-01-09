@@ -2,100 +2,76 @@
 @tailwind components;
 @tailwind utilities;
 
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
+/* Validating cache... */
+
+@layer base {
+  :root {
+    --background: 248 250 252;
+    --foreground: 15 23 42;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-secondary-900 antialiased font-sans overflow-x-hidden;
+    background-image: radial-gradient(
+        at 0% 0%,
+        rgba(16, 185, 129, 0.05) 0px,
+        transparent 50%
+      ),
+      radial-gradient(
+        at 100% 100%,
+        rgba(16, 185, 129, 0.05) 0px,
+        transparent 50%
+      );
+    background-attachment: fixed;
+  }
 }
 
-html,
-body {
-  max-width: 100vw;
-  overflow-x: hidden;
-  font-family: 'Noto Sans Bengali', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+@layer components {
+  .glass-card {
+    @apply bg-white/70 backdrop-blur-md border border-white/50 shadow-soft rounded-2xl;
+  }
+
+  .glass-card-hover {
+    @apply hover:bg-white/80 transition-all duration-300 hover:shadow-medium hover:-translate-y-1;
+  }
+
+  .btn-primary {
+    @apply bg-primary-500 hover:bg-primary-600 text-white font-medium px-6 py-3 rounded-xl 
+    transition-all duration-300 shadow-lg shadow-primary-500/20 hover:shadow-primary-500/40 
+    active:scale-95 flex items-center justify-center gap-2;
+  }
+
+  .btn-outline {
+    @apply border-2 border-dashed border-secondary-300 bg-transparent text-secondary-500 
+    hover:border-primary-500 hover:text-primary-600 hover:bg-primary-50 
+    rounded-xl px-4 py-3 transition-all duration-300 font-medium;
+  }
+
+  .input-field {
+    @apply w-full pl-10 pr-4 py-3 rounded-xl border border-secondary-200 bg-white/50 
+    focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 
+    outline-none transition-all duration-300 placeholder:text-secondary-400;
+  }
+
+  .number-font {
+    @apply font-mono tracking-tight;
+  }
 }
 
-body {
-  background-color: #f5f5f5;
-  color: #333;
-}
-
-/* Material Design inspired input styles */
-.material-input {
-  transition: all 0.2s ease-in-out;
-  border: 1px solid #e0e0e0;
-}
-
-.material-input:focus {
-  border-color: #4caf50;
-  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
-  outline: none;
-}
-
-/* Material Design inspired button styles */
-.material-btn {
-  transition: all 0.2s ease-in-out;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
-}
-
-.material-btn:hover {
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
-}
-
-.material-btn:active {
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
-}
-
-/* Card hover effect */
-.card-hover {
-  transition: all 0.3s ease-in-out;
-}
-
-.card-hover:hover {
-  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
-  transform: translateY(-2px);
-}
-
-/* Checkbox custom style */
-.custom-checkbox {
-  appearance: none;
-  width: 24px;
-  height: 24px;
-  border: 2px solid #4caf50;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.custom-checkbox:checked {
-  background-color: #4caf50;
-  border-color: #4caf50;
-}
-
-.custom-checkbox:checked::after {
-  content: '✓';
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-weight: bold;
-  font-size: 16px;
-}
-
-/* Scrollbar styling */
+/* Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #888;
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #555;
+  @apply bg-secondary-300 rounded-full hover:bg-secondary-400 transition-colors;
 }

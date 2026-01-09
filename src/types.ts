@@ -4,7 +4,7 @@ export interface Transaction {
   amount: number;
   isPaid: boolean;
   date: string;
-  notes?: string;
+  notes: string;
   createdAt: string;
   isHiddenFromRecent?: boolean;
 }
