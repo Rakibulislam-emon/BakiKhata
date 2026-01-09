@@ -356,20 +356,20 @@ export const CustomerList = ({
                         >
                           {formatCurrency(Math.abs(balance))}
                         </p>
-                        <div className="flex items-center justify-end gap-1 mt-1">
+                        <div className="flex items-center  justify-end gap-1 mt-1">
                           {!isPaidOff ? (
                             balance > 0 ? (
                               <>
                                 <AlertCircle className="w-3 h-3 text-red-500" />
                                 <p className="text-xs font-semibold text-red-500">
-                                  পাওনা (Receivable)
+                                  পাওনা 
                                 </p>
                               </>
                             ) : (
                               <>
                                 <CheckCircle2 className="w-3 h-3 text-emerald-600" />
                                 <p className="text-xs font-semibold text-emerald-600">
-                                  দেনা (Payable)
+                                  দেনা 
                                 </p>
                               </>
                             )
