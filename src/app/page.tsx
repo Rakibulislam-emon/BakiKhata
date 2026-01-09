@@ -26,6 +26,7 @@ export default function Home() {
     addTransaction,
     togglePaid,
     deleteTransaction,
+    updateTransaction,
     deleteAllForCustomer,
     toggleAllPaidForCustomer,
     deleteAllPaidForCustomer,
@@ -139,6 +140,50 @@ export default function Home() {
         cancel: { label: "বাতিল", onClick: () => {} },
       }
     );
+  };
+
+  const handleUpdateTransaction = async (
+    id: string,
+    updates: { amount?: number; notes?: string; type?: "lend" | "borrow" }
+  ) => {
+    // Determine sign based on type if provided, otherwise keep existing sign logic from amount
+    let finalAmount = updates.amount;
+
+    if (
+      updates.type === "borrow" &&
+      finalAmount !== undefined &&
+      finalAmount > 0
+    ) {
+      finalAmount = -finalAmount;
+    } else if (
+      updates.type === "lend" &&
+      finalAmount !== undefined &&
+      finalAmount < 0
+    ) {
+      finalAmount = Math.abs(finalAmount);
+    } else if (updates.type === "borrow" && finalAmount === undefined) {
+      // If only type changed, we need to flip the sign of the existing transaction amount
+      const existingTx = transactions.find((t) => t.id === id);
+      if (existingTx && existingTx.amount > 0) finalAmount = -existingTx.amount;
+    } else if (updates.type === "lend" && finalAmount === undefined) {
+      const existingTx = transactions.find((t) => t.id === id);
+      if (existingTx && existingTx.amount < 0)
+        finalAmount = Math.abs(existingTx.amount);
+    }
+
+    // Sanitize updates to only include database columns
+    const dbUpdates: { amount?: number; notes?: string } = {
+      amount: finalAmount,
+    };
+    if (updates.notes !== undefined) dbUpdates.notes = updates.notes;
+
+    const res = await updateTransaction(id, dbUpdates);
+
+    if (res?.error) {
+      toast.error("আপডেট করতে সমস্যা হয়েছে");
+    } else {
+      toast.success("লেনদেন আপডেট করা হয়েছে");
+    }
   };
 
   const handleToggleAllPaid = async () => {
@@ -312,6 +357,7 @@ export default function Home() {
           onToggleAllPaid={handleToggleAllPaid}
           onTogglePaid={togglePaid}
           onDeleteTransaction={handleDeleteTransaction}
+          onUpdateTransaction={handleUpdateTransaction}
           onDeleteAllPaid={handleDeleteAllPaid}
           showAddForm={showAddForm}
           setShowAddForm={setShowAddForm}

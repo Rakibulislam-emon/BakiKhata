@@ -33,6 +33,10 @@ interface CustomerDetailProps {
   onToggleAllPaid: () => void;
   onTogglePaid: (id: string) => void;
   onDeleteTransaction: (id: string) => void;
+  onUpdateTransaction: (
+    id: string,
+    updates: { amount?: number; notes?: string; type?: "lend" | "borrow" }
+  ) => void;
   onDeleteAllPaid: () => void;
   showAddForm: boolean;
   setShowAddForm: (show: boolean) => void;
@@ -61,6 +65,7 @@ export const CustomerDetail = ({
   onToggleAllPaid,
   onTogglePaid,
   onDeleteTransaction,
+  onUpdateTransaction,
   onDeleteAllPaid,
   showAddForm,
   setShowAddForm,
@@ -73,6 +78,39 @@ export const CustomerDetail = ({
   const allUnpaid = customer.transactions.filter((t) => !t.isPaid);
   const allPaid = customer.transactions.filter((t) => t.isPaid);
   const canSelectAll = allUnpaid.length > 0;
+
+  // Add state for editing
+  const [editingId, setEditingId] = React.useState<string | null>(null);
+  const [editForm, setEditForm] = React.useState<{
+    amount: string;
+    notes: string;
+    type: "lend" | "borrow";
+  }>({ amount: "", notes: "", type: "lend" });
+
+  const startEditing = (transaction: Transaction) => {
+    setEditingId(transaction.id);
+    setEditForm({
+      amount: Math.abs(transaction.amount).toString(),
+      notes: transaction.notes,
+      type: transaction.amount > 0 ? "lend" : "borrow",
+    });
+  };
+
+  const cancelEditing = () => {
+    setEditingId(null);
+    setEditForm({ amount: "", notes: "", type: "lend" });
+  };
+
+  const saveEditing = (id: string) => {
+    if (!editForm.amount || parseFloat(editForm.amount) === 0) return;
+
+    onUpdateTransaction(id, {
+      amount: parseFloat(editForm.amount),
+      notes: editForm.notes,
+      type: editForm.type,
+    });
+    setEditingId(null);
+  };
 
   return (
     <motion.div
@@ -125,7 +163,6 @@ export const CustomerDetail = ({
               <p className="text-6xl font-bold font-mono tracking-tighter text-secondary-900 mb-3 drop-shadow-sm">
                 {formatCurrency(Math.abs(totals.totalBaki))}
               </p>
-              
             </div>
           </div>
 
@@ -262,56 +299,151 @@ export const CustomerDetail = ({
                   key={transaction.id}
                   initial={{ opacity: 0, scale: 0.98 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  className={`glass-card p-4 border-l-4 group ${
-                    transaction.amount < 0
-                      ? "border-l-red-500"
-                      : "border-l-emerald-500"
+                  exit={{ opacity: 0, scale: 0.98 }}
+                  className={`group relative flex items-center justify-between p-4 rounded-xl border transition-all ${
+                    transaction.amount > 0
+                      ? "bg-slate-50 border-emerald-100 hover:border-emerald-200 hover:shadow-sm"
+                      : "bg-red-50/30 border-red-100 hover:border-red-200 hover:shadow-sm"
                   }`}
                 >
-                  <div className="flex items-start gap-4">
-                    <div className="pt-1">
-                      <input
-                        type="checkbox"
-                        checked={transaction.isPaid}
-                        onChange={() => onTogglePaid(transaction.id)}
-                        className="custom-checkbox w-5 h-5 text-primary-600 rounded border-secondary-300 focus:ring-primary-500"
-                      />
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-start justify-between">
-                        <div>
-                          <p className="text-xl font-bold text-secondary-900 font-mono">
-                            <span
-                              className={
-                                transaction.amount < 0
-                                  ? "text-red-600"
-                                  : "text-emerald-600"
-                              }
-                            >
-                              {formatCurrency(Math.abs(transaction.amount))}
-                            </span>
-                          </p>
-                          <div className="flex items-center gap-2 text-xs text-secondary-400 mt-1">
-                            <Clock className="w-3 h-3" />
-                            <span>{formatDateTime(transaction.date)}</span>
-                          </div>
-                          {transaction.notes && (
-                            <p className="text-sm text-secondary-600 mt-2 bg-secondary-50 inline-block px-2 py-1 rounded-md">
-                              {transaction.notes}
-                            </p>
-                          )}
+                  {editingId === transaction.id ? (
+                    <div className="flex-1 flex flex-col gap-3">
+                      <div className="flex flex-col sm:flex-row gap-2">
+                        <div className="flex bg-secondary-100 p-0.5 rounded-lg h-10 self-start sm:w-auto w-full justify-between sm:justify-start">
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setEditForm({ ...editForm, type: "lend" })
+                            }
+                            className={`flex-1 sm:flex-none px-3 text-xs font-semibold rounded-md transition-all h-full ${
+                              editForm.type === "lend"
+                                ? "bg-white text-emerald-600 shadow-sm"
+                                : "text-secondary-500 hover:text-emerald-600"
+                            }`}
+                          >
+                            পাওনা
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setEditForm({ ...editForm, type: "borrow" })
+                            }
+                            className={`flex-1 sm:flex-none px-3 text-xs font-semibold rounded-md transition-all h-full ${
+                              editForm.type === "borrow"
+                                ? "bg-white text-red-600 shadow-sm"
+                                : "text-secondary-500 hover:text-red-600"
+                            }`}
+                          >
+                            দেনা
+                          </button>
                         </div>
+                        <input
+                          type="number"
+                          value={editForm.amount}
+                          onChange={(e) =>
+                            setEditForm({ ...editForm, amount: e.target.value })
+                          }
+                          className="w-full sm:w-32 px-3 py-2 rounded-lg border border-secondary-200 text-sm focus:border-primary-500 outline-none"
+                          placeholder="Amount"
+                        />
+                        <input
+                          type="text"
+                          value={editForm.notes}
+                          onChange={(e) =>
+                            setEditForm({ ...editForm, notes: e.target.value })
+                          }
+                          className="w-full sm:flex-1 px-3 py-2 rounded-lg border border-secondary-200 text-sm focus:border-primary-500 outline-none"
+                          placeholder="Notes"
+                        />
+                      </div>
+                      <div className="flex justify-end gap-2">
+                        <button
+                          onClick={cancelEditing}
+                          className="px-3 py-1.5 text-xs font-medium text-secondary-600 hover:bg-secondary-100 rounded-lg transition-colors border border-secondary-200"
+                        >
+                          বাতিল
+                        </button>
+                        <button
+                          onClick={() => saveEditing(transaction.id)}
+                          className="px-3 py-1.5 text-xs font-medium text-white bg-primary-600 hover:bg-primary-700 rounded-lg transition-colors shadow-sm"
+                        >
+                          সেভ করুন
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="flex items-center gap-4">
+                        <button
+                          onClick={() => onTogglePaid(transaction.id)}
+                          className={`p-2 rounded-full transition-all duration-300 ${
+                            transaction.amount > 0
+                              ? "bg-emerald-100/50 text-emerald-600 hover:bg-emerald-100 ring-4 ring-emerald-50/50"
+                              : "bg-red-100/50 text-red-600 hover:bg-red-100 ring-4 ring-red-50/50"
+                          }`}
+                        >
+                          <Square className="w-5 h-5 opacity-50 group-hover:opacity-100" />
+                        </button>
+                        <div>
+                          <p className="font-semibold text-secondary-900 flex items-center gap-2">
+                            {formatCurrency(Math.abs(transaction.amount))}
+                            {transaction.amount > 0 ? (
+                              <span className="text-[10px] items-center px-2 py-0.5 rounded-full bg-emerald-100/50 text-emerald-700 font-bold tracking-wider border border-emerald-100 hidden sm:inline-flex">
+                                পাওনা
+                              </span>
+                            ) : (
+                              <span className="text-[10px] items-center px-2 py-0.5 rounded-full bg-red-100/50 text-red-700 font-bold tracking-wider border border-red-100 hidden sm:inline-flex">
+                                দেনা
+                              </span>
+                            )}
+                          </p>
+                          <div className="flex items-center gap-2 text-xs text-secondary-500 mt-0.5">
+                            <span className="flex items-center gap-1 bg-secondary-50 px-1.5 py-0.5 rounded border border-secondary-100">
+                              <Clock className="w-3 h-3" />
+                              {formatDateTime(transaction.date)}
+                            </span>
+                            {transaction.notes && (
+                              <span className="flex items-center gap-1 text-secondary-600 bg-secondary-50 px-1.5 py-0.5 rounded border border-secondary-100 max-w-[150px] truncate">
+                                <FileText className="w-3 h-3" />
+                                {transaction.notes}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity absolute right-4">
+                        <button
+                          onClick={() => startEditing(transaction)}
+                          className="p-2 text-primary-500 hover:bg-primary-50 rounded-lg transition-colors"
+                          title="এডিট"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="16"
+                            height="16"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            className="lucide lucide-pencil w-4 h-4"
+                          >
+                            <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+                            <path d="m15 5 4 4" />
+                          </svg>
+                        </button>
                         <button
                           onClick={() => onDeleteTransaction(transaction.id)}
-                          className="p-2 text-secondary-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
+                          className="p-2 text-red-400 hover:bg-red-50 hover:text-red-500 rounded-lg transition-colors"
                           title="মুছুন"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
                       </div>
-                    </div>
-                  </div>
+                    </>
+                  )}
                 </motion.div>
               ))}
             </AnimatePresence>
