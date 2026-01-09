@@ -1,6 +1,7 @@
 import React from "react";
-import { TrendingDown, TrendingUp, History, Check } from "lucide-react";
+import { TrendingDown, TrendingUp, History, Users } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
+import { motion } from "framer-motion";
 
 interface SummaryCardsProps {
   totalBaki: number;
@@ -15,62 +16,73 @@ export const SummaryCards = ({
   transactionCount,
   customerCount,
 }: SummaryCardsProps) => {
+  const cards = [
+    {
+      label: "মোট বাকি",
+      value: formatCurrency(totalBaki),
+      icon: TrendingDown,
+      color: "red",
+      bgClass: "bg-red-50 text-red-600",
+      borderClass: "border-red-100",
+    },
+    {
+      label: "পরিশোধিত",
+      value: formatCurrency(totalPaid),
+      icon: TrendingUp,
+      color: "green",
+      bgClass: "bg-green-50 text-green-600",
+      borderClass: "border-green-100",
+    },
+    {
+      label: "মোট লেনদেন",
+      value: transactionCount,
+      icon: History,
+      color: "orange",
+      bgClass: "bg-orange-50 text-orange-600",
+      borderClass: "border-orange-100",
+      isNumber: true,
+    },
+    {
+      label: "মোট গ্রাহক",
+      value: customerCount,
+      icon: Users,
+      color: "blue",
+      bgClass: "bg-blue-50 text-blue-600",
+      borderClass: "border-blue-100",
+      isNumber: true,
+    },
+  ];
+
   return (
-    <div className="max-w-4xl mx-auto px-4 -mt-6">
+    <div className="max-w-4xl mx-auto px-4 -mt-8 relative z-10">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-white rounded-xl p-4 shadow-card card-hover">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-red-100 rounded-lg">
-              <TrendingDown className="w-6 h-6 text-red-600" />
+        {cards.map((card, index) => (
+          <motion.div
+            key={index}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.1, duration: 0.4 }}
+            className="glass-card p-5 hover:scale-[1.02] transition-transform duration-300"
+          >
+            <div className="flex flex-col gap-3">
+              <div className={`p-3 rounded-xl w-fit ${card.bgClass} shadow-sm`}>
+                <card.icon className="w-5 h-5" />
+              </div>
+              <div>
+                <p className="text-secondary-500 text-sm font-medium mb-1">
+                  {card.label}
+                </p>
+                <p
+                  className={`text-xl font-bold ${
+                    card.isNumber ? "font-mono" : ""
+                  } text-secondary-900`}
+                >
+                  {card.value}
+                </p>
+              </div>
             </div>
-            <div>
-              <p className="text-gray-500 text-sm">মোট বাকি</p>
-              <p className="text-xl font-bold text-red-600">
-                {formatCurrency(totalBaki)}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-xl p-4 shadow-card card-hover">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-green-100 rounded-lg">
-              <TrendingUp className="w-6 h-6 text-green-600" />
-            </div>
-            <div>
-              <p className="text-gray-500 text-sm">পরিশোধিত</p>
-              <p className="text-xl font-bold text-green-600">
-                {formatCurrency(totalPaid)}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-xl p-4 shadow-card card-hover">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-orange-100 rounded-lg">
-              <History className="w-6 h-6 text-orange-600" />
-            </div>
-            <div>
-              <p className="text-gray-500 text-sm">মোট লেনদেন</p>
-              <p className="text-xl font-bold text-orange-600">
-                {transactionCount}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-xl p-4 shadow-card card-hover">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <Check className="w-6 h-6 text-blue-600" />
-            </div>
-            <div>
-              <p className="text-gray-500 text-sm">গ্রাহক</p>
-              <p className="text-xl font-bold text-blue-600">{customerCount}</p>
-            </div>
-          </div>
-        </div>
+          </motion.div>
+        ))}
       </div>
     </div>
   );

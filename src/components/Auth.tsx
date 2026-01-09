@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { Lock, Mail, Loader2, ArrowRight } from "lucide-react";
+import { Lock, Mail, Loader2, ArrowRight, UserPlus, LogIn } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 export const Auth = () => {
   const [loading, setLoading] = useState(false);
@@ -33,7 +34,9 @@ export const Auth = () => {
           },
         });
         if (error) throw error;
-        setMessage("Registration successful! Check your email to confirm.");
+        setMessage(
+          "রেজিস্ট্রেশন সফল হয়েছে! অনুগ্রহ করে আপনার ইমেইল চেক করুন।"
+        );
       }
     } catch (err: any) {
       setError(err.message);
@@ -43,66 +46,107 @@ export const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-      <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8">
+    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Decorative Background Elements */}
+      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary-400/20 rounded-full blur-[100px] pointer-events-none" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-primary-600/20 rounded-full blur-[100px] pointer-events-none" />
+
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="max-w-md w-full glass-card p-8 relative z-10"
+      >
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-gray-800">বাকি খাতা</h1>
-          <p className="text-gray-500 mt-2">
-            {isLogin ? "লগ ইন করুন" : "নতুন একাউন্ট খুলুন"}
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary-100 text-primary-600 mb-4 shadow-soft"
+          >
+            {isLogin ? (
+              <LogIn className="w-8 h-8" />
+            ) : (
+              <UserPlus className="w-8 h-8" />
+            )}
+          </motion.div>
+          <h1 className="text-3xl font-bold text-secondary-900 mb-2">
+            বাকি খাতা
+          </h1>
+          <p className="text-secondary-500">
+            {isLogin
+              ? "আপনার একাউন্টে লগ ইন করুন"
+              : "বিনামূল্যে নতুন একাউন্ট খুলুন"}
           </p>
         </div>
 
         <form onSubmit={handleAuth} className="space-y-6">
-          {error && (
-            <div className="p-3 bg-red-50 text-red-600 rounded-lg text-sm">
-              {error}
-            </div>
-          )}
-          {message && (
-            <div className="p-3 bg-green-50 text-green-600 rounded-lg text-sm">
-              {message}
-            </div>
-          )}
+          <AnimatePresence mode="wait">
+            {error && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                className="p-4 bg-red-50 text-red-600 rounded-xl text-sm border border-red-100 flex items-center gap-2"
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-red-500 flex-shrink-0" />
+                {error}
+              </motion.div>
+            )}
+            {message && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                className="p-4 bg-primary-50 text-primary-700 rounded-xl text-sm border border-primary-100 flex items-center gap-2"
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-primary-500 flex-shrink-0" />
+                {message}
+              </motion.div>
+            )}
+          </AnimatePresence>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              ইমেইল
-            </label>
-            <div className="relative">
-              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:border-green-500 focus:ring-2 focus:ring-green-100 outline-none transition-all"
-                placeholder="you@example.com"
-                required
-              />
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-secondary-700 mb-1.5 ml-1">
+                ইমেইল
+              </label>
+              <div className="relative group">
+                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-secondary-400 w-5 h-5 group-focus-within:text-primary-500 transition-colors" />
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="input-field"
+                  placeholder="you@example.com"
+                  required
+                />
+              </div>
             </div>
-          </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              পাসওয়ার্ড
-            </label>
-            <div className="relative">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:border-green-500 focus:ring-2 focus:ring-green-100 outline-none transition-all"
-                placeholder="******"
-                required
-                minLength={6}
-              />
+            <div>
+              <label className="block text-sm font-medium text-secondary-700 mb-1.5 ml-1">
+                পাসওয়ার্ড
+              </label>
+              <div className="relative group">
+                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-secondary-400 w-5 h-5 group-focus-within:text-primary-500 transition-colors" />
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="input-field"
+                  placeholder="••••••••"
+                  required
+                  minLength={6}
+                />
+              </div>
             </div>
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-all font-semibold flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed shadow-lg shadow-green-200"
+            className="w-full btn-primary"
           >
             {loading ? (
               <Loader2 className="w-5 h-5 animate-spin" />
@@ -115,17 +159,21 @@ export const Auth = () => {
           </button>
         </form>
 
-        <div className="mt-6 text-center">
+        <div className="mt-8 text-center">
           <button
-            onClick={() => setIsLogin(!isLogin)}
-            className="text-sm text-green-600 hover:text-green-700 font-medium"
+            onClick={() => {
+              setIsLogin(!isLogin);
+              setError("");
+              setMessage("");
+            }}
+            className="text-sm text-secondary-500 hover:text-primary-600 font-medium transition-colors"
           >
             {isLogin
               ? "একাউন্ট নেই? নতুন একাউন্ট খুলুন"
               : "আগেই একাউন্ট আছে? লগ ইন করুন"}
           </button>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 };
