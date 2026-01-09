@@ -8,11 +8,12 @@ export const useTransactions = (session: any) => {
   const [loading, setLoading] = useState(false);
 
   const fetchTransactions = useCallback(async () => {
-    if (!session) return;
+    if (!session?.user?.id) return;
     setLoading(true);
     const { data, error } = await supabase
       .from("transactions")
       .select("*")
+      .eq("user_id", session.user.id)
       .order("date", { ascending: false });
 
     if (error) {
@@ -42,7 +43,7 @@ export const useTransactions = (session: any) => {
     amountValue: string,
     notes: string
   ) => {
-    if (!session) return { error: "No session" };
+    if (!session?.user?.id) return { error: "No session" };
 
     const amount = parseFloat(amountValue);
     if (isNaN(amount) || amount <= 0) {
@@ -50,6 +51,7 @@ export const useTransactions = (session: any) => {
     }
 
     const transactionData = {
+      user_id: session.user.id,
       customer_name: name,
       amount,
       is_paid: false,
@@ -101,7 +103,8 @@ export const useTransactions = (session: any) => {
     const { error } = await supabase
       .from("transactions")
       .update({ is_paid: newStatus })
-      .eq("id", id);
+      .eq("id", id)
+      .eq("user_id", session?.user?.id);
 
     if (error) {
       console.error("Error updating transaction:", error);
@@ -118,7 +121,11 @@ export const useTransactions = (session: any) => {
     const previousTransactions = [...transactions];
     setTransactions((prev) => prev.filter((t) => t.id !== id));
 
-    const { error } = await supabase.from("transactions").delete().eq("id", id);
+    const { error } = await supabase
+      .from("transactions")
+      .delete()
+      .eq("id", id)
+      .eq("user_id", session?.user?.id);
 
     if (error) {
       console.error("Error deleting transaction:", error);
@@ -139,6 +146,7 @@ export const useTransactions = (session: any) => {
     const { error } = await supabase
       .from("transactions")
       .delete()
+      .eq("user_id", session?.user?.id)
       .ilike("customer_name", customerName);
 
     if (error) {
@@ -165,6 +173,7 @@ export const useTransactions = (session: any) => {
     const { error } = await supabase
       .from("transactions")
       .update({ is_paid: shouldBePaid })
+      .eq("user_id", session?.user?.id)
       .ilike("customer_name", customerName);
 
     if (error) {
@@ -190,6 +199,7 @@ export const useTransactions = (session: any) => {
     const { error } = await supabase
       .from("transactions")
       .delete()
+      .eq("user_id", session?.user?.id)
       .match({ is_paid: true })
       .ilike("customer_name", customerName);
 
@@ -212,6 +222,7 @@ export const useTransactions = (session: any) => {
     const { error } = await supabase
       .from("transactions")
       .update({ is_hidden_from_recent: true })
+      .eq("user_id", session?.user?.id)
       .in("id", recentIds);
 
     if (error) {
