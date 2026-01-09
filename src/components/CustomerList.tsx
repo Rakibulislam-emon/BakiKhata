@@ -1,8 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import { CustomerSummary } from "@/types";
 import { formatDate, formatCurrency } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
-import { Users, ChevronRight, AlertCircle, CheckCircle2 } from "lucide-react";
+import {
+  Users,
+  ChevronRight,
+  AlertCircle,
+  CheckCircle2,
+  Filter,
+} from "lucide-react";
 
 interface CustomerListProps {
   customerSummaries: CustomerSummary[];
@@ -10,43 +16,110 @@ interface CustomerListProps {
   onSelectCustomer: (name: string) => void;
 }
 
+type FilterStatus = "all" | "unpaid" | "paid";
+
 export const CustomerList = ({
   customerSummaries,
   searchTerm,
   onSelectCustomer,
 }: CustomerListProps) => {
-  const filteredCustomers = customerSummaries.filter((c) =>
-    c.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const [filterStatus, setFilterStatus] = useState<FilterStatus>("all");
+
+  const filteredCustomers = customerSummaries.filter((c) => {
+    const matchesSearch = c.name
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
+
+    // Calculate balance logic same as render
+    const totalBaki = c.transactions
+      .filter((t) => !t.isPaid)
+      .reduce((sum, t) => sum + t.amount, 0);
+    const balance = totalBaki;
+    const isPaidOff = balance === 0;
+
+    if (filterStatus === "unpaid") return matchesSearch && !isPaidOff;
+    if (filterStatus === "paid") return matchesSearch && isPaidOff;
+    return matchesSearch;
+  });
 
   return (
     <div className="max-w-4xl mx-auto px-4 mt-8 pb-12">
-      <div className="flex items-center gap-2 mb-6 ml-1">
-        <Users className="w-5 h-5 text-primary-500" />
-        <h3 className="text-xl font-bold text-secondary-900">
-          গ্রাহকদের তালিকা
-        </h3>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 ml-1">
+        <div className="flex items-center gap-2">
+          <Users className="w-5 h-5 text-primary-500" />
+          <h3 className="text-xl font-bold text-secondary-900">
+            গ্রাহকদের তালিকা
+          </h3>
+        </div>
+
+        {/* Filter Buttons */}
+        <div className="flex p-1 bg-secondary-100/50 backdrop-blur-sm rounded-xl border border-secondary-200/50 w-fit">
+          <button
+            onClick={() => setFilterStatus("all")}
+            className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-all ${
+              filterStatus === "all"
+                ? "bg-white text-secondary-900 shadow-sm"
+                : "text-secondary-500 hover:text-secondary-700"
+            }`}
+          >
+            সব
+          </button>
+          <button
+            onClick={() => setFilterStatus("unpaid")}
+            className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 ${
+              filterStatus === "unpaid"
+                ? "bg-white text-red-600 shadow-sm"
+                : "text-secondary-500 hover:text-red-600"
+            }`}
+          >
+            <div
+              className={`w-2 h-2 rounded-full ${
+                filterStatus === "unpaid" ? "bg-red-500" : "bg-red-400/50"
+              }`}
+            />
+            বাকি আছে
+          </button>
+          <button
+            onClick={() => setFilterStatus("paid")}
+            className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 ${
+              filterStatus === "paid"
+                ? "bg-white text-primary-600 shadow-sm"
+                : "text-secondary-500 hover:text-primary-600"
+            }`}
+          >
+            <div
+              className={`w-2 h-2 rounded-full ${
+                filterStatus === "paid" ? "bg-primary-500" : "bg-primary-400/50"
+              }`}
+            />
+            পরিশোধিত
+          </button>
+        </div>
       </div>
 
-      {customerSummaries.length === 0 ? (
+      {filteredCustomers.length === 0 ? (
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           className="glass-card p-12 text-center"
         >
           <div className="w-20 h-20 bg-secondary-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <Users className="w-10 h-10 text-secondary-400" />
+            <Filter className="w-10 h-10 text-secondary-400" />
           </div>
           <h3 className="text-xl font-semibold text-secondary-700 mb-2">
-            কোনো গ্রাহক নেই
+            কোনো গ্রাহক পাওয়া যায়নি
           </h3>
           <p className="text-secondary-500">
-            নতুন বিল যোগ করলে এখানে গ্রাহকের তালিকা দেখা যাবে
+            {searchTerm
+              ? "অন্য নাম দিয়ে অনুসন্ধান করুন"
+              : filterStatus !== "all"
+              ? "এই ফিল্টারে কোনো গ্রাহক নেই"
+              : "নতুন বিল যোগ করলে এখানে গ্রাহকের তালিকা দেখা যাবে"}
           </p>
         </motion.div>
       ) : (
         <div className="space-y-4">
-          <AnimatePresence>
+          <AnimatePresence mode="popLayout">
             {filteredCustomers.map((customer, index) => {
               const totalBaki = customer.transactions
                 .filter((t) => !t.isPaid)
@@ -64,9 +137,11 @@ export const CustomerList = ({
 
               return (
                 <motion.div
+                  layout
                   key={customer.name}
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
                   transition={{ delay: index * 0.05 }}
                   onClick={() => onSelectCustomer(customer.name)}
                   className="glass-card p-5 glass-card-hover cursor-pointer group"
