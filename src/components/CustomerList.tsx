@@ -108,14 +108,33 @@ export const CustomerList = ({
     }
   };
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 10;
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, filterStatus, sortBy]);
+
+  const totalPages = Math.ceil(
+    filteredAndSortedCustomers.length / ITEMS_PER_PAGE
+  );
+  const paginatedCustomers = filteredAndSortedCustomers.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
+
   return (
     <div className="max-w-4xl mx-auto px-4 mt-8 pb-12">
       <div className="flex flex-col gap-6 mb-6">
+        {/* Header Section (Unchanged) */}
         <div className="flex items-center gap-2 ml-1">
           <Users className="w-5 h-5 text-primary-500" />
           <h3 className="text-xl font-bold text-secondary-900">
             গ্রাহকদের তালিকা
           </h3>
+          <span className="text-sm font-medium text-secondary-500 bg-secondary-100 px-2 py-0.5 rounded-full">
+            {filteredAndSortedCustomers.length}
+          </span>
         </div>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
@@ -250,7 +269,7 @@ export const CustomerList = ({
       ) : (
         <div className="space-y-4">
           <AnimatePresence mode="popLayout">
-            {filteredAndSortedCustomers.map((customer, index) => {
+            {paginatedCustomers.map((customer, index) => {
               const totalBaki = customer.transactions
                 .filter((t) => !t.isPaid)
                 .reduce((sum, t) => sum + t.amount, 0);
@@ -347,6 +366,31 @@ export const CustomerList = ({
               );
             })}
           </AnimatePresence>
+
+          {/* Pagination Controls */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-between pt-6 border-t border-secondary-200/50">
+              <button
+                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+                className="px-4 py-2 rounded-xl text-sm font-medium text-secondary-600 hover:bg-white hover:text-primary-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+              >
+                ← আগের
+              </button>
+              <span className="text-sm font-medium text-secondary-500 bg-white px-4 py-2 rounded-xl border border-secondary-100 shadow-sm">
+                পৃষ্ঠা {currentPage} / {totalPages}
+              </span>
+              <button
+                onClick={() =>
+                  setCurrentPage((p) => Math.min(totalPages, p + 1))
+                }
+                disabled={currentPage === totalPages}
+                className="px-4 py-2 rounded-xl text-sm font-medium text-secondary-600 hover:bg-white hover:text-primary-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+              >
+                পরের →
+              </button>
+            </div>
+          )}
         </div>
       )}
     </div>
