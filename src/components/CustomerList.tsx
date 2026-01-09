@@ -13,7 +13,9 @@ import {
   TrendingDown,
   SortAsc,
   ChevronDown,
+  X,
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface CustomerListProps {
   customerSummaries: CustomerSummary[];
@@ -34,7 +36,7 @@ export const CustomerList = ({
   const [isSortOpen, setIsSortOpen] = useState(false);
   const sortRef = useRef<HTMLDivElement>(null);
 
-  // Close sort dropdown when clicking outside
+  // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (sortRef.current && !sortRef.current.contains(event.target as Node)) {
@@ -80,10 +82,10 @@ export const CustomerList = ({
         return balanceB - balanceA;
       }
       // Default: recent
-      return (
-        new Date(b.lastTransaction).getTime() -
-        new Date(a.lastTransaction).getTime()
-      );
+      // Use the LATEST transaction date available (which might be the filtered date)
+      const lastA = a.transactions[0]?.date || a.lastTransaction;
+      const lastB = b.transactions[0]?.date || b.lastTransaction;
+      return new Date(lastB).getTime() - new Date(lastA).getTime();
     });
 
   const getSortLabel = (option: SortOption) => {
@@ -184,64 +186,70 @@ export const CustomerList = ({
             </button>
           </div>
 
-          {/* Custom Sort Dropdown */}
-          <div className="relative w-full sm:w-auto z-20" ref={sortRef}>
-            <button
-              onClick={() => setIsSortOpen(!isSortOpen)}
-              className="w-full sm:w-auto px-4 py-2.5 bg-white backdrop-blur-md border border-secondary-200 rounded-xl flex items-center justify-between gap-4 text-sm font-medium text-secondary-700 hover:border-primary-500 hover:text-primary-600 transition-all shadow-soft group"
-            >
-              <div className="flex items-center gap-2">
-                <ArrowUpDown className="w-4 h-4 text-secondary-400 group-hover:text-primary-500 transition-colors" />
-                <span>{getSortLabel(sortBy)}</span>
-              </div>
-              <ChevronDown
-                className={`w-4 h-4 text-secondary-400 transition-transform duration-300 ${
-                  isSortOpen ? "rotate-180" : ""
-                }`}
-              />
-            </button>
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            {/* Custom Sort Dropdown */}
+            <div className="relative w-full sm:w-auto z-20" ref={sortRef}>
+              <button
+                onClick={() => setIsSortOpen(!isSortOpen)}
+                className="w-full sm:w-auto px-4 py-2.5 bg-white backdrop-blur-md border border-secondary-200 rounded-xl flex items-center justify-between gap-4 text-sm font-medium text-secondary-700 hover:border-primary-500 hover:text-primary-600 transition-all shadow-soft group"
+              >
+                <div className="flex items-center gap-2">
+                  <ArrowUpDown className="w-4 h-4 text-secondary-400 group-hover:text-primary-500 transition-colors" />
+                  <span>{getSortLabel(sortBy)}</span>
+                </div>
+                <ChevronDown
+                  className={`w-4 h-4 text-secondary-400 transition-transform duration-300 ${
+                    isSortOpen ? "rotate-180" : ""
+                  }`}
+                />
+              </button>
 
-            <AnimatePresence>
-              {isSortOpen && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                  transition={{ duration: 0.2 }}
-                  className="absolute right-0 top-full mt-2 w-full sm:w-56 bg-white rounded-xl shadow-xl border border-secondary-100 overflow-hidden z-50 origin-top-right"
-                >
-                  <div className="p-1.5">
-                    {(
-                      ["recent", "highest_balance", "name_asc"] as SortOption[]
-                    ).map((option) => (
-                      <button
-                        key={option}
-                        onClick={() => {
-                          setSortBy(option);
-                          setIsSortOpen(false);
-                        }}
-                        className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
-                          sortBy === option
-                            ? "bg-primary-50 text-primary-700"
-                            : "text-secondary-600 hover:bg-secondary-50"
-                        }`}
-                      >
-                        <div
-                          className={`p-1.5 rounded-md ${
+              <AnimatePresence>
+                {isSortOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                    transition={{ duration: 0.2 }}
+                    className="absolute right-0 top-full mt-2 w-full sm:w-56 bg-white rounded-xl shadow-xl border border-secondary-100 overflow-hidden z-50 origin-top-right"
+                  >
+                    <div className="p-1.5">
+                      {(
+                        [
+                          "recent",
+                          "highest_balance",
+                          "name_asc",
+                        ] as SortOption[]
+                      ).map((option) => (
+                        <button
+                          key={option}
+                          onClick={() => {
+                            setSortBy(option);
+                            setIsSortOpen(false);
+                          }}
+                          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
                             sortBy === option
-                              ? "bg-white text-primary-600 shadow-sm"
-                              : "bg-secondary-100 text-secondary-500"
+                              ? "bg-primary-50 text-primary-700"
+                              : "text-secondary-600 hover:bg-secondary-50"
                           }`}
                         >
-                          {getSortIcon(option)}
-                        </div>
-                        {getSortLabel(option)}
-                      </button>
-                    ))}
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
+                          <div
+                            className={`p-1.5 rounded-md ${
+                              sortBy === option
+                                ? "bg-white text-primary-600 shadow-sm"
+                                : "bg-secondary-100 text-secondary-500"
+                            }`}
+                          >
+                            {getSortIcon(option)}
+                          </div>
+                          {getSortLabel(option)}
+                        </button>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           </div>
         </div>
       </div>
