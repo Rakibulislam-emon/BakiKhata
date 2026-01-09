@@ -5,13 +5,13 @@ import { Plus, Search, LogOut } from "lucide-react";
 import { Transaction, CustomerSummary } from "@/types";
 import { formatCurrency } from "@/lib/utils";
 
-import { Notification } from "@/components/Notification";
 import { SummaryCards } from "@/components/SummaryCards";
 import { TransactionForm } from "@/components/TransactionForm";
 import { CustomerList } from "@/components/CustomerList";
 import { RecentTransactions } from "@/components/RecentTransactions";
 import { CustomerDetail } from "@/components/CustomerDetail";
 import { Auth } from "@/components/Auth";
+import { toast } from "sonner";
 
 import { useAuth } from "@/hooks/useAuth";
 import { useTransactions } from "@/hooks/useTransactions";
@@ -34,17 +34,19 @@ export default function Home() {
   } = useTransactions(session);
 
   // UI State
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    name: string;
+    amount: string;
+    notes: string;
+    type: "lend" | "borrow";
+  }>({
     name: "",
     amount: "",
     notes: "",
+    type: "lend",
   });
   const [searchTerm, setSearchTerm] = useState("");
   const [showAddForm, setShowAddForm] = useState(false);
-  const [notification, setNotification] = useState<{
-    type: "success" | "error";
-    message: string;
-  } | null>(null);
   const [selectedCustomerName, setSelectedCustomerName] = useState<
     string | null
   >(null);
@@ -58,16 +60,16 @@ export default function Home() {
     }
   }, [session, fetchTransactions, setTransactions]);
 
-  const handleLogout = async () => {
-    if (confirm("আপনি কি নিশ্চিত যে লগআউট করতে চান?")) {
-      await logout();
-      setSelectedCustomerName(null);
-    }
-  };
-
-  const showNotification = (type: "success" | "error", message: string) => {
-    setNotification({ type, message });
-    setTimeout(() => setNotification(null), 3000);
+  const handleLogout = () => {
+    toast("আপনি কি নিশ্চিত যে লগআউট করতে চান?", {
+      action: {
+        label: "লগআউট",
+        onClick: async () => {
+          await logout();
+          setSelectedCustomerName(null);
+        },
+      },
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -75,55 +77,68 @@ export default function Home() {
     const nameToUse = selectedCustomerName || formData.name.trim();
 
     if (!nameToUse || !formData.amount) {
-      showNotification("error", "দয়া করে নাম এবং টাকার পরিমাণ লিখুন");
+      toast.error("দয়া করে নাম এবং টাকার পরিমাণ লিখুন");
       return;
     }
 
+    const amountValue = parseFloat(formData.amount);
+    const finalAmount = formData.type === "borrow" ? -amountValue : amountValue;
+
     const res = await addTransaction(
       nameToUse,
-      formData.amount,
+      finalAmount.toString(),
       formData.notes
     );
 
     if (res.error) {
-      showNotification("error", "বিল যোগ করতে সমস্যা হয়েছে");
+      toast.error("বিল যোগ করতে সমস্যা হয়েছে");
     } else {
       setFormData((prev) => ({ ...prev, amount: "", notes: "" }));
       if (!selectedCustomerName) {
-        setFormData({ name: "", amount: "", notes: "" });
+        setFormData({ name: "", amount: "", notes: "", type: "lend" });
       }
       setShowAddForm(false);
-      showNotification("success", "বিল যোগ হয়েছে");
+      toast.success("লেনদেন যোগ হয়েছে");
     }
   };
 
-  const handleDeleteTransaction = async (id: string) => {
-    if (confirm("আপনি কি নিশ্চিত যে এই বিল মুছে ফেলতে চান?")) {
-      const res = await deleteTransaction(id);
-      if (res.error) {
-        showNotification("error", "মুছতে সমস্যা হয়েছে");
-      } else {
-        showNotification("success", "বিল মুছে ফেলা হয়েছে");
-      }
-    }
+  const handleDeleteTransaction = (id: string) => {
+    toast("আপনি কি নিশ্চিত যে এই লেনদেন মুছে ফেলতে চান?", {
+      action: {
+        label: "মুছুন",
+        onClick: async () => {
+          const res = await deleteTransaction(id);
+          if (res.error) {
+            toast.error("মুছতে সমস্যা হয়েছে");
+          } else {
+            toast.success("লেনদেন মুছে ফেলা হয়েছে");
+          }
+        },
+      },
+      cancel: { label: "বাতিল", onClick: () => {} },
+    });
   };
 
-  const handleDeleteAllTransactions = async () => {
+  const handleDeleteAllTransactions = () => {
     if (!selectedCustomerName) return;
-    if (
-      !confirm(
-        `আপনি কি নিশ্চিত যে ${selectedCustomerName}-এর সব বিল মুছে ফেলতে চান?`
-      )
-    )
-      return;
-
-    const res = await deleteAllForCustomer(selectedCustomerName);
-    if (res.error) {
-      showNotification("error", "মুছতে সমস্যা হয়েছে");
-    } else {
-      setSelectedCustomerName(null);
-      showNotification("success", "সব বিল মুছে ফেলা হয়েছে");
-    }
+    toast(
+      `আপনি কি নিশ্চিত যে ${selectedCustomerName}-এর সব লেনদেন মুছে ফেলতে চান?`,
+      {
+        action: {
+          label: "সব মুছুন",
+          onClick: async () => {
+            const res = await deleteAllForCustomer(selectedCustomerName);
+            if (res.error) {
+              toast.error("মুছতে সমস্যা হয়েছে");
+            } else {
+              setSelectedCustomerName(null);
+              toast.success("সব লেনদেন মুছে ফেলা হয়েছে");
+            }
+          },
+        },
+        cancel: { label: "বাতিল", onClick: () => {} },
+      }
+    );
   };
 
   const handleToggleAllPaid = async () => {
@@ -137,41 +152,48 @@ export default function Home() {
       shouldBePaid
     );
     if (res.error) {
-      showNotification("error", "আপডেট করতে সমস্যা হয়েছে");
+      toast.error("আপডেট করতে সমস্যা হয়েছে");
     }
   };
 
-  const handleDeleteAllPaid = async () => {
+  const handleDeleteAllPaid = () => {
     if (!selectedCustomerName) return;
-    if (
-      !confirm(
-        `আপনি কি নিশ্চিত যে ${selectedCustomerName}-এর সব পরিশোধিত বিল মুছে ফেলতে চান?`
-      )
-    )
-      return;
-
-    const res = await deleteAllPaidForCustomer(selectedCustomerName);
-    if (res.error) {
-      showNotification("error", "মুছতে সমস্যা হয়েছে");
-    } else {
-      showNotification("success", "সব পরিশোধিত বিল মুছে ফেলা হয়েছে");
-    }
+    toast(
+      `আপনি কি নিশ্চিত যে ${selectedCustomerName}-এর সব নিষ্পন্ন লেনদেন মুছে ফেলতে চান?`,
+      {
+        action: {
+          label: "মুছুন",
+          onClick: async () => {
+            const res = await deleteAllPaidForCustomer(selectedCustomerName);
+            if (res.error) {
+              toast.error("মুছতে সমস্যা হয়েছে");
+            } else {
+              toast.success("সব নিষ্পন্ন লেনদেন মুছে ফেলা হয়েছে");
+            }
+          },
+        },
+        cancel: { label: "বাতিল", onClick: () => {} },
+      }
+    );
   };
 
-  const handleClearRecent = async () => {
-    if (
-      confirm(
-        "আপনি কি নিশ্চিত যে সাম্প্রতিক লেনদেনের তালিকা মুছে ফেলতে চান? (মূল হিসাব ঠিক থাকবে)"
-      )
-    ) {
-      const recentIds = recentTransactions.map((t) => t.id);
-      const res = await clearRecent(recentIds);
-      if (res.error) {
-        showNotification("error", "সমস্যা হয়েছে");
-      } else {
-        showNotification("success", "সাম্প্রতিক তালিকা পরিষ্কার করা হয়েছে");
-      }
-    }
+  const handleClearRecent = () => {
+    toast("সাম্প্রতিক তালিকা পরিষ্কার করতে চান?", {
+      description: "মূল হিসাব ঠিক থাকবে, শুধু তালিকা পরিষ্কার হবে।",
+      action: {
+        label: "পরিষ্কার করুন",
+        onClick: async () => {
+          const recentIds = recentTransactions.map((t) => t.id);
+          const res = await clearRecent(recentIds);
+          if (res.error) {
+            toast.error("সমস্যা হয়েছে");
+          } else {
+            toast.success("সাম্প্রতিক তালিকা পরিষ্কার করা হয়েছে");
+          }
+        },
+      },
+      cancel: { label: "বাতিল", onClick: () => {} },
+    });
   };
 
   // Memoized derived data
@@ -255,14 +277,14 @@ export default function Home() {
   const totalBaki = useMemo(
     () =>
       transactions
-        .filter((t) => !t.isPaid)
+        .filter((t) => !t.isPaid && t.amount > 0)
         .reduce((sum, t) => sum + t.amount, 0),
     [transactions]
   );
   const totalPaid = useMemo(
     () =>
       transactions
-        .filter((t) => t.isPaid)
+        .filter((t) => t.isPaid && t.amount > 0)
         .reduce((sum, t) => sum + t.amount, 0),
     [transactions]
   );
@@ -282,12 +304,6 @@ export default function Home() {
   if (selectedCustomerData && customerTotals) {
     return (
       <>
-        {notification && (
-          <Notification
-            type={notification.type}
-            message={notification.message}
-          />
-        )}
         <CustomerDetail
           customer={selectedCustomerData}
           totals={customerTotals}
@@ -316,13 +332,6 @@ export default function Home() {
       </div>
 
       <div className="relative z-10">
-        {notification && (
-          <Notification
-            type={notification.type}
-            message={notification.message}
-          />
-        )}
-
         <header className="bg-primary-600 text-white pb-24 pt-8 px-4 rounded-b-[2.5rem] shadow-2xl shadow-primary-900/10 relative overflow-hidden">
           {/* Header Background Pattern */}
           <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay"></div>
@@ -330,7 +339,7 @@ export default function Home() {
           <div className="max-w-4xl mx-auto flex items-center justify-between relative z-10">
             <div>
               <h1 className="text-3xl font-bold mb-1 tracking-tight">
-                📋 বাকি হিসাব
+                📋 ব্যক্তিগত হিসাব
               </h1>
               <p className="text-primary-100/80 text-sm font-medium">
                 {session.user.email}
@@ -358,7 +367,7 @@ export default function Home() {
             <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-secondary-400 w-5 h-5 group-focus-within:text-primary-500 transition-colors" />
             <input
               type="text"
-              placeholder="গ্রাহকের নাম খুঁজুন..."
+              placeholder="নাম অনুসন্ধান..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-12 pr-4 py-4 rounded-2xl border border-white/40 bg-white/60 backdrop-blur-md shadow-soft focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 outline-none transition-all placeholder:text-secondary-400"
@@ -379,7 +388,7 @@ export default function Home() {
                 <div className="p-1 rounded-full bg-secondary-100 group-hover:bg-primary-100 transition-colors">
                   <Plus className="w-5 h-5" />
                 </div>
-                নতুন বিল যোগ করুন
+                নতুন লেনদেন যোগ করুন
               </motion.button>
             ) : (
               <TransactionForm

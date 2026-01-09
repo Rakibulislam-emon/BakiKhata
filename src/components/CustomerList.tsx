@@ -79,7 +79,7 @@ export const CustomerList = ({
         const balanceB = b.transactions
           .filter((t) => !t.isPaid)
           .reduce((sum, t) => sum + t.amount, 0);
-        return balanceB - balanceA;
+        return Math.abs(balanceB) - Math.abs(balanceA);
       }
       // Default: recent
       // Use the LATEST transaction date available (which might be the filtered date)
@@ -93,7 +93,7 @@ export const CustomerList = ({
       case "recent":
         return "সম্প্রতি সক্রিয়";
       case "highest_balance":
-        return "সর্বোচ্চ বাকি";
+        return "সর্বোচ্চ পরিমাণ";
       case "name_asc":
         return "নাম (A-Z)";
     }
@@ -131,9 +131,7 @@ export const CustomerList = ({
         {/* Header Section (Unchanged) */}
         <div className="flex items-center gap-2 ml-1">
           <Users className="w-5 h-5 text-primary-500" />
-          <h3 className="text-xl font-bold text-secondary-900">
-            গ্রাহকদের তালিকা
-          </h3>
+          <h3 className="text-xl font-bold text-secondary-900">তালিকাসমূহ</h3>
           <span className="text-sm font-medium text-secondary-500 bg-secondary-100 px-2 py-0.5 rounded-full">
             {filteredAndSortedCustomers.length}
           </span>
@@ -165,7 +163,7 @@ export const CustomerList = ({
                   filterStatus === "unpaid" ? "bg-red-500" : "bg-red-400/50"
                 }`}
               />
-              বাকি আছে
+            বাকি আছে
             </button>
             <button
               onClick={() => setFilterStatus("paid")}
@@ -264,14 +262,14 @@ export const CustomerList = ({
             <Filter className="w-10 h-10 text-secondary-400" />
           </div>
           <h3 className="text-xl font-semibold text-secondary-700 mb-2">
-            কোনো গ্রাহক পাওয়া যায়নি
+            কিছু পাওয়া যায়নি
           </h3>
           <p className="text-secondary-500">
             {searchTerm
               ? "অন্য নাম দিয়ে অনুসন্ধান করুন"
               : filterStatus !== "all"
-              ? "এই ফিল্টারে কোনো গ্রাহক নেই"
-              : "নতুন বিল যোগ করলে এখানে গ্রাহকের তালিকা দেখা যাবে"}
+              ? "এই ফিল্টারে কেউ নেই"
+              : "নতুন লেনদেন যোগ করলে এখানে তালিকা দেখা যাবে"}
           </p>
         </motion.div>
       ) : (
@@ -308,8 +306,10 @@ export const CustomerList = ({
                       <div
                         className={`w-14 h-14 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg ${
                           !isPaidOff
-                            ? "bg-gradient-to-br from-orange-400 to-red-500"
-                            : "bg-gradient-to-br from-emerald-400 to-primary-600"
+                            ? balance > 0
+                              ? "bg-gradient-to-br from-emerald-400 to-emerald-600"
+                              : "bg-gradient-to-br from-orange-400 to-red-500"
+                            : "bg-gradient-to-br from-slate-400 to-slate-500"
                         }`}
                       >
                         {customer.name.charAt(0).toUpperCase()}
@@ -326,11 +326,11 @@ export const CustomerList = ({
                           <span
                             className={`${
                               unpaidCount > 0
-                                ? "text-red-500"
+                                ? "text-secondary-600"
                                 : "text-secondary-400"
                             }`}
                           >
-                            বাকি: {unpaidCount}
+                            সক্রিয়: {unpaidCount}
                           </span>
                           <span className="text-secondary-300">|</span>
                           <span className="text-primary-600">
@@ -344,24 +344,37 @@ export const CustomerList = ({
                       <div>
                         <p
                           className={`text-2xl font-bold font-mono tracking-tight ${
-                            !isPaidOff ? "text-red-500" : "text-primary-600"
+                            !isPaidOff
+                              ? balance > 0
+                                ? "text-emerald-600"
+                                : "text-red-500"
+                              : "text-secondary-400"
                           }`}
                         >
-                          {formatCurrency(balance)}
+                          {formatCurrency(Math.abs(balance))}
                         </p>
                         <div className="flex items-center justify-end gap-1 mt-1">
                           {!isPaidOff ? (
-                            <>
-                              <AlertCircle className="w-3 h-3 text-red-500" />
-                              <p className="text-xs font-semibold text-red-500">
-                                বাকি আছে
-                              </p>
-                            </>
+                            balance > 0 ? (
+                              <>
+                                <AlertCircle className="w-3 h-3 text-emerald-600" />
+                                <p className="text-xs font-semibold text-emerald-600">
+                                  পাওনা (Receivable)
+                                </p>
+                              </>
+                            ) : (
+                              <>
+                                <AlertCircle className="w-3 h-3 text-red-500" />
+                                <p className="text-xs font-semibold text-red-500">
+                                  দেনা (Payable)
+                                </p>
+                              </>
+                            )
                           ) : (
                             <>
-                              <CheckCircle2 className="w-3 h-3 text-primary-500" />
-                              <p className="text-xs font-semibold text-primary-500">
-                                পরিশোধিত
+                              <CheckCircle2 className="w-3 h-3 text-secondary-400" />
+                              <p className="text-xs font-semibold text-secondary-400">
+                                সেটেল্ড
                               </p>
                             </>
                           )}

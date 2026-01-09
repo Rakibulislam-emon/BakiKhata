@@ -46,7 +46,7 @@ export const useTransactions = (session: any) => {
     if (!session?.user?.id) return { error: "No session" };
 
     const amount = parseFloat(amountValue);
-    if (isNaN(amount) || amount <= 0) {
+    if (isNaN(amount) || amount === 0) {
       return { error: "Invalid amount" };
     }
 

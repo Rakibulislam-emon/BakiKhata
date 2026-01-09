@@ -40,9 +40,15 @@ interface CustomerDetailProps {
     name: string;
     amount: string;
     notes: string;
+    type: "lend" | "borrow";
   };
   setFormData: (
-    data: Partial<{ name: string; amount: string; notes: string }>
+    data: Partial<{
+      name: string;
+      amount: string;
+      notes: string;
+      type: "lend" | "borrow";
+    }>
   ) => void;
   onSubmit: (e: React.FormEvent) => void;
 }
@@ -107,21 +113,38 @@ export const CustomerDetail = ({
 
       {/* Summary Cards */}
       <div className="max-w-4xl mx-auto px-4 mt-6">
-        <div className="bg-gradient-to-br from-primary-600 to-primary-800 rounded-3xl p-8 text-white shadow-xl shadow-primary-900/10 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
+        <div className="bg-primary-500 rounded-3xl p-8 text-white shadow-xl shadow-primary-500/20 relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
 
           <div className="relative z-10 text-center mb-8">
             <p className="text-primary-100 text-sm font-medium mb-1">
               বর্তমান বাকি
             </p>
-            <p className="text-5xl font-bold font-mono tracking-tight">
-              {formatCurrency(totals.totalBaki)}
-            </p>
+            <div className="flex flex-col items-center">
+              <p className="text-5xl font-bold font-mono tracking-tight mb-2 text-white">
+                {formatCurrency(Math.abs(totals.totalBaki))}
+              </p>
+              <div
+                className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${
+                  totals.totalBaki > 0
+                    ? "bg-white/20 text-white"
+                    : totals.totalBaki < 0
+                    ? "bg-red-500/20 text-red-100"
+                    : "bg-white/20 text-white"
+                }`}
+              >
+                {totals.totalBaki > 0
+                  ? "পাওনা (Asset)"
+                  : totals.totalBaki < 0
+                  ? "দেনা (Liability)"
+                  : "সেটেল্ড"}
+              </div>
+            </div>
           </div>
 
           <div className="grid grid-cols-3 gap-4 relative z-10">
             <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 text-center border border-white/10">
-              <p className="text-primary-100 text-xs mb-1">মোট বিল</p>
+              <p className="text-primary-100 text-xs mb-1">মোট </p>
               <p className="text-xl font-bold">
                 {customer.transactions.length}
               </p>
@@ -138,13 +161,39 @@ export const CustomerDetail = ({
         </div>
       </div>
 
-      {/* Add New Bill Form */}
+      {/* Add New Transaction Form */}
       <div className="max-w-4xl mx-auto px-4 mt-8">
         <div className="glass-card p-6">
-          <h2 className="text-lg font-bold mb-4 text-secondary-900 flex items-center gap-2">
-            <Plus className="w-5 h-5 text-primary-500" />
-            নতুন বিল যোগ করুন
-          </h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-bold text-secondary-900 flex items-center gap-2">
+              <Plus className="w-5 h-5 text-primary-500" />
+              নতুন লেনদেন
+            </h2>
+            <div className="flex bg-secondary-100 p-0.5 rounded-lg">
+              <button
+                type="button"
+                onClick={() => setFormData({ type: "lend" })}
+                className={`px-3 py-1 text-xs font-semibold rounded-md transition-all ${
+                  formData.type === "lend"
+                    ? "bg-white text-emerald-600 shadow-sm"
+                    : "text-secondary-500 hover:text-emerald-600"
+                }`}
+              >
+                পাওনা
+              </button>
+              <button
+                type="button"
+                onClick={() => setFormData({ type: "borrow" })}
+                className={`px-3 py-1 text-xs font-semibold rounded-md transition-all ${
+                  formData.type === "borrow"
+                    ? "bg-white text-red-600 shadow-sm"
+                    : "text-secondary-500 hover:text-red-600"
+                }`}
+              >
+                দেনা
+              </button>
+            </div>
+          </div>
           <form onSubmit={onSubmit} className="flex gap-3">
             <div className="flex-1 relative group">
               <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 text-secondary-400 w-4 h-4 group-focus-within:text-primary-500 transition-colors" />
@@ -192,8 +241,8 @@ export const CustomerDetail = ({
         <div className="max-w-4xl mx-auto px-4 mt-8">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-bold text-secondary-900 flex items-center gap-2">
-              <div className="w-2 h-2 bg-red-500 rounded-full" />
-              বাকি বিল ({allUnpaid.length})
+              <div className="w-2 h-2 bg-orange-500 rounded-full" />
+              চলমান লেনদেন ({allUnpaid.length})
             </h3>
             <button
               onClick={onToggleAllPaid}
@@ -217,7 +266,11 @@ export const CustomerDetail = ({
                   initial={{ opacity: 0, scale: 0.98 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.95 }}
-                  className="glass-card p-4 border-l-4 border-l-red-500 group"
+                  className={`glass-card p-4 border-l-4 group ${
+                    transaction.amount < 0
+                      ? "border-l-red-500"
+                      : "border-l-emerald-500"
+                  }`}
                 >
                   <div className="flex items-start gap-4">
                     <div className="pt-1">
@@ -232,7 +285,15 @@ export const CustomerDetail = ({
                       <div className="flex items-start justify-between">
                         <div>
                           <p className="text-xl font-bold text-secondary-900 font-mono">
-                            {formatCurrency(transaction.amount)}
+                            <span
+                              className={
+                                transaction.amount < 0
+                                  ? "text-red-600"
+                                  : "text-emerald-600"
+                              }
+                            >
+                              {formatCurrency(Math.abs(transaction.amount))}
+                            </span>
                           </p>
                           <div className="flex items-center gap-2 text-xs text-secondary-400 mt-1">
                             <Clock className="w-3 h-3" />
@@ -266,8 +327,8 @@ export const CustomerDetail = ({
         <div className="max-w-4xl mx-auto px-4 mt-8">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-bold text-secondary-900 flex items-center gap-2">
-              <div className="w-2 h-2 bg-primary-500 rounded-full" />
-              পরিশোধিত বিল ({allPaid.length})
+              <div className="w-2 h-2 bg-slate-400 rounded-full" />
+              নিষ্পন্ন ({allPaid.length})
             </h3>
             <button
               onClick={onDeleteAllPaid}
@@ -282,7 +343,7 @@ export const CustomerDetail = ({
             {allPaid.map((transaction) => (
               <div
                 key={transaction.id}
-                className="glass-card p-4 border-l-4 border-l-primary-500 bg-secondary-50/50"
+                className="glass-card p-4 border-l-4 border-l-slate-400 bg-secondary-50/50"
               >
                 <div className="flex items-center gap-4">
                   <div className="pt-1">
@@ -297,7 +358,7 @@ export const CustomerDetail = ({
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-xl font-bold text-primary-700 line-through decoration-2 font-mono">
-                          {formatCurrency(transaction.amount)}
+                          {formatCurrency(Math.abs(transaction.amount))}
                         </p>
                         <div className="flex items-center gap-2 text-xs text-secondary-400 mt-1">
                           <CheckCircle2 className="w-3 h-3" />

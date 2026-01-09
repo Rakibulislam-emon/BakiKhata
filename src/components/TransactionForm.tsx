@@ -7,8 +7,14 @@ interface TransactionFormProps {
     name: string;
     amount: string;
     notes: string;
+    type: "lend" | "borrow";
   };
-  setFormData: (data: { name: string; amount: string; notes: string }) => void;
+  setFormData: (data: {
+    name: string;
+    amount: string;
+    notes: string;
+    type: "lend" | "borrow";
+  }) => void;
   onSubmit: (e: React.FormEvent) => void;
   onCancel: () => void;
   isSubmitting?: boolean;
@@ -30,7 +36,7 @@ export const TransactionForm = ({
       <div className="glass-card p-6 md:p-8">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-bold text-secondary-900">
-            নতুন বিল যোগ করুন
+            নতুন লেনদেন যোগ করুন
           </h2>
           <button
             onClick={onCancel}
@@ -41,10 +47,36 @@ export const TransactionForm = ({
         </div>
 
         <form onSubmit={onSubmit} className="space-y-5">
+          {/* Type Toggle */}
+          <div className="flex bg-secondary-100 p-1 rounded-xl">
+            <button
+              type="button"
+              onClick={() => setFormData({ ...formData, type: "lend" })}
+              className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all ${
+                formData.type === "lend"
+                  ? "bg-white text-emerald-600 shadow-sm"
+                  : "text-secondary-500 hover:text-secondary-700"
+              }`}
+            >
+              আমি দিয়েছি (পাওনা)
+            </button>
+            <button
+              type="button"
+              onClick={() => setFormData({ ...formData, type: "borrow" })}
+              className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all ${
+                formData.type === "borrow"
+                  ? "bg-white text-red-600 shadow-sm"
+                  : "text-secondary-500 hover:text-secondary-700"
+              }`}
+            >
+              আমি নিয়েছি (দেনা)
+            </button>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div>
               <label className="block text-sm font-medium text-secondary-700 mb-2 ml-1">
-                গ্রাহকের নাম *
+                নাম *
               </label>
               <div className="relative group">
                 <User className="absolute left-3.5 top-1/2 -translate-y-1/2 text-secondary-400 w-5 h-5 group-focus-within:text-primary-500 transition-colors" />
