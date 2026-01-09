@@ -1,7 +1,14 @@
 import React from "react";
 import { Transaction } from "@/types";
 import { formatCurrency, formatDateTime } from "@/lib/utils";
-import { Check, TrendingDown, Clock, Trash2, X } from "lucide-react";
+import {
+  CheckCircle2,
+  TrendingDown,
+  Clock,
+  Trash2,
+  X,
+  AlertCircle,
+} from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface RecentTransactionsProps {
@@ -26,11 +33,11 @@ export const RecentTransactions = ({
         </h3>
         <button
           onClick={onClearRecent}
-          className="btn-outline border-secondary-200 text-xs py-2 px-3 hover:bg-red-50 hover:text-red-600 hover:border-red-200"
+          className="flex items-center gap-1.5 px-3 py-1.5 bg-secondary-100 text-secondary-500 rounded-lg hover:bg-red-50 hover:text-red-600 transition-all text-xs font-semibold border border-transparent hover:border-red-200"
           title="সব মুছুন"
         >
-          <X className="w-3 h-3 mr-1" />
-          সব মুছুন
+          <X className="w-3.5 h-3.5" />
+          তালিকা মুছুন
         </button>
       </div>
 
@@ -44,54 +51,74 @@ export const RecentTransactions = ({
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
               transition={{ delay: index * 0.05 }}
-              className={`glass-card p-4 flex items-center justify-between group ${
-                transaction.isPaid ? "opacity-75 bg-secondary-50/50" : ""
+              className={`glass-card p-4 flex items-center justify-between group border-l-4 ${
+                transaction.isPaid
+                  ? "border-l-primary-500 bg-primary-50/30"
+                  : transaction.amount > 0
+                  ? "border-l-emerald-500"
+                  : "border-l-red-500"
               }`}
             >
               <div className="flex items-center gap-4">
                 <div
-                  className={`p-3 rounded-full ${
+                  className={`p-3 rounded-full shadow-sm ${
                     transaction.isPaid
-                      ? "bg-green-100/50 text-green-600"
-                      : "bg-red-100/50 text-red-600"
+                      ? "bg-primary-100 text-primary-600"
+                      : transaction.amount > 0
+                      ? "bg-emerald-100 text-emerald-600"
+                      : "bg-red-100 text-red-600"
                   }`}
                 >
                   {transaction.isPaid ? (
-                    <Check className="w-5 h-5" />
+                    <CheckCircle2 className="w-5 h-5" />
+                  ) : transaction.amount > 0 ? (
+                    <AlertCircle className="w-5 h-5" />
                   ) : (
                     <TrendingDown className="w-5 h-5" />
                   )}
                 </div>
                 <div>
-                  <p className="font-semibold text-secondary-900 text-lg">
+                  <p className="font-bold text-secondary-900 text-base">
                     {transaction.customerName}
                   </p>
-                  <p className="text-xs text-secondary-500 mt-1 font-medium">
+                  <p className="text-xs text-secondary-500 mt-1 font-medium flex items-center gap-1">
+                    <Clock className="w-3 h-3" />
                     {formatDateTime(transaction.date)}
                   </p>
                 </div>
               </div>
 
               <div className="flex items-center gap-5">
-                <p
-                  className={`text-lg font-mono font-bold ${
-                    transaction.isPaid
-                      ? "text-green-600 line-through decoration-2"
-                      : "text-red-600"
-                  }`}
-                >
-                  {formatCurrency(transaction.amount)}
-                </p>
+                <div className="text-right">
+                  <p
+                    className={`text-lg font-mono font-bold tracking-tight ${
+                      transaction.isPaid
+                        ? "text-primary-600 line-through decoration-2 opacity-70"
+                        : transaction.amount > 0
+                        ? "text-emerald-600"
+                        : "text-red-600"
+                    }`}
+                  >
+                    {formatCurrency(Math.abs(transaction.amount))}
+                  </p>
+                  {!transaction.isPaid && (
+                    <p
+                      className={`text-[10px] font-bold uppercase tracking-wider ${
+                        transaction.amount > 0
+                          ? "text-emerald-500"
+                          : "text-red-500"
+                      }`}
+                    >
+                      {transaction.amount > 0 ? "পাওনা" : "দেনা"}
+                    </p>
+                  )}
+                </div>
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    // Custom toast/modal would be better than window.confirm in a full implementation
-                    // keeping confirm for simplicity but styling the button better
-                    if (confirm("আপনি কি নিশ্চিত যে এই বিল মুছে ফেলতে চান?")) {
-                      onDeleteTransaction(transaction.id);
-                    }
+                    onDeleteTransaction(transaction.id);
                   }}
-                  className="p-2 text-secondary-300 hover:text-red-500 hover:bg-red-50 rounded-full transition-colors opacity-0 group-hover:opacity-100"
+                  className="p-2 text-secondary-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-colors opacity-0 group-hover:opacity-100"
                   title="মুছুন"
                 >
                   <Trash2 className="w-5 h-5" />

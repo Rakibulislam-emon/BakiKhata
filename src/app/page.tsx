@@ -339,7 +339,7 @@ export default function Home() {
           <div className="max-w-4xl mx-auto flex items-center justify-between relative z-10">
             <div>
               <h1 className="text-3xl font-bold mb-1 tracking-tight">
-                📋 ব্যক্তিগত হিসাব
+                📋 বাকি হিসাব
               </h1>
               <p className="text-primary-100/80 text-sm font-medium">
                 {session.user.email}
