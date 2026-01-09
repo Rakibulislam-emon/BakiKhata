@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { CustomerSummary } from "@/types";
 import { formatDate, formatCurrency } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
@@ -8,6 +8,11 @@ import {
   AlertCircle,
   CheckCircle2,
   Filter,
+  ArrowUpDown,
+  Clock,
+  TrendingDown,
+  SortAsc,
+  ChevronDown,
 } from "lucide-react";
 
 interface CustomerListProps {
@@ -17,6 +22,7 @@ interface CustomerListProps {
 }
 
 type FilterStatus = "all" | "unpaid" | "paid";
+type SortOption = "recent" | "highest_balance" | "name_asc";
 
 export const CustomerList = ({
   customerSummaries,
@@ -24,80 +30,204 @@ export const CustomerList = ({
   onSelectCustomer,
 }: CustomerListProps) => {
   const [filterStatus, setFilterStatus] = useState<FilterStatus>("all");
+  const [sortBy, setSortBy] = useState<SortOption>("recent");
+  const [isSortOpen, setIsSortOpen] = useState(false);
+  const sortRef = useRef<HTMLDivElement>(null);
 
-  const filteredCustomers = customerSummaries.filter((c) => {
-    const matchesSearch = c.name
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase());
+  // Close sort dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (sortRef.current && !sortRef.current.contains(event.target as Node)) {
+        setIsSortOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
-    // Calculate balance logic same as render
-    const totalBaki = c.transactions
-      .filter((t) => !t.isPaid)
-      .reduce((sum, t) => sum + t.amount, 0);
-    const balance = totalBaki;
-    const isPaidOff = balance === 0;
+  const filteredAndSortedCustomers = customerSummaries
+    .filter((c) => {
+      // Calculate balance logic same as render
+      const totalBaki = c.transactions
+        .filter((t) => !t.isPaid)
+        .reduce((sum, t) => sum + t.amount, 0);
+      const balance = totalBaki;
+      const isPaidOff = balance === 0;
 
-    if (filterStatus === "unpaid") return matchesSearch && !isPaidOff;
-    if (filterStatus === "paid") return matchesSearch && isPaidOff;
-    return matchesSearch;
-  });
+      // Filtering logic: Name OR Amount Search
+      const lowerTerm = searchTerm.toLowerCase();
+      const matchesSearch =
+        c.name.toLowerCase().includes(lowerTerm) ||
+        balance.toString().includes(lowerTerm);
+
+      let matchesFilter = true;
+      if (filterStatus === "unpaid") matchesFilter = !isPaidOff;
+      if (filterStatus === "paid") matchesFilter = isPaidOff;
+
+      return matchesSearch && matchesFilter;
+    })
+    .sort((a, b) => {
+      if (sortBy === "name_asc") {
+        return a.name.localeCompare(b.name);
+      }
+      if (sortBy === "highest_balance") {
+        const balanceA = a.transactions
+          .filter((t) => !t.isPaid)
+          .reduce((sum, t) => sum + t.amount, 0);
+        const balanceB = b.transactions
+          .filter((t) => !t.isPaid)
+          .reduce((sum, t) => sum + t.amount, 0);
+        return balanceB - balanceA;
+      }
+      // Default: recent
+      return (
+        new Date(b.lastTransaction).getTime() -
+        new Date(a.lastTransaction).getTime()
+      );
+    });
+
+  const getSortLabel = (option: SortOption) => {
+    switch (option) {
+      case "recent":
+        return "সম্প্রতি সক্রিয়";
+      case "highest_balance":
+        return "সর্বোচ্চ বাকি";
+      case "name_asc":
+        return "নাম (A-Z)";
+    }
+  };
+
+  const getSortIcon = (option: SortOption) => {
+    switch (option) {
+      case "recent":
+        return <Clock className="w-4 h-4" />;
+      case "highest_balance":
+        return <TrendingDown className="w-4 h-4" />;
+      case "name_asc":
+        return <SortAsc className="w-4 h-4" />;
+    }
+  };
 
   return (
     <div className="max-w-4xl mx-auto px-4 mt-8 pb-12">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 ml-1">
-        <div className="flex items-center gap-2">
+      <div className="flex flex-col gap-6 mb-6">
+        <div className="flex items-center gap-2 ml-1">
           <Users className="w-5 h-5 text-primary-500" />
           <h3 className="text-xl font-bold text-secondary-900">
             গ্রাহকদের তালিকা
           </h3>
         </div>
 
-        {/* Filter Buttons */}
-        <div className="flex p-1 bg-secondary-100/50 backdrop-blur-sm rounded-xl border border-secondary-200/50 w-fit">
-          <button
-            onClick={() => setFilterStatus("all")}
-            className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-all ${
-              filterStatus === "all"
-                ? "bg-white text-secondary-900 shadow-sm"
-                : "text-secondary-500 hover:text-secondary-700"
-            }`}
-          >
-            সব
-          </button>
-          <button
-            onClick={() => setFilterStatus("unpaid")}
-            className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 ${
-              filterStatus === "unpaid"
-                ? "bg-white text-red-600 shadow-sm"
-                : "text-secondary-500 hover:text-red-600"
-            }`}
-          >
-            <div
-              className={`w-2 h-2 rounded-full ${
-                filterStatus === "unpaid" ? "bg-red-500" : "bg-red-400/50"
+        <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
+          {/* Filter Buttons */}
+          <div className="flex p-1 bg-secondary-100/50 backdrop-blur-sm rounded-xl border border-secondary-200/50 w-full sm:w-auto overflow-x-auto">
+            <button
+              onClick={() => setFilterStatus("all")}
+              className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
+                filterStatus === "all"
+                  ? "bg-white text-secondary-900 shadow-sm"
+                  : "text-secondary-500 hover:text-secondary-700"
               }`}
-            />
-            বাকি আছে
-          </button>
-          <button
-            onClick={() => setFilterStatus("paid")}
-            className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 ${
-              filterStatus === "paid"
-                ? "bg-white text-primary-600 shadow-sm"
-                : "text-secondary-500 hover:text-primary-600"
-            }`}
-          >
-            <div
-              className={`w-2 h-2 rounded-full ${
-                filterStatus === "paid" ? "bg-primary-500" : "bg-primary-400/50"
+            >
+              সব
+            </button>
+            <button
+              onClick={() => setFilterStatus("unpaid")}
+              className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 whitespace-nowrap ${
+                filterStatus === "unpaid"
+                  ? "bg-white text-red-600 shadow-sm"
+                  : "text-secondary-500 hover:text-red-600"
               }`}
-            />
-            পরিশোধিত
-          </button>
+            >
+              <div
+                className={`w-2 h-2 rounded-full ${
+                  filterStatus === "unpaid" ? "bg-red-500" : "bg-red-400/50"
+                }`}
+              />
+              বাকি আছে
+            </button>
+            <button
+              onClick={() => setFilterStatus("paid")}
+              className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 whitespace-nowrap ${
+                filterStatus === "paid"
+                  ? "bg-white text-primary-600 shadow-sm"
+                  : "text-secondary-500 hover:text-primary-600"
+              }`}
+            >
+              <div
+                className={`w-2 h-2 rounded-full ${
+                  filterStatus === "paid"
+                    ? "bg-primary-500"
+                    : "bg-primary-400/50"
+                }`}
+              />
+              পরিশোধিত
+            </button>
+          </div>
+
+          {/* Custom Sort Dropdown */}
+          <div className="relative w-full sm:w-auto z-20" ref={sortRef}>
+            <button
+              onClick={() => setIsSortOpen(!isSortOpen)}
+              className="w-full sm:w-auto px-4 py-2.5 bg-white backdrop-blur-md border border-secondary-200 rounded-xl flex items-center justify-between gap-4 text-sm font-medium text-secondary-700 hover:border-primary-500 hover:text-primary-600 transition-all shadow-soft group"
+            >
+              <div className="flex items-center gap-2">
+                <ArrowUpDown className="w-4 h-4 text-secondary-400 group-hover:text-primary-500 transition-colors" />
+                <span>{getSortLabel(sortBy)}</span>
+              </div>
+              <ChevronDown
+                className={`w-4 h-4 text-secondary-400 transition-transform duration-300 ${
+                  isSortOpen ? "rotate-180" : ""
+                }`}
+              />
+            </button>
+
+            <AnimatePresence>
+              {isSortOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                  transition={{ duration: 0.2 }}
+                  className="absolute right-0 top-full mt-2 w-full sm:w-56 bg-white rounded-xl shadow-xl border border-secondary-100 overflow-hidden z-50 origin-top-right"
+                >
+                  <div className="p-1.5">
+                    {(
+                      ["recent", "highest_balance", "name_asc"] as SortOption[]
+                    ).map((option) => (
+                      <button
+                        key={option}
+                        onClick={() => {
+                          setSortBy(option);
+                          setIsSortOpen(false);
+                        }}
+                        className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
+                          sortBy === option
+                            ? "bg-primary-50 text-primary-700"
+                            : "text-secondary-600 hover:bg-secondary-50"
+                        }`}
+                      >
+                        <div
+                          className={`p-1.5 rounded-md ${
+                            sortBy === option
+                              ? "bg-white text-primary-600 shadow-sm"
+                              : "bg-secondary-100 text-secondary-500"
+                          }`}
+                        >
+                          {getSortIcon(option)}
+                        </div>
+                        {getSortLabel(option)}
+                      </button>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
       </div>
 
-      {filteredCustomers.length === 0 ? (
+      {filteredAndSortedCustomers.length === 0 ? (
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -120,7 +250,7 @@ export const CustomerList = ({
       ) : (
         <div className="space-y-4">
           <AnimatePresence mode="popLayout">
-            {filteredCustomers.map((customer, index) => {
+            {filteredAndSortedCustomers.map((customer, index) => {
               const totalBaki = customer.transactions
                 .filter((t) => !t.isPaid)
                 .reduce((sum, t) => sum + t.amount, 0);
