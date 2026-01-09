@@ -27,6 +27,10 @@ export const Auth = () => {
         const { error } = await supabase.auth.signUp({
           email,
           password,
+          options: {
+            emailRedirectTo:
+              typeof window !== "undefined" ? window.location.origin : "",
+          },
         });
         if (error) throw error;
         setMessage("Registration successful! Check your email to confirm.");
