@@ -134,17 +134,20 @@ export const TransactionForm = ({
             </div>
           </div>
 
-          <div className="flex gap-4 pt-2">
-            <button type="submit" className="flex-1 btn-primary">
-              <Plus className="w-5 h-5" />
-              যোগ করুন
-            </button>
+          <div className="flex flex-col-reverse md:flex-row gap-4 pt-4">
             <button
               type="button"
               onClick={onCancel}
-              className="px-6 btn-outline border-secondary-200 text-secondary-600 hover:text-red-600 hover:border-red-200 hover:bg-red-50"
+              className="w-full md:w-auto px-6 py-3 rounded-xl border border-secondary-200 text-secondary-600 font-medium hover:text-red-600 hover:border-red-200 hover:bg-red-50 transition-all text-center"
             >
               বাতিল
+            </button>
+            <button
+              type="submit"
+              className="w-full md:flex-1 btn-primary py-3 flex items-center justify-center gap-2 text-base font-semibold shadow-lg shadow-primary-500/20"
+            >
+              <Plus className="w-5 h-5" />
+              <span className="whitespace-nowrap">যোগ করুন</span>
             </button>
           </div>
         </form>

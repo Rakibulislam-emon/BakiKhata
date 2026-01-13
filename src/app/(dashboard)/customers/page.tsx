@@ -85,15 +85,17 @@ export default function CustomersPage() {
               />
               <AnimatePresence>
                 {searchTerm && (
-                  <motion.button
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.8 }}
-                    onClick={() => setSearchTerm("")}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 rounded-full bg-secondary-100 text-secondary-500 hover:bg-secondary-200 hover:text-red-500 transition-colors"
-                  >
-                    <X className="w-4 h-4" />
-                  </motion.button>
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2 z-10">
+                    <motion.button
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.8 }}
+                      onClick={() => setSearchTerm("")}
+                      className="p-1.5 rounded-full bg-secondary-100 text-secondary-500 hover:bg-secondary-200 hover:text-red-500 transition-colors shadow-sm"
+                    >
+                      <X className="w-4 h-4" />
+                    </motion.button>
+                  </div>
                 )}
               </AnimatePresence>
             </div>
