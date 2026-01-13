@@ -147,13 +147,14 @@ export default function LandingPage() {
             </div>
 
             <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-secondary-900 mb-8 leading-tight">
-              ব্যবসার হিসাব রাখুন <br />
+              আপনার সব হিসাব রাখুন <br />
               <span className="hero-gradient-text">ডিজিটাল ও স্মার্ট</span> ভাবে
             </h1>
 
             <p className="mt-4 max-w-2xl mx-auto text-xl text-secondary-600 mb-10 leading-relaxed">
               খাতা-কলমের ঝামেলা ভুলে যান। বাকি খাতা অ্যাপের মাধ্যমে আপনার
-              ব্যবসার সব লেনদেন, বাকি ও পাওনা আদায়ের হিসাব রাখুন খুব সহজেই।
+              ব্যক্তিগত বা ব্যবসায়িক সব লেনদেন, বাকি ও পাওনা আদায়ের হিসাব রাখুন
+              খুব সহজেই।
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -201,8 +202,7 @@ export default function LandingPage() {
               কেন ব্যবহার করবেন বাকি খাতা?
             </h2>
             <p className="text-lg text-secondary-600 max-w-2xl mx-auto">
-              আধুনিক ব্যবসার জন্য আধুনিক সমাধান। আপনার নিরাপত্তাই আমাদের
-              অগ্রাধিকার।
+              সবার জন্য আধুনিক সমাধান। আপনার নিরাপত্তাই আমাদের অগ্রাধিকার।
             </p>
           </div>
 
@@ -222,7 +222,7 @@ export default function LandingPage() {
             <FeatureCard
               icon={<BarChart3 className="w-8 h-8 text-primary-500" />}
               title="স্মার্ট রিপোর্ট"
-              description="দিন, সপ্তাহ বা মাসের হিসাব দেখুন এক নজরে। ব্যবসার লাভ-ক্ষতি বোঝা এখন পানির মতো সহজ।"
+              description="দিন, সপ্তাহ বা মাসের হিসাব দেখুন এক নজরে। আয়-ব্যয় বা লাভ-ক্ষতি বোঝা এখন পানির মতো সহজ।"
               delay={0.2}
             />
           </div>
@@ -329,8 +329,9 @@ export default function LandingPage() {
                 </span>
               </div>
               <p className="text-secondary-500 max-w-md leading-relaxed">
-                ক্ষুদ্র ও মাঝারি ব্যবসার জন্য বাংলাদেশের সেরা ডিজিটাল হিসাবরক্ষণ
-                অ্যাপ। আমরা বিশ্বাস করি প্রযুক্তির ছোঁয়ায় বদলে যাবে ব্যবসার ধরন।
+                ব্যক্তিগত ও ব্যবসায়িক প্রয়োজনে বাংলাদেশের সেরা ডিজিটাল
+                হিসাবরক্ষণ অ্যাপ। আমরা বিশ্বাস করি প্রযুক্তির ছোঁয়ায় বদলে যাবে
+                জীবনযাত্রা।
               </p>
             </div>
 
