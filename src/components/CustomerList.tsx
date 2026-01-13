@@ -126,7 +126,7 @@ export const CustomerList = ({
   );
 
   return (
-    <div className="max-w-4xl mx-auto px-4 mt-8 pb-12">
+    <div className="w-full px-4 mt-8 pb-12">
       <div className="flex flex-col gap-6 mb-6">
         {/* Header Section (Unchanged) */}
         <div className="flex items-center gap-2 ml-1">
@@ -294,96 +294,108 @@ export const CustomerList = ({
                 <motion.div
                   layout
                   key={customer.name}
-                  initial={{ opacity: 0, x: -20 }}
+                  initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, scale: 0.95 }}
                   transition={{ delay: index * 0.05 }}
                   onClick={() => onSelectCustomer(customer.name)}
-                  className="glass-card p-5 glass-card-hover cursor-pointer group"
+                  className={`glass-card p-4 hover:shadow-md transition-all cursor-pointer group active:scale-[0.99] border-l-4 ${
+                    !isPaidOff
+                      ? balance > 0
+                        ? "border-l-emerald-500 hover:bg-emerald-50/30"
+                        : "border-l-red-500 hover:bg-red-50/30"
+                      : "border-l-emerald-500 hover:bg-emerald-50/30"
+                  }`}
                 >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-5">
+                  <div className="flex items-center justify-between gap-4">
+                    {/* Left: Avatar & Info */}
+                    <div className="flex items-center gap-4 flex-1 min-w-0">
                       <div
-                        className={`w-14 h-14 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg ${
+                        className={`w-12 h-12 shrink-0 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-sm ring-4 ring-white/50 ${
                           !isPaidOff
                             ? balance > 0
-                              ? "bg-gradient-to-br from-red-500 to-red-600" // Receivable (Baki) -> Red
-                              : "bg-gradient-to-br from-emerald-400 to-emerald-600" // Payable (Dena) -> Green (or keep red? user said 'paid hoyey jabey' -> green based. If I owe them, it's not 'paid' yet. But user focused on 'Baki jader thekey pabo' (Receivables) -> Red. 'Paid' -> Green. Let's make Settled/Zero -> Green based, and Payable -> different?
-                            : // Re-reading: "baki jader thekey pabo tader ta red... ar jader ta paid hoyey jabey tader ta green"
-                              // If balance == 0, it's paid. If balance < 0 (I owe), it's nominally 'paid' by them (overpaid even).
-                              // Let's stick to: Receivable (>0) = RED. Everything else (<=0) = GREEN/SLATE.
-                              "bg-gradient-to-br from-emerald-400 to-emerald-600" // Settled -> Green
+                              ? "bg-gradient-to-br from-emerald-400 to-emerald-600"
+                              : "bg-gradient-to-br from-red-500 to-red-600"
+                            : "bg-gradient-to-br from-emerald-400 to-emerald-600"
                         }`}
                       >
                         {customer.name.charAt(0).toUpperCase()}
                       </div>
-                      <div>
-                        <h3 className="text-lg font-bold text-secondary-900 group-hover:text-primary-600 transition-colors">
+
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-base font-bold text-secondary-900 truncate group-hover:text-primary-600 transition-colors">
                           {customer.name}
                         </h3>
-                        <p className="text-xs text-secondary-500 flex items-center gap-1.5 mt-1">
-                          <span className="w-1.5 h-1.5 rounded-full bg-secondary-300"></span>
-                          শেষ লেনদেন: {formatDate(customer.lastTransaction)}
-                        </p>
-                        <div className="flex gap-3 text-xs text-secondary-500 mt-2 font-medium">
-                          <span
-                            className={`${
-                              unpaidCount > 0
-                                ? "text-secondary-600"
-                                : "text-secondary-400"
-                            }`}
-                          >
-                            সক্রিয়: {unpaidCount}
+
+                        <div className="flex flex-wrap items-center gap-2 mt-1.5">
+                          <span className="text-[10px] sm:text-xs font-medium text-secondary-400 flex items-center gap-1 bg-secondary-50 px-2 py-0.5 rounded-full border border-secondary-100">
+                            <Clock className="w-3 h-3" />
+                            {formatDate(customer.lastTransaction)}
                           </span>
-                          <span className="text-secondary-300">|</span>
-                          <span className="text-primary-600">
-                            পরিশোধিত: {paidCount}
-                          </span>
+
+                          {(unpaidCount > 0 || paidCount > 0) && (
+                            <div className="hidden sm:flex items-center gap-2">
+                              {unpaidCount > 0 && (
+                                <span className="text-[10px] font-medium text-secondary-500 bg-secondary-100 px-1.5 py-0.5 rounded-full">
+                                  সক্রিয়: {unpaidCount}
+                                </span>
+                              )}
+                              {paidCount > 0 && (
+                                <span className="text-[10px] font-medium text-secondary-400 bg-secondary-50 px-1.5 py-0.5 rounded-full">
+                                  পরিশোধিত: {paidCount}
+                                </span>
+                              )}
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>
 
-                    <div className="text-right flex items-center gap-6">
-                      <div>
+                    {/* Right: Amount & Action */}
+                    <div className="flex items-center gap-4">
+                      <div className="text-right">
                         <p
-                          className={`text-2xl font-bold font-mono tracking-tight ${
+                          className={`text-lg sm:text-xl font-bold font-mono tracking-tight ${
                             !isPaidOff
                               ? balance > 0
-                                ? "text-red-500" // Receivable -> Red
-                                : "text-emerald-600" // Payable -> Green
-                              : "text-emerald-600" // Settled -> Green
+                                ? "text-emerald-600"
+                                : "text-red-600"
+                              : "text-emerald-600"
                           }`}
                         >
                           {formatCurrency(Math.abs(balance))}
                         </p>
-                        <div className="flex items-center  justify-end gap-1 mt-1">
+                        <div className="flex items-center justify-end gap-1 mt-0.5">
                           {!isPaidOff ? (
                             balance > 0 ? (
                               <>
-                                <AlertCircle className="w-3 h-3 text-red-500" />
-                                <p className="text-xs font-semibold text-red-500">
-                                  পাওনা 
-                                </p>
+                                <TrendingDown className="w-3 h-3 text-emerald-500 rotate-180" />
+                                <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-wider">
+                                  পাওনা
+                                </span>
                               </>
                             ) : (
                               <>
-                                <CheckCircle2 className="w-3 h-3 text-emerald-600" />
-                                <p className="text-xs font-semibold text-emerald-600">
-                                  দেনা 
-                                </p>
+                                <AlertCircle className="w-3 h-3 text-red-500" />
+                                <span className="text-[10px] font-bold text-red-500 uppercase tracking-wider">
+                                  দেনা
+                                </span>
                               </>
                             )
                           ) : (
                             <>
-                              <CheckCircle2 className="w-3 h-3 text-emerald-600" />
-                              <p className="text-xs font-semibold text-emerald-600">
+                              <CheckCircle2 className="w-3 h-3 text-emerald-500" />
+                              <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-wider">
                                 পরিশোধিত
-                              </p>
+                              </span>
                             </>
                           )}
                         </div>
                       </div>
-                      <ChevronRight className="w-5 h-5 text-secondary-300 group-hover:text-primary-500 transition-colors" />
+
+                      <div className="w-8 h-8 rounded-full bg-secondary-50 flex items-center justify-center group-hover:bg-primary-50 transition-colors">
+                        <ChevronRight className="w-4 h-4 text-secondary-400 group-hover:text-primary-600 transition-colors" />
+                      </div>
                     </div>
                   </div>
                 </motion.div>

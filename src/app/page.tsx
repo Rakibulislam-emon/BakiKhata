@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
-import { Auth } from "@/components/Auth";
 import { useRouter } from "next/navigation";
 import {
   ArrowRight,
@@ -23,7 +22,6 @@ import { DashboardPreview } from "@/components/landing/DashboardPreview";
 export default function LandingPage() {
   const { session, loading } = useAuth();
   const router = useRouter();
-  const [showAuth, setShowAuth] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
@@ -36,22 +34,6 @@ export default function LandingPage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
-      </div>
-    );
-  }
-
-  if (showAuth) {
-    return (
-      <div className="min-h-screen flex flex-col relative">
-        <motion.button
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          onClick={() => setShowAuth(false)}
-          className="absolute top-8 left-8 z-50 p-2 bg-white/80 backdrop-blur-md rounded-full hover:bg-white shadow-sm transition-all"
-        >
-          <X className="w-6 h-6 text-secondary-500" />
-        </motion.button>
-        <Auth />
       </div>
     );
   }
@@ -95,12 +77,9 @@ export default function LandingPage() {
             </div>
 
             <div className="hidden md:block">
-              <button
-                onClick={() => setShowAuth(true)}
-                className="btn-primary py-2.5 px-6 text-sm"
-              >
+              <Link href="/login" className="btn-primary py-2.5 px-6 text-sm">
                 লগ ইন করুন
-              </button>
+              </Link>
             </div>
 
             <div className="-mr-2 flex md:hidden">
@@ -140,12 +119,12 @@ export default function LandingPage() {
                 >
                   কিভাবে কাজ করে
                 </a>
-                <button
-                  onClick={() => setShowAuth(true)}
+                <Link
+                  href="/login"
                   className="w-full text-left bg-primary-50 text-primary-600 block px-3 py-2 rounded-md text-base font-medium mt-4"
                 >
                   লগ ইন / সাইন আপ
-                </button>
+                </Link>
               </div>
             </motion.div>
           )}
@@ -168,23 +147,24 @@ export default function LandingPage() {
             </div>
 
             <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-secondary-900 mb-8 leading-tight">
-              ব্যবসার হিসাব রাখুন <br />
+              আপনার সব হিসাব রাখুন <br />
               <span className="hero-gradient-text">ডিজিটাল ও স্মার্ট</span> ভাবে
             </h1>
 
             <p className="mt-4 max-w-2xl mx-auto text-xl text-secondary-600 mb-10 leading-relaxed">
               খাতা-কলমের ঝামেলা ভুলে যান। বাকি খাতা অ্যাপের মাধ্যমে আপনার
-              ব্যবসার সব লেনদেন, বাকি ও পাওনা আদায়ের হিসাব রাখুন খুব সহজেই।
+              ব্যক্তিগত বা ব্যবসায়িক সব লেনদেন, বাকি ও পাওনা আদায়ের হিসাব রাখুন
+              খুব সহজেই।
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <button
-                onClick={() => setShowAuth(true)}
-                className="btn-primary w-full sm:w-auto text-lg px-10 py-5"
+              <Link
+                href="/login"
+                className="btn-primary w-full sm:w-auto text-lg px-10 py-5 flex items-center justify-center gap-2"
               >
                 এখনই শুরু করুন
                 <ArrowRight className="w-5 h-5" />
-              </button>
+              </Link>
               <a
                 href="#features"
                 className="btn-secondary w-full sm:w-auto text-lg px-10 py-5 group inline-flex items-center justify-center gap-2"
@@ -222,8 +202,7 @@ export default function LandingPage() {
               কেন ব্যবহার করবেন বাকি খাতা?
             </h2>
             <p className="text-lg text-secondary-600 max-w-2xl mx-auto">
-              আধুনিক ব্যবসার জন্য আধুনিক সমাধান। আপনার নিরাপত্তাই আমাদের
-              অগ্রাধিকার।
+              সবার জন্য আধুনিক সমাধান। আপনার নিরাপত্তাই আমাদের অগ্রাধিকার।
             </p>
           </div>
 
@@ -243,7 +222,7 @@ export default function LandingPage() {
             <FeatureCard
               icon={<BarChart3 className="w-8 h-8 text-primary-500" />}
               title="স্মার্ট রিপোর্ট"
-              description="দিন, সপ্তাহ বা মাসের হিসাব দেখুন এক নজরে। ব্যবসার লাভ-ক্ষতি বোঝা এখন পানির মতো সহজ।"
+              description="দিন, সপ্তাহ বা মাসের হিসাব দেখুন এক নজরে। আয়-ব্যয় বা লাভ-ক্ষতি বোঝা এখন পানির মতো সহজ।"
               delay={0.2}
             />
           </div>
@@ -323,13 +302,13 @@ export default function LandingPage() {
             হাজারো ব্যবসায়ী তাদের হিসাব নিকাশ সহজ করতে ব্যবহার করছেন বাকি খাতা।
             আপনি কেন পিছিয়ে থাকবেন?
           </p>
-          <button
-            onClick={() => setShowAuth(true)}
+          <Link
+            href="/login"
             className="bg-white text-primary-600 hover:bg-primary-50 font-bold text-lg px-12 py-5 rounded-2xl shadow-2xl shadow-black/20 transform hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-3 mx-auto"
           >
             ফ্রি একাউন্ট খুলুন
             <ArrowRight className="w-6 h-6" />
-          </button>
+          </Link>
           <p className="mt-6 text-primary-200 text-sm font-medium">
             কোন ক্রেডিট কার্ডের প্রয়োজন নেই • ১ মিনিটেই সেটআপ
           </p>
@@ -350,8 +329,9 @@ export default function LandingPage() {
                 </span>
               </div>
               <p className="text-secondary-500 max-w-md leading-relaxed">
-                ক্ষুদ্র ও মাঝারি ব্যবসার জন্য বাংলাদেশের সেরা ডিজিটাল হিসাবরক্ষণ
-                অ্যাপ। আমরা বিশ্বাস করি প্রযুক্তির ছোঁয়ায় বদলে যাবে ব্যবসার ধরন।
+                ব্যক্তিগত ও ব্যবসায়িক প্রয়োজনে বাংলাদেশের সেরা ডিজিটাল
+                হিসাবরক্ষণ অ্যাপ। আমরা বিশ্বাস করি প্রযুক্তির ছোঁয়ায় বদলে যাবে
+                জীবনযাত্রা।
               </p>
             </div>
 

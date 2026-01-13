@@ -5,6 +5,7 @@ import { useTransactions } from "@/hooks/useTransactions";
 import { SummaryCards } from "@/components/SummaryCards";
 import { RecentTransactions } from "@/components/RecentTransactions";
 import { TransactionForm } from "@/components/TransactionForm";
+import { FullPageLoader } from "@/components/ui/LoadingSpinner";
 import { useMemo, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Plus } from "lucide-react";
@@ -13,6 +14,7 @@ export default function DashboardPage() {
   const { session } = useAuth();
   const {
     transactions,
+    loading,
     fetchTransactions,
     addTransaction,
     deleteTransaction,
@@ -76,6 +78,14 @@ export default function DashboardPage() {
     [transactions]
   );
 
+  const totalDena = useMemo(
+    () =>
+      transactions
+        .filter((t) => !t.isPaid && t.amount < 0)
+        .reduce((sum, t) => sum + t.amount, 0),
+    [transactions]
+  );
+
   const totalPaid = useMemo(
     () =>
       transactions
@@ -135,13 +145,13 @@ export default function DashboardPage() {
     });
   };
 
+  if (loading && transactions.length === 0) {
+    return <FullPageLoader />;
+  }
+
   return (
     <div className="space-y-8">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-secondary-900">ড্যাশবোর্ড</h1>
-          <p className="text-secondary-500">আপনার ব্যবসার সংক্ষিপ্তসার</p>
-        </div>
+      <div className="flex justify-end gap-4">
         <button
           onClick={() => setShowAddForm(true)}
           className="btn-primary w-full md:w-auto py-4 md:py-2.5 text-lg md:text-sm font-semibold shadow-xl md:shadow-none justify-center active:scale-95 transition-all"
@@ -161,6 +171,7 @@ export default function DashboardPage() {
 
       <SummaryCards
         totalBaki={totalBaki}
+        totalDena={totalDena}
         totalPaid={totalPaid}
         transactionCount={transactions.length}
         customerCount={customerSummaries}

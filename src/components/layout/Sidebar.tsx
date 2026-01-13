@@ -1,6 +1,6 @@
 "use client";
 
-import { Home, Users, Settings, LogOut } from "lucide-react";
+import { Home, Settings, LogOut, TrendingDown, TrendingUp } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
@@ -9,8 +9,9 @@ import { motion } from "framer-motion";
 
 const navItems = [
   { icon: Home, label: "ড্যাশবোর্ড", href: "/dashboard" },
-  { icon: Users, label: "গ্রাহক তালিকা", href: "/customers" },
-  { icon: Settings, label: "সেটিংস", href: "/settings" },
+  { icon: TrendingUp, label: "পাওনা তালিকা", href: "/dashboard/receivables" },
+  { icon: TrendingDown, label: "দেনা তালিকা", href: "/dashboard/payables" },
+  { icon: Settings, label: "সেটিংস", href: "/dashboard/settings" },
 ];
 
 export function Sidebar() {
@@ -36,32 +37,45 @@ export function Sidebar() {
         <h1 className="text-2xl font-bold bg-gradient-to-r from-primary-600 to-primary-800 bg-clip-text text-transparent">
           বাকি খাতা
         </h1>
-        <p className="text-xs text-secondary-500 font-medium mt-1">
-          ব্যবসায়ের ডিজিটাল সমাধান
+        <p className="text-xs md:pl-2 text-secondary-500 font-medium mt-1">
+          ডিজিটাল সমাধান
         </p>
       </div>
 
       <nav className="flex-1 px-4 space-y-2">
         {navItems.map((item) => {
           const isActive = pathname === item.href;
+
+          let activeClass =
+            "bg-primary-500 text-white shadow-lg shadow-primary-500/30";
+          let inactiveClass =
+            "text-secondary-600 hover:bg-white/50 hover:text-primary-600";
+          let iconActive = "text-white";
+          let iconInactive = "text-secondary-400 group-hover:text-primary-500";
+
+          if (item.href === "/dashboard/receivables") {
+            activeClass =
+              "bg-emerald-500 text-white shadow-lg shadow-emerald-500/30";
+            inactiveClass =
+              "text-secondary-600 hover:bg-emerald-50 hover:text-emerald-600";
+            iconInactive = "text-emerald-500 group-hover:text-emerald-600";
+          } else if (item.href === "/dashboard/payables") {
+            activeClass = "bg-red-500 text-white shadow-lg shadow-red-500/30";
+            inactiveClass =
+              "text-secondary-600 hover:bg-red-50 hover:text-red-600";
+            iconInactive = "text-red-500 group-hover:text-red-600";
+          }
+
           return (
             <Link
               key={item.href}
               href={item.href}
               className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 group
-                ${
-                  isActive
-                    ? "bg-primary-500 text-white shadow-lg shadow-primary-500/30"
-                    : "text-secondary-600 hover:bg-white/50 hover:text-primary-600"
-                }
+                ${isActive ? activeClass : inactiveClass}
               `}
             >
               <item.icon
-                className={`w-5 h-5 ${
-                  isActive
-                    ? "text-white"
-                    : "text-secondary-400 group-hover:text-primary-500"
-                }`}
+                className={`w-5 h-5 ${isActive ? iconActive : iconInactive}`}
               />
               <span className="font-medium">{item.label}</span>
             </Link>

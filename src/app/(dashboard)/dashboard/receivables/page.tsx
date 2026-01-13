@@ -3,15 +3,16 @@
 import { useAuth } from "@/hooks/useAuth";
 import { useTransactions } from "@/hooks/useTransactions";
 import { CustomerList } from "@/components/CustomerList";
+import { FullPageLoader } from "@/components/ui/LoadingSpinner";
 import { useMemo, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Search, Plus, X } from "lucide-react";
+import { Search, Plus, X, TrendingUp } from "lucide-react";
 import { CustomerSummary } from "@/types";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function CustomersPage() {
   const { session } = useAuth();
-  const { transactions, fetchTransactions, setTransactions } =
+  const { transactions, loading, fetchTransactions, setTransactions } =
     useTransactions(session);
   const [searchTerm, setSearchTerm] = useState("");
   const router = useRouter();
@@ -34,14 +35,24 @@ export default function CustomersPage() {
 
     const summaries: CustomerSummary[] = [];
     customerMap.forEach((txns) => {
-      const sortedTxns = txns.sort(
-        (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-      );
-      summaries.push({
-        name: txns[0].customerName, // Use original casing
-        transactions: sortedTxns,
-        lastTransaction: sortedTxns[0]?.date || "",
-      });
+      // Calculate balance to filter for Paona (Receivables)
+      // Include if currently positive OR if settled (0) but historically had positive transactions
+      const totalBaki = txns
+        .filter((t) => !t.isPaid)
+        .reduce((sum, t) => sum + t.amount, 0);
+
+      const hasPositiveHistory = txns.some((t) => t.amount > 0);
+
+      if (totalBaki > 0 || (totalBaki === 0 && hasPositiveHistory)) {
+        const sortedTxns = txns.sort(
+          (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+        );
+        summaries.push({
+          name: txns[0].customerName, // Use original casing
+          transactions: sortedTxns,
+          lastTransaction: sortedTxns[0]?.date || "",
+        });
+      }
     });
 
     return summaries.sort(
@@ -53,23 +64,28 @@ export default function CustomersPage() {
 
   const handleSelectCustomer = (name: string) => {
     // Navigate to dynamic route based on customer name (encoded)
-    router.push(`/customers/${encodeURIComponent(name)}`);
+    router.push(`/dashboard/receivables/${encodeURIComponent(name)}`);
   };
+
+  if (loading && transactions.length === 0) {
+    return <FullPageLoader />;
+  }
 
   return (
     <div className="space-y-6">
-      <div className="glass-card p-6 md:p-8 relative overflow-hidden">
+      <div className="glass-card p-6 md:p-8 relative overflow-hidden bg-gradient-to-br from-emerald-50 to-white border-l-4 border-l-emerald-500">
         {/* Background Decoration */}
-        <div className="absolute top-0 right-0 w-64 h-64 bg-primary-500/5 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
+        <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/5 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
 
         <div className="relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div className="flex-1">
-            <h1 className="text-3xl font-bold text-secondary-900 tracking-tight mb-2">
-              গ্রাহক তালিকা
+            <h1 className="text-3xl font-bold text-secondary-900 tracking-tight mb-2 flex items-center gap-2">
+              <TrendingUp className="w-8 h-8 text-emerald-500" />
+              পাওনা তালিকা
             </h1>
             <p className="text-secondary-500 max-w-lg leading-relaxed">
-              আপনার সকল গ্রাহকের হিসাব এবং লেনদেনের তথ্য এখানে দেখুন। নাম দিয়ে
-              খুঁজুন এবং বিস্তারিত দেখতে ক্লিক করুন।
+              যাদের কাছে আপনি টাকা পাবেন তাদের তালিকা। বিস্তারিত দেখতে নামের উপর
+              ক্লিক করুন।
             </p>
           </div>
 

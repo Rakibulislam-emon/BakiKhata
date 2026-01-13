@@ -1,13 +1,40 @@
 import React, { useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { Lock, Mail, Loader2, ArrowRight, UserPlus, LogIn } from "lucide-react";
+import {
+  Lock,
+  Mail,
+  Loader2,
+  ArrowRight,
+  UserPlus,
+  LogIn,
+  Eye,
+  EyeOff,
+} from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+
+const getBengaliErrorMessage = (error: string) => {
+  const err = error.toLowerCase();
+  if (err.includes("invalid login credentials"))
+    return "ইমেইল বা পাসওয়ার্ড সঠিক নয়";
+  if (
+    err.includes("user already registered") ||
+    err.includes("already registered") ||
+    err.includes("email already exists")
+  )
+    return "এই ইমেইল দিয়ে ইতিমধ্যে একটি একাউন্ট খোলা আছে";
+  if (err.includes("password should be at least 6 characters"))
+    return "পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে";
+  if (err.includes("rate limit") || err.includes("too many requests"))
+    return "অতিরিক্ত চেষ্টার কারণে সাময়িকভাবে বন্ধ আছে। কিছুক্ষণ পর আবার চেষ্টা করুন";
+  return "একটি সমস্যা হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন";
+};
 
 export const Auth = () => {
   const [loading, setLoading] = useState(false);
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
 
@@ -39,7 +66,7 @@ export const Auth = () => {
         );
       }
     } catch (err: any) {
-      setError(err.message);
+      setError(getBengaliErrorMessage(err.message));
     } finally {
       setLoading(false);
     }
@@ -116,8 +143,9 @@ export const Auth = () => {
                 <input
                   type="email"
                   value={email}
+                  disabled={loading}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="input-field"
+                  className="input-field disabled:opacity-50 disabled:cursor-not-allowed"
                   placeholder="you@example.com"
                   required
                 />
@@ -131,14 +159,26 @@ export const Auth = () => {
               <div className="relative group">
                 <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-secondary-400 w-5 h-5 group-focus-within:text-primary-500 transition-colors" />
                 <input
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   value={password}
+                  disabled={loading}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="input-field"
+                  className="input-field pr-12 disabled:opacity-50 disabled:cursor-not-allowed"
                   placeholder="••••••••"
                   required
                   minLength={6}
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-secondary-400 hover:text-secondary-600 transition-colors"
+                >
+                  {showPassword ? (
+                    <EyeOff className="w-5 h-5" />
+                  ) : (
+                    <Eye className="w-5 h-5" />
+                  )}
+                </button>
               </div>
             </div>
           </div>
@@ -146,7 +186,7 @@ export const Auth = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full btn-primary"
+            className="w-full btn-primary disabled:opacity-70 disabled:cursor-not-allowed"
           >
             {loading ? (
               <Loader2 className="w-5 h-5 animate-spin" />
@@ -166,7 +206,8 @@ export const Auth = () => {
               setError("");
               setMessage("");
             }}
-            className="text-sm text-secondary-500 hover:text-primary-600 font-medium transition-colors"
+            disabled={loading}
+            className="text-sm text-secondary-500 hover:text-primary-600 font-medium transition-colors disabled:opacity-50"
           >
             {isLogin
               ? "একাউন্ট নেই? নতুন একাউন্ট খুলুন"

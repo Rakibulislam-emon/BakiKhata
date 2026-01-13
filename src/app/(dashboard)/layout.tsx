@@ -2,10 +2,11 @@
 
 import { Sidebar } from "@/components/layout/Sidebar";
 import { MobileSidebar } from "@/components/layout/MobileSidebar";
+import { BottomNav } from "@/components/layout/BottomNav";
 import { Header } from "@/components/layout/Header";
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Auth } from "@/components/Auth";
 
 export default function DashboardLayout({
@@ -16,6 +17,14 @@ export default function DashboardLayout({
   const { session, loading } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!loading && !session) {
+      router.push("/login");
+    }
+  }, [session, loading, router]);
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
@@ -25,7 +34,7 @@ export default function DashboardLayout({
   }
 
   if (!session) {
-    return <Auth />;
+    return null; // Prevent rendering anything while redirecting
   }
 
   return (
@@ -42,12 +51,14 @@ export default function DashboardLayout({
         onClose={() => setMobileMenuOpen(false)}
       />
 
-      <main className="md:ml-64 relative z-10 min-h-screen flex flex-col transition-all duration-300">
+      <main className="md:ml-64 relative z-10 min-h-screen flex flex-col transition-all duration-300 pb-24 md:pb-0">
         <Header onMenuClick={() => setMobileMenuOpen(true)} />
         <div className="flex-1 p-4 md:p-8 max-w-7xl mx-auto w-full">
           {children}
         </div>
       </main>
+
+      <BottomNav />
     </div>
   );
 }

@@ -10,6 +10,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useRouter } from "next/navigation";
 
 interface RecentTransactionsProps {
   transactions: Transaction[];
@@ -22,10 +23,12 @@ export const RecentTransactions = ({
   onClearRecent,
   onDeleteTransaction,
 }: RecentTransactionsProps) => {
+  const router = useRouter();
+
   if (transactions.length === 0) return null;
 
   return (
-    <div className="max-w-4xl mx-auto px-4 mt-12 pb-24">
+    <div className="w-full px-4 mt-12 pb-24">
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-xl font-bold text-secondary-900 flex items-center gap-2">
           <Clock className="w-5 h-5 text-primary-500" />
@@ -51,7 +54,16 @@ export const RecentTransactions = ({
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
               transition={{ delay: index * 0.05 }}
-              className={`glass-card p-4 flex items-center justify-between group border-l-4 ${
+              onClick={() => {
+                const isReceivable = transaction.amount >= 0;
+                const route = isReceivable ? "receivables" : "payables";
+                router.push(
+                  `/dashboard/${route}/${encodeURIComponent(
+                    transaction.customerName
+                  )}`
+                );
+              }}
+              className={`glass-card p-4 flex items-center justify-between group border-l-4 cursor-pointer hover:shadow-md transition-all ${
                 transaction.isPaid
                   ? "border-l-primary-500 bg-primary-50/30"
                   : transaction.amount > 0
@@ -78,7 +90,7 @@ export const RecentTransactions = ({
                   )}
                 </div>
                 <div>
-                  <p className="font-bold text-secondary-900 text-base">
+                  <p className="font-bold text-secondary-900 text-base group-hover:text-primary-600 transition-colors">
                     {transaction.customerName}
                   </p>
                   <p className="text-xs text-secondary-500 mt-1 font-medium flex items-center gap-1">
