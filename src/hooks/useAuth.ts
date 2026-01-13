@@ -27,9 +27,16 @@ export const useAuth = () => {
   const logout = async () => {
     try {
       await supabase.auth.signOut();
-      setSession(null);
     } catch (error) {
       console.error("Error signing out:", error);
+    } finally {
+      setSession(null);
+      localStorage.clear(); // Ensure all local state is wiped
+      document.cookie.split(";").forEach((c) => {
+        document.cookie = c
+          .replace(/^ +/, "")
+          .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+      });
     }
   };
 
