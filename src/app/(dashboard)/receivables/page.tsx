@@ -3,6 +3,7 @@
 import { useAuth } from "@/hooks/useAuth";
 import { useTransactions } from "@/hooks/useTransactions";
 import { CustomerList } from "@/components/CustomerList";
+import { FullPageLoader } from "@/components/ui/LoadingSpinner";
 import { useMemo, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Search, Plus, X, TrendingUp } from "lucide-react";
@@ -11,7 +12,7 @@ import { motion, AnimatePresence } from "framer-motion";
 
 export default function CustomersPage() {
   const { session } = useAuth();
-  const { transactions, fetchTransactions, setTransactions } =
+  const { transactions, loading, fetchTransactions, setTransactions } =
     useTransactions(session);
   const [searchTerm, setSearchTerm] = useState("");
   const router = useRouter();
@@ -65,6 +66,10 @@ export default function CustomersPage() {
     // Navigate to dynamic route based on customer name (encoded)
     router.push(`/customers/${encodeURIComponent(name)}`);
   };
+
+  if (loading && transactions.length === 0) {
+    return <FullPageLoader />;
+  }
 
   return (
     <div className="space-y-6">

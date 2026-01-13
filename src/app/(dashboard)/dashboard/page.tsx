@@ -5,6 +5,7 @@ import { useTransactions } from "@/hooks/useTransactions";
 import { SummaryCards } from "@/components/SummaryCards";
 import { RecentTransactions } from "@/components/RecentTransactions";
 import { TransactionForm } from "@/components/TransactionForm";
+import { FullPageLoader } from "@/components/ui/LoadingSpinner";
 import { useMemo, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Plus } from "lucide-react";
@@ -13,6 +14,7 @@ export default function DashboardPage() {
   const { session } = useAuth();
   const {
     transactions,
+    loading,
     fetchTransactions,
     addTransaction,
     deleteTransaction,
@@ -142,6 +144,10 @@ export default function DashboardPage() {
       },
     });
   };
+
+  if (loading && transactions.length === 0) {
+    return <FullPageLoader />;
+  }
 
   return (
     <div className="space-y-8">

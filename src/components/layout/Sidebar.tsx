@@ -37,8 +37,8 @@ export function Sidebar() {
         <h1 className="text-2xl font-bold bg-gradient-to-r from-primary-600 to-primary-800 bg-clip-text text-transparent">
           বাকি খাতা
         </h1>
-        <p className="text-xs text-secondary-500 font-medium mt-1">
-          ব্যবসায়ের ডিজিটাল সমাধান
+        <p className="text-xs md:pl-2 text-secondary-500 font-medium mt-1">
+           ডিজিটাল সমাধান
         </p>
       </div>
 
