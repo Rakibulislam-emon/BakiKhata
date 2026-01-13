@@ -283,6 +283,24 @@ export const useTransactions = (session: any) => {
     return { success: true };
   };
 
+  const deleteAllTransactions = async () => {
+    const previousTransactions = [...transactions];
+    setTransactions([]);
+
+    const { error } = await supabase
+      .from("transactions")
+      .delete()
+      .eq("user_id", session?.user?.id)
+      .neq("id", "00000000-0000-0000-0000-000000000000"); // Hack to delete all rows matching user_id
+
+    if (error) {
+      console.error("Error deleting all transactions:", error);
+      setTransactions(previousTransactions);
+      return { error };
+    }
+    return { success: true };
+  };
+
   return {
     transactions,
     loading,
@@ -295,6 +313,7 @@ export const useTransactions = (session: any) => {
     deleteAllPaidForCustomer,
     clearRecent,
     updateTransaction,
+    deleteAllTransactions,
     setTransactions,
   };
 };
