@@ -4,19 +4,30 @@ import { useAuth } from "@/hooks/useAuth";
 import { useTransactions } from "@/hooks/useTransactions";
 import { SummaryCards } from "@/components/SummaryCards";
 import { RecentTransactions } from "@/components/RecentTransactions";
-import { useMemo, useEffect } from "react";
+import { TransactionForm } from "@/components/TransactionForm";
+import { useMemo, useEffect, useState } from "react";
 import { toast } from "sonner";
-import { CustomerSummary } from "@/types";
+import { Plus } from "lucide-react";
+import { AnimatePresence } from "framer-motion";
 
 export default function DashboardPage() {
   const { session } = useAuth();
   const {
     transactions,
     fetchTransactions,
+    addTransaction,
     deleteTransaction,
     clearRecent,
     setTransactions,
   } = useTransactions(session);
+
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    amount: "",
+    notes: "",
+    type: "lend" as "lend" | "borrow",
+  });
 
   useEffect(() => {
     if (session) {
@@ -25,6 +36,38 @@ export default function DashboardPage() {
       setTransactions([]);
     }
   }, [session, fetchTransactions, setTransactions]);
+
+  const handleAddTransaction = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formData.name || !formData.amount) {
+      toast.error("অনুগ্রহ করে নাম এবং টাকার পরিমাণ দিন");
+      return;
+    }
+
+    const res = await addTransaction({
+      customerName: formData.name,
+      amount: parseFloat(formData.amount),
+      type: formData.type,
+      notes: formData.notes,
+    });
+
+    if (res.error) {
+      // res.error might be a string or object depending on previous edits
+      // ensuring it's handled gracefully
+      const errorMessage =
+        typeof res.error === "string" ? res.error : "Failed to add transaction";
+      toast.error(errorMessage);
+    } else {
+      toast.success("লেনদেন সফলভাবে যোগ করা হয়েছে");
+      setShowAddForm(false);
+      setFormData({
+        name: "",
+        amount: "",
+        notes: "",
+        type: "lend",
+      });
+    }
+  };
 
   const totalBaki = useMemo(
     () =>
@@ -95,10 +138,30 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-2xl font-bold text-secondary-900">ড্যাশবোর্ড</h1>
-        <p className="text-secondary-500">আপনার ব্যবসার সংক্ষিপ্তসার</p>
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-secondary-900">ড্যাশবোর্ড</h1>
+          <p className="text-secondary-500">আপনার ব্যবসার সংক্ষিপ্তসার</p>
+        </div>
+        <button
+          onClick={() => setShowAddForm(true)}
+          className="btn-primary self-start md:self-auto"
+        >
+          <Plus className="w-5 h-5" />
+          নতুন লেনদেন
+        </button>
       </div>
+
+      <AnimatePresence>
+        {showAddForm && (
+          <TransactionForm
+            formData={formData}
+            setFormData={setFormData}
+            onSubmit={handleAddTransaction}
+            onCancel={() => setShowAddForm(false)}
+          />
+        )}
+      </AnimatePresence>
 
       <SummaryCards
         totalBaki={totalBaki}

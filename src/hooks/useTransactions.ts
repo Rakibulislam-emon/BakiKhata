@@ -38,22 +38,29 @@ export const useTransactions = (session: any) => {
     setLoading(false);
   }, [session]);
 
-  const addTransaction = async (
-    name: string,
-    amountValue: string,
-    notes: string
-  ) => {
+  const addTransaction = async ({
+    customerName,
+    amount,
+    type,
+    notes,
+  }: {
+    customerName: string;
+    amount: number;
+    type: "lend" | "borrow";
+    notes: string;
+  }) => {
     if (!session?.user?.id) return { error: "No session" };
 
-    const amount = parseFloat(amountValue);
     if (isNaN(amount) || amount === 0) {
       return { error: "Invalid amount" };
     }
 
+    const finalAmount = type === "lend" ? Math.abs(amount) : -Math.abs(amount);
+
     const transactionData = {
       user_id: session.user.id,
-      customer_name: name,
-      amount,
+      customer_name: customerName,
+      amount: finalAmount,
       is_paid: false,
       date: getCurrentDateTime(),
       notes: notes.trim(),
@@ -69,7 +76,7 @@ export const useTransactions = (session: any) => {
 
     if (error) {
       console.error("Error adding transaction:", error);
-      return { error };
+      return { error: error.message };
     }
 
     if (data) {
