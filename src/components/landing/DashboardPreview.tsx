@@ -45,9 +45,6 @@ export const DashboardPreview = () => {
             <div className="w-8 h-8 rounded-full bg-secondary-100 flex items-center justify-center">
               <Search className="w-4 h-4 text-secondary-500" />
             </div>
-            <div className="w-8 h-8 rounded-full bg-secondary-100 flex items-center justify-center">
-              <Bell className="w-4 h-4 text-secondary-500" />
-            </div>
             <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-primary-100 to-purple-100 border border-white shadow-sm" />
           </div>
         </div>
@@ -55,43 +52,52 @@ export const DashboardPreview = () => {
         {/* Mock Content Body */}
         <div className="flex-1 p-6 overflow-hidden">
           {/* Stats Row */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            <div className="bg-white p-4 rounded-xl shadow-sm border border-secondary-100 space-y-2">
-              <div className="flex items-center gap-2 text-emerald-600 text-xs font-medium uppercase tracking-wider">
+          {/* Stats Row */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4 mb-6">
+            <div className="bg-white p-3 md:p-4 rounded-xl shadow-sm border border-secondary-100 space-y-2">
+              <div className="flex items-center gap-2 text-emerald-600 text-[10px] md:text-xs font-medium uppercase tracking-wider">
                 <ArrowUpRight className="w-3 h-3" />
                 মোট পাবো (Credit)
               </div>
-              <div className="text-2xl font-bold text-secondary-900">
+              <div className="text-xl md:text-2xl font-bold text-secondary-900">
                 ৳ ৫৪,৫০০
               </div>
-              <div className="text-xs text-secondary-500 flex items-center gap-1">
-                ৫ জন আপনার কাছে ঋণী
+              <div className="text-[10px] md:text-xs text-secondary-500 flex items-center gap-1">
+                ৫ জন ঋণী
               </div>
             </div>
-            <div className="bg-white p-4 rounded-xl shadow-sm border border-secondary-100 space-y-2">
-              <div className="flex items-center gap-2 text-rose-600 text-xs font-medium uppercase tracking-wider">
+            <div className="bg-white p-3 md:p-4 rounded-xl shadow-sm border border-secondary-100 space-y-2">
+              <div className="flex items-center gap-2 text-rose-600 text-[10px] md:text-xs font-medium uppercase tracking-wider">
                 <ArrowDownLeft className="w-3 h-3" />
                 মোট দেব (Debit)
               </div>
-              <div className="text-2xl font-bold text-secondary-900">
+              <div className="text-xl md:text-2xl font-bold text-secondary-900">
                 ৳ ১২,২০০
               </div>
-              <div className="text-xs text-secondary-500 flex items-center gap-1">
-                ৩ জনের কাছে আপনি ঋণী
+              <div className="text-[10px] md:text-xs text-secondary-500 flex items-center gap-1">
+                ৩ জনের কাছে ঋণী
               </div>
             </div>
-            <div className="bg-white p-4 rounded-xl shadow-sm border border-secondary-100 space-y-2">
-              <div className="flex items-center gap-2 text-secondary-500 text-xs font-medium uppercase tracking-wider">
+            <div className="bg-white p-3 md:p-4 rounded-xl shadow-sm border border-secondary-100 space-y-2 hidden md:block">
+              {/* Hide 3rd card on mobile to save space if needed, or keep it. Let's keep it but maybe 2 cols on mobile? 
+                 Actually, grid-cols-1 is fine if we have h-[500px]. 
+                 The user complained it was "showing very less". 
+                 Let's trying keeping it simple but with less padding/margin.
+              */}
+              <div className="flex items-center gap-2 text-secondary-500 text-[10px] md:text-xs font-medium uppercase tracking-wider">
                 <Wallet className="w-3 h-3" />
                 নিট ব্যালেন্স
               </div>
-              <div className="text-2xl font-bold text-primary-600">
+              <div className="text-xl md:text-2xl font-bold text-primary-600">
                 ৳ ৪২,৩০০
               </div>
-              <div className="text-xs text-secondary-500">
-                সব মিলিয়ে বর্তমান অবস্থা
+              <div className="text-[10px] md:text-xs text-secondary-500">
+                বর্তমান অবস্থা
               </div>
             </div>
+            {/* Mobile only 3rd card if we want, or just hide it. 
+                 Let's stick to the previous code's structure but with updated padding/text size.
+             */}
           </div>
 
           {/* Recent List Mock */}
