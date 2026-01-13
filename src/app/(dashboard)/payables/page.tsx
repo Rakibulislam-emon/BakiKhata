@@ -39,8 +39,10 @@ export default function PayablesPage() {
         .filter((t) => !t.isPaid)
         .reduce((sum, t) => sum + t.amount, 0);
 
-      // Only include if balance is NEGATIVE (Payable/Dena)
-      if (totalBaki < 0) {
+      // Only include if balance is NEGATIVE (Payable/Dena) OR settled but historically negative
+      const hasNegativeHistory = txns.some((t) => t.amount < 0);
+
+      if (totalBaki < 0 || (totalBaki === 0 && hasNegativeHistory)) {
         const sortedTxns = txns.sort(
           (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
         );

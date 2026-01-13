@@ -34,12 +34,15 @@ export default function CustomersPage() {
 
     const summaries: CustomerSummary[] = [];
     customerMap.forEach((txns) => {
-      // Calculate balance to filter for Paona (Receivables > 0)
+      // Calculate balance to filter for Paona (Receivables)
+      // Include if currently positive OR if settled (0) but historically had positive transactions
       const totalBaki = txns
         .filter((t) => !t.isPaid)
         .reduce((sum, t) => sum + t.amount, 0);
 
-      if (totalBaki > 0) {
+      const hasPositiveHistory = txns.some((t) => t.amount > 0);
+
+      if (totalBaki > 0 || (totalBaki === 0 && hasPositiveHistory)) {
         const sortedTxns = txns.sort(
           (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
         );

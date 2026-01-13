@@ -76,6 +76,14 @@ export default function DashboardPage() {
     [transactions]
   );
 
+  const totalDena = useMemo(
+    () =>
+      transactions
+        .filter((t) => !t.isPaid && t.amount < 0)
+        .reduce((sum, t) => sum + t.amount, 0),
+    [transactions]
+  );
+
   const totalPaid = useMemo(
     () =>
       transactions
@@ -161,6 +169,7 @@ export default function DashboardPage() {
 
       <SummaryCards
         totalBaki={totalBaki}
+        totalDena={totalDena}
         totalPaid={totalPaid}
         transactionCount={transactions.length}
         customerCount={customerSummaries}
