@@ -126,7 +126,7 @@ export const CustomerList = ({
   );
 
   return (
-    <div className="max-w-4xl mx-auto px-4 mt-8 pb-12">
+    <div className="w-full px-4 mt-8 pb-12">
       <div className="flex flex-col gap-6 mb-6">
         {/* Header Section (Unchanged) */}
         <div className="flex items-center gap-2 ml-1">
@@ -362,14 +362,14 @@ export const CustomerList = ({
                               <>
                                 <AlertCircle className="w-3 h-3 text-red-500" />
                                 <p className="text-xs font-semibold text-red-500">
-                                  পাওনা 
+                                  পাওনা
                                 </p>
                               </>
                             ) : (
                               <>
                                 <CheckCircle2 className="w-3 h-3 text-emerald-600" />
                                 <p className="text-xs font-semibold text-emerald-600">
-                                  দেনা 
+                                  দেনা
                                 </p>
                               </>
                             )
