@@ -4,16 +4,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useTransactions } from "@/hooks/useTransactions";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import {
-  User,
-  Bell,
-  Globe,
-  LogOut,
-  Trash2,
-  Moon,
-  Shield,
-  CreditCard,
-} from "lucide-react";
+import { User, LogOut, Trash2, Shield } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -22,7 +13,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -36,7 +26,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Separator } from "@/components/ui/separator";
 
 export default function SettingsPage() {
   const { session, logout } = useAuth();
@@ -128,68 +117,6 @@ export default function SettingsPage() {
                   ভেরিফাইড অ্যাকাউন্ট
                 </Badge>
               </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Preferences Section */}
-        <Card>
-          <CardHeader>
-            <CardTitle>অ্যাপ সেটিংস</CardTitle>
-            <CardDescription>
-              আপনার অ্যাপ ব্যবহারের অভিজ্ঞতা কাস্টমাইজ করুন
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-secondary-100 rounded-lg">
-                  <Moon className="w-5 h-5 text-secondary-600" />
-                </div>
-                <div>
-                  <p className="font-medium text-secondary-900">ডার্ক মোড</p>
-                  <p className="text-sm text-secondary-500">
-                    চোখের শান্তির জন্য ডার্ক থিম ব্যবহার করুন
-                  </p>
-                </div>
-              </div>
-              <Switch disabled title="শীঘ্রই আসছে" />
-            </div>
-
-            <Separator />
-
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-secondary-100 rounded-lg">
-                  <Bell className="w-5 h-5 text-secondary-600" />
-                </div>
-                <div>
-                  <p className="font-medium text-secondary-900">নোটিফিকেশন</p>
-                  <p className="text-sm text-secondary-500">
-                    লেনদেনের আপডেট এবং অ্যালার্ট পান
-                  </p>
-                </div>
-              </div>
-              <Switch disabled checked={true} title="শীঘ্রই আসছে" />
-            </div>
-
-            <Separator />
-
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-secondary-100 rounded-lg">
-                  <Globe className="w-5 h-5 text-secondary-600" />
-                </div>
-                <div>
-                  <p className="font-medium text-secondary-900">ভাষা</p>
-                  <p className="text-sm text-secondary-500">
-                    বর্তমানে বাংলা ভাষা সেট করা আছে
-                  </p>
-                </div>
-              </div>
-              <span className="text-sm font-medium text-secondary-600 bg-secondary-100 px-3 py-1 rounded-full">
-                বাংলা
-              </span>
             </div>
           </CardContent>
         </Card>

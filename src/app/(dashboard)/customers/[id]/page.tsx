@@ -91,11 +91,12 @@ export default function CustomerDetailPage() {
     const amountValue = parseFloat(formData.amount);
     const finalAmount = formData.type === "borrow" ? -amountValue : amountValue;
 
-    const res = await addTransaction(
-      customerName, // Use the page's customer context
-      finalAmount.toString(),
-      formData.notes
-    );
+    const res = await addTransaction({
+      customerName,
+      amount: parseFloat(finalAmount.toString()),
+      type: formData.type,
+      notes: formData.notes,
+    });
 
     if (res.error) {
       toast.error("বিল যোগ করতে সমস্যা হয়েছে");
