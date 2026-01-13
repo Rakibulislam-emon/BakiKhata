@@ -1,463 +1,408 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
-import { Plus, Search, LogOut } from "lucide-react";
-import { Transaction, CustomerSummary } from "@/types";
-import { formatCurrency } from "@/lib/utils";
-
-import { SummaryCards } from "@/components/SummaryCards";
-import { TransactionForm } from "@/components/TransactionForm";
-import { CustomerList } from "@/components/CustomerList";
-import { RecentTransactions } from "@/components/RecentTransactions";
-import { CustomerDetail } from "@/components/CustomerDetail";
-import { Auth } from "@/components/Auth";
-import { toast } from "sonner";
-
+import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
-import { useTransactions } from "@/hooks/useTransactions";
+import { Auth } from "@/components/Auth";
+import { useRouter } from "next/navigation";
+import {
+  ArrowRight,
+  CheckCircle2,
+  ShieldCheck,
+  Zap,
+  BarChart3,
+  Users,
+  Wallet,
+  Menu,
+  X,
+} from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import Link from "next/link";
+import Image from "next/image";
 
-export default function Home() {
-  const { session, loading: authLoading, logout } = useAuth();
-  const {
-    transactions,
-    loading: txLoading,
-    fetchTransactions,
-    addTransaction,
-    togglePaid,
-    deleteTransaction,
-    updateTransaction,
-    deleteAllForCustomer,
-    toggleAllPaidForCustomer,
-    deleteAllPaidForCustomer,
-    clearRecent,
-    setTransactions,
-  } = useTransactions(session);
+export default function LandingPage() {
+  const { session, loading } = useAuth();
+  const router = useRouter();
+  const [showAuth, setShowAuth] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // UI State
-  const [formData, setFormData] = useState<{
-    name: string;
-    amount: string;
-    notes: string;
-    type: "lend" | "borrow";
-  }>({
-    name: "",
-    amount: "",
-    notes: "",
-    type: "lend",
-  });
-  const [searchTerm, setSearchTerm] = useState("");
-  const [showAddForm, setShowAddForm] = useState(false);
-  const [selectedCustomerName, setSelectedCustomerName] = useState<
-    string | null
-  >(null);
-
-  // Load transactions when session exists
   useEffect(() => {
     if (session) {
-      fetchTransactions();
-    } else {
-      setTransactions([]);
+      router.push("/dashboard");
     }
-  }, [session, fetchTransactions, setTransactions]);
+  }, [session, router]);
 
-  const handleLogout = () => {
-    toast("আপনি কি নিশ্চিত যে লগআউট করতে চান?", {
-      action: {
-        label: "লগআউট",
-        onClick: async () => {
-          await logout();
-          setSelectedCustomerName(null);
-        },
-      },
-    });
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const nameToUse = selectedCustomerName || formData.name.trim();
-
-    if (!nameToUse || !formData.amount) {
-      toast.error("দয়া করে নাম এবং টাকার পরিমাণ লিখুন");
-      return;
-    }
-
-    const amountValue = parseFloat(formData.amount);
-    const finalAmount = formData.type === "borrow" ? -amountValue : amountValue;
-
-    const res = await addTransaction(
-      nameToUse,
-      finalAmount.toString(),
-      formData.notes
-    );
-
-    if (res.error) {
-      toast.error("বিল যোগ করতে সমস্যা হয়েছে");
-    } else {
-      setFormData((prev) => ({ ...prev, amount: "", notes: "" }));
-      if (!selectedCustomerName) {
-        setFormData({ name: "", amount: "", notes: "", type: "lend" });
-      }
-      setShowAddForm(false);
-      toast.success("লেনদেন যোগ হয়েছে");
-    }
-  };
-
-  const handleDeleteTransaction = (id: string) => {
-    toast("আপনি কি নিশ্চিত যে এই লেনদেন মুছে ফেলতে চান?", {
-      action: {
-        label: "মুছুন",
-        onClick: async () => {
-          const res = await deleteTransaction(id);
-          if (res.error) {
-            toast.error("মুছতে সমস্যা হয়েছে");
-          } else {
-            toast.success("লেনদেন মুছে ফেলা হয়েছে");
-          }
-        },
-      },
-      cancel: { label: "বাতিল", onClick: () => {} },
-    });
-  };
-
-  const handleDeleteAllTransactions = () => {
-    if (!selectedCustomerName) return;
-    toast(
-      `আপনি কি নিশ্চিত যে ${selectedCustomerName}-এর সব লেনদেন মুছে ফেলতে চান?`,
-      {
-        action: {
-          label: "সব মুছুন",
-          onClick: async () => {
-            const res = await deleteAllForCustomer(selectedCustomerName);
-            if (res.error) {
-              toast.error("মুছতে সমস্যা হয়েছে");
-            } else {
-              setSelectedCustomerName(null);
-              toast.success("সব লেনদেন মুছে ফেলা হয়েছে");
-            }
-          },
-        },
-        cancel: { label: "বাতিল", onClick: () => {} },
-      }
-    );
-  };
-
-  const handleUpdateTransaction = async (
-    id: string,
-    updates: { amount?: number; notes?: string; type?: "lend" | "borrow" }
-  ) => {
-    // Determine sign based on type if provided, otherwise keep existing sign logic from amount
-    let finalAmount = updates.amount;
-
-    if (
-      updates.type === "borrow" &&
-      finalAmount !== undefined &&
-      finalAmount > 0
-    ) {
-      finalAmount = -finalAmount;
-    } else if (
-      updates.type === "lend" &&
-      finalAmount !== undefined &&
-      finalAmount < 0
-    ) {
-      finalAmount = Math.abs(finalAmount);
-    } else if (updates.type === "borrow" && finalAmount === undefined) {
-      // If only type changed, we need to flip the sign of the existing transaction amount
-      const existingTx = transactions.find((t) => t.id === id);
-      if (existingTx && existingTx.amount > 0) finalAmount = -existingTx.amount;
-    } else if (updates.type === "lend" && finalAmount === undefined) {
-      const existingTx = transactions.find((t) => t.id === id);
-      if (existingTx && existingTx.amount < 0)
-        finalAmount = Math.abs(existingTx.amount);
-    }
-
-    // Sanitize updates to only include database columns
-    const dbUpdates: { amount?: number; notes?: string } = {
-      amount: finalAmount,
-    };
-    if (updates.notes !== undefined) dbUpdates.notes = updates.notes;
-
-    const res = await updateTransaction(id, dbUpdates);
-
-    if (res?.error) {
-      toast.error("আপডেট করতে সমস্যা হয়েছে");
-    } else {
-      toast.success("লেনদেন আপডেট করা হয়েছে");
-    }
-  };
-
-  const handleToggleAllPaid = async () => {
-    if (!selectedCustomerName) return;
-    const customerData = getCustomerData(selectedCustomerName);
-    const allUnpaid = customerData.transactions.filter((t) => !t.isPaid);
-    const shouldBePaid = allUnpaid.length > 0;
-
-    const res = await toggleAllPaidForCustomer(
-      selectedCustomerName,
-      shouldBePaid
-    );
-    if (res.error) {
-      toast.error("আপডেট করতে সমস্যা হয়েছে");
-    }
-  };
-
-  const handleDeleteAllPaid = () => {
-    if (!selectedCustomerName) return;
-    toast(
-      `আপনি কি নিশ্চিত যে ${selectedCustomerName}-এর সব নিষ্পন্ন লেনদেন মুছে ফেলতে চান?`,
-      {
-        action: {
-          label: "মুছুন",
-          onClick: async () => {
-            const res = await deleteAllPaidForCustomer(selectedCustomerName);
-            if (res.error) {
-              toast.error("মুছতে সমস্যা হয়েছে");
-            } else {
-              toast.success("সব নিষ্পন্ন লেনদেন মুছে ফেলা হয়েছে");
-            }
-          },
-        },
-        cancel: { label: "বাতিল", onClick: () => {} },
-      }
-    );
-  };
-
-  const handleClearRecent = () => {
-    toast("সাম্প্রতিক তালিকা পরিষ্কার করতে চান?", {
-      description: "মূল হিসাব ঠিক থাকবে, শুধু তালিকা পরিষ্কার হবে।",
-      action: {
-        label: "পরিষ্কার করুন",
-        onClick: async () => {
-          const recentIds = recentTransactions.map((t) => t.id);
-          const res = await clearRecent(recentIds);
-          if (res.error) {
-            toast.error("সমস্যা হয়েছে");
-          } else {
-            toast.success("সাম্প্রতিক তালিকা পরিষ্কার করা হয়েছে");
-          }
-        },
-      },
-      cancel: { label: "বাতিল", onClick: () => {} },
-    });
-  };
-
-  // Memoized derived data
-  const customerSummaries = useMemo(() => {
-    const customerMap = new Map<string, Transaction[]>();
-    transactions.forEach((transaction) => {
-      const name = transaction.customerName.toLowerCase().trim();
-      if (!customerMap.has(name)) customerMap.set(name, []);
-      customerMap.get(name)!.push(transaction);
-    });
-
-    const summaries: CustomerSummary[] = [];
-    customerMap.forEach((txns) => {
-      const sortedTxns = txns.sort(
-        (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-      );
-      summaries.push({
-        name: txns[0].customerName,
-        transactions: sortedTxns,
-        lastTransaction: sortedTxns[0]?.date || "",
-      });
-    });
-
-    return summaries.sort(
-      (a, b) =>
-        new Date(b.lastTransaction).getTime() -
-        new Date(a.lastTransaction).getTime()
-    );
-  }, [transactions]);
-
-  const selectedCustomerData = useMemo(() => {
-    if (!selectedCustomerName) return null;
-    const txns = transactions.filter(
-      (t) => t.customerName.toLowerCase() === selectedCustomerName.toLowerCase()
-    );
-    if (txns.length === 0) return null;
-    return {
-      name: txns[0].customerName,
-      transactions: txns.sort(
-        (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-      ),
-    };
-  }, [selectedCustomerName, transactions]);
-
-  const customerTotals = useMemo(() => {
-    if (!selectedCustomerData) return null;
-    const unpaid = selectedCustomerData.transactions.filter((t) => !t.isPaid);
-    const paid = selectedCustomerData.transactions.filter((t) => t.isPaid);
-    return {
-      totalBaki: unpaid.reduce((sum, t) => sum + t.amount, 0),
-      totalPaid: paid.reduce((sum, t) => sum + t.amount, 0),
-      unpaidCount: unpaid.length,
-      paidCount: paid.length,
-    };
-  }, [selectedCustomerData]);
-
-  const getCustomerData = (name: string) => {
-    const txns = transactions.filter(
-      (t) => t.customerName.toLowerCase() === name.toLowerCase()
-    );
-    const sortedTxns = txns.sort(
-      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-    );
-    return {
-      name: txns[0]?.customerName || name,
-      transactions: sortedTxns,
-    };
-  };
-
-  const recentTransactions = useMemo(() => {
-    return transactions
-      .filter(
-        (t) =>
-          t.customerName.toLowerCase().includes(searchTerm.toLowerCase()) &&
-          !t.isHiddenFromRecent
-      )
-      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-      .slice(0, 5);
-  }, [transactions, searchTerm]);
-
-  const totalBaki = useMemo(
-    () =>
-      transactions
-        .filter((t) => !t.isPaid && t.amount > 0)
-        .reduce((sum, t) => sum + t.amount, 0),
-    [transactions]
-  );
-  const totalPaid = useMemo(
-    () =>
-      transactions
-        .filter((t) => t.isPaid && t.amount > 0)
-        .reduce((sum, t) => sum + t.amount, 0),
-    [transactions]
-  );
-
-  if (authLoading) {
+  if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
       </div>
     );
   }
 
-  if (!session) {
-    return <Auth />;
-  }
-
-  if (selectedCustomerData && customerTotals) {
+  if (showAuth) {
     return (
-      <>
-        <CustomerDetail
-          customer={selectedCustomerData}
-          totals={customerTotals}
-          onBack={() => setSelectedCustomerName(null)}
-          onDeleteAll={handleDeleteAllTransactions}
-          onToggleAllPaid={handleToggleAllPaid}
-          onTogglePaid={togglePaid}
-          onDeleteTransaction={handleDeleteTransaction}
-          onUpdateTransaction={handleUpdateTransaction}
-          onDeleteAllPaid={handleDeleteAllPaid}
-          showAddForm={showAddForm}
-          setShowAddForm={setShowAddForm}
-          formData={formData}
-          setFormData={(data) => setFormData({ ...formData, ...data })}
-          onSubmit={handleSubmit}
-        />
-      </>
+      <div className="min-h-screen flex flex-col relative">
+        <motion.button
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          onClick={() => setShowAuth(false)}
+          className="absolute top-8 left-8 z-50 p-2 bg-white/80 backdrop-blur-md rounded-full hover:bg-white shadow-sm transition-all"
+        >
+          <X className="w-6 h-6 text-secondary-500" />
+        </motion.button>
+        <Auth />
+      </div>
     );
   }
 
   return (
-    <div className="min-h-screen pb-20 relative overflow-hidden">
-      {/* Decorative Background */}
-      <div className="fixed inset-0 z-0 pointer-events-none">
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary-400/10 rounded-full blur-[100px]" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-secondary-400/10 rounded-full blur-[100px]" />
-      </div>
-
-      <div className="relative z-10">
-        <header className="bg-primary-600 text-white pb-24 pt-8 px-4 rounded-b-[2.5rem] shadow-2xl shadow-primary-900/10 relative overflow-hidden">
-          {/* Header Background Pattern */}
-          <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay"></div>
-
-          <div className="max-w-4xl mx-auto flex items-center justify-between relative z-10">
-            <div>
-              <h1 className="text-3xl font-bold mb-1 tracking-tight">
-                📋 বাকি হিসাব
-              </h1>
-              <p className="text-primary-100/80 text-sm font-medium">
-                {session.user.email}
-              </p>
+    <div className="min-h-screen overflow-x-hidden">
+      {/* Navbar */}
+      <nav className="fixed w-full z-50 top-0 left-0 bg-white/60 backdrop-blur-xl border-b border-white/20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-20">
+            <div className="flex-shrink-0 flex items-center gap-2">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-500 to-purple-600 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-primary-500/20">
+                ব
+              </div>
+              <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary-600 to-purple-600 hidden sm:block">
+                বাকি খাতা
+              </span>
             </div>
-            <button
-              onClick={handleLogout}
-              className="p-2.5 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-xl transition-all shadow-lg shadow-black/5"
-              title="লগ আউট"
-            >
-              <LogOut className="w-5 h-5 text-white" />
-            </button>
+
+            <div className="hidden md:block">
+              <div className="ml-10 flex items-baseline space-x-8">
+                <a
+                  href="#features"
+                  className="text-secondary-600 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                >
+                  বৈশিষ্ট্য
+                </a>
+                <a
+                  href="#how-it-works"
+                  className="text-secondary-600 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                >
+                  কিভাবে কাজ করে
+                </a>
+                <a
+                  href="#pricing"
+                  className="text-secondary-600 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                >
+                  ফ্রি ব্যবহার করুন
+                </a>
+              </div>
+            </div>
+
+            <div className="hidden md:block">
+              <button
+                onClick={() => setShowAuth(true)}
+                className="btn-primary py-2.5 px-6 text-sm"
+              >
+                লগ ইন করুন
+              </button>
+            </div>
+
+            <div className="-mr-2 flex md:hidden">
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="bg-white/50 inline-flex items-center justify-center p-2 rounded-md text-secondary-400 hover:text-secondary-500 hover:bg-secondary-100 focus:outline-none"
+              >
+                {mobileMenuOpen ? (
+                  <X className="h-6 w-6" />
+                ) : (
+                  <Menu className="h-6 w-6" />
+                )}
+              </button>
+            </div>
           </div>
-        </header>
+        </div>
 
-        <SummaryCards
-          totalBaki={totalBaki}
-          totalPaid={totalPaid}
-          transactionCount={transactions.length}
-          customerCount={customerSummaries.length}
-        />
+        {/* Mobile menu */}
+        <AnimatePresence>
+          {mobileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              className="md:hidden bg-white/90 backdrop-blur-xl border-b border-secondary-100"
+            >
+              <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a
+                  href="#features"
+                  className="text-secondary-600 hover:text-primary-600 block px-3 py-2 rounded-md text-base font-medium"
+                >
+                  বৈশিষ্ট্য
+                </a>
+                <a
+                  href="#how-it-works"
+                  className="text-secondary-600 hover:text-primary-600 block px-3 py-2 rounded-md text-base font-medium"
+                >
+                  কিভাবে কাজ করে
+                </a>
+                <button
+                  onClick={() => setShowAuth(true)}
+                  className="w-full text-left bg-primary-50 text-primary-600 block px-3 py-2 rounded-md text-base font-medium mt-4"
+                >
+                  লগ ইন / সাইন আপ
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </nav>
 
-        <div className="max-w-4xl mx-auto px-4 mt-8">
-          <div className="relative group">
-            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-secondary-400 w-5 h-5 group-focus-within:text-primary-500 transition-colors" />
-            <input
-              type="text"
-              placeholder="নাম অনুসন্ধান..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-12 pr-4 py-4 rounded-2xl border border-white/40 bg-white/60 backdrop-blur-md shadow-soft focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 outline-none transition-all placeholder:text-secondary-400"
+      {/* Hero Section */}
+      <section className="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/60 border border-white/60 shadow-sm backdrop-blur-sm mb-8">
+              <span className="flex h-2 w-2 rounded-full bg-emerald-500"></span>
+              <span className="text-sm font-medium text-secondary-600">
+                ১০০% ফ্রি ও নিরাপদ
+              </span>
+            </div>
+
+            <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-secondary-900 mb-8 leading-tight">
+              ব্যবসার হিসাব রাখুন <br />
+              <span className="hero-gradient-text">ডিজিটাল ও স্মার্ট</span> ভাবে
+            </h1>
+
+            <p className="mt-4 max-w-2xl mx-auto text-xl text-secondary-600 mb-10 leading-relaxed">
+              খাতা-কলমের ঝামেলা ভুলে যান। বাকি খাতা অ্যাপের মাধ্যমে আপনার
+              ব্যবসার সব লেনদেন, বাকি ও পাওনা আদায়ের হিসাব রাখুন খুব সহজেই।
+            </p>
+
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <button
+                onClick={() => setShowAuth(true)}
+                className="btn-primary w-full sm:w-auto text-lg px-10 py-5"
+              >
+                এখনই শুরু করুন
+                <ArrowRight className="w-5 h-5" />
+              </button>
+              <button className="btn-secondary w-full sm:w-auto text-lg px-10 py-5 group">
+                আরও জানুন
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              </button>
+            </div>
+          </motion.div>
+
+          {/* Hero Image / Dashboard Preview */}
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, delay: 0.2 }}
+            className="mt-20 relative"
+          >
+            <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent z-10 h-full w-full pointer-events-none" />
+            <div className="glass-card p-4 md:p-6 rounded-[2.5rem] bg-white/40 border-white/60 shadow-2xl relative overflow-hidden group">
+              <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-primary-500/5 to-purple-500/5 group-hover:opacity-100 transition-opacity duration-500" />
+              {/* Mockup UI Elements representing the dashboard */}
+              <div className="bg-white rounded-2xl shadow-sm border border-secondary-100 overflow-hidden aspect-[16/9] relative">
+                <div className="absolute inset-0 flex items-center justify-center bg-secondary-50">
+                  <p className="text-secondary-400 font-medium">
+                    ড্যাশবোর্ড প্রিভিউ
+                  </p>
+                  {/* In a real app, put an actual screenshot here */}
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Features Grid */}
+      <section id="features" className="py-24 relative">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-secondary-900 mb-4">
+              কেন ব্যবহার করবেন বাকি খাতা?
+            </h2>
+            <p className="text-lg text-secondary-600 max-w-2xl mx-auto">
+              আধুনিক ব্যবসার জন্য আধুনিক সমাধান। আপনার নিরাপত্তাই আমাদের
+              অগ্রাধিকার।
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            <FeatureCard
+              icon={<ShieldCheck className="w-8 h-8 text-emerald-500" />}
+              title="সম্পূর্ণ নিরাপদ"
+              description="আপনার তথ্য সম্পূর্ণ সুরক্ষিত এবং এনক্রিপ্ট করা থাকে। হারানোর বা নষ্ট হবার ভয় নেই।"
+              delay={0}
+            />
+            <FeatureCard
+              icon={<Zap className="w-8 h-8 text-amber-500" />}
+              title="সুপার ফাস্ট"
+              description="বজ্রপাতেও থামবে না আপনার হিসাব। অ্যাপ চলবে সুপার ফাস্ট স্পিডে, যেকোনো ডিভাইসে।"
+              delay={0.1}
+            />
+            <FeatureCard
+              icon={<BarChart3 className="w-8 h-8 text-primary-500" />}
+              title="স্মার্ট রিপোর্ট"
+              description="দিন, সপ্তাহ বা মাসের হিসাব দেখুন এক নজরে। ব্যবসার লাভ-ক্ষতি বোঝা এখন পানির মতো সহজ।"
+              delay={0.2}
             />
           </div>
         </div>
+      </section>
 
-        <div className="max-w-4xl mx-auto px-4 mt-6">
-          <AnimatePresence mode="wait">
-            {!showAddForm ? (
-              <motion.button
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                onClick={() => setShowAddForm(true)}
-                className="w-full py-4 bg-white/50 hover:bg-white border-2 border-dashed border-secondary-300 rounded-2xl text-secondary-500 hover:border-primary-500 hover:text-primary-600 transition-all flex items-center justify-center gap-2 font-medium backdrop-blur-sm group"
-              >
-                <div className="p-1 rounded-full bg-secondary-100 group-hover:bg-primary-100 transition-colors">
-                  <Plus className="w-5 h-5" />
-                </div>
-                নতুন লেনদেন যোগ করুন
-              </motion.button>
-            ) : (
-              <TransactionForm
-                formData={formData}
-                setFormData={(data) => setFormData({ ...formData, ...data })}
-                onSubmit={handleSubmit}
-                onCancel={() => setShowAddForm(false)}
-              />
-            )}
-          </AnimatePresence>
+      {/* CTA Section */}
+      <section className="py-24 relative overflow-hidden">
+        <div className="absolute inset-0 bg-primary-900 z-0">
+          <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay"></div>
+          <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-primary-600/50 to-purple-900/90" />
         </div>
 
-        <CustomerList
-          customerSummaries={customerSummaries}
-          searchTerm={searchTerm}
-          onSelectCustomer={setSelectedCustomerName}
-        />
-        <RecentTransactions
-          transactions={recentTransactions}
-          onClearRecent={handleClearRecent}
-          onDeleteTransaction={handleDeleteTransaction}
-        />
-      </div>
+        <div className="max-w-4xl mx-auto px-4 relative z-10 text-center">
+          <h2 className="text-4xl md:text-5xl font-bold text-white mb-8 tracking-tight">
+            আজই শুরু করুন আপনার <br /> ডিজিটাল যাত্রা
+          </h2>
+          <p className="text-xl text-primary-100 mb-12 max-w-2xl mx-auto">
+            হাজারো ব্যবসায়ী তাদের হিসাব নিকাশ সহজ করতে ব্যবহার করছেন বাকি খাতা।
+            আপনি কেন পিছিয়ে থাকবেন?
+          </p>
+          <button
+            onClick={() => setShowAuth(true)}
+            className="bg-white text-primary-600 hover:bg-primary-50 font-bold text-lg px-12 py-5 rounded-2xl shadow-2xl shadow-black/20 transform hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-3 mx-auto"
+          >
+            ফ্রি একাউন্ট খুলুন
+            <ArrowRight className="w-6 h-6" />
+          </button>
+          <p className="mt-6 text-primary-200 text-sm font-medium">
+            কোন ক্রেডিট কার্ডের প্রয়োজন নেই • ১ মিনিটেই সেটআপ
+          </p>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-white border-t border-secondary-100 pt-16 pb-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid md:grid-cols-4 gap-12 mb-12">
+            <div className="col-span-1 md:col-span-2">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-8 h-8 rounded-lg bg-primary-600 flex items-center justify-center text-white font-bold shadow-lg">
+                  ব
+                </div>
+                <span className="text-xl font-bold text-secondary-900">
+                  বাকি খাতা
+                </span>
+              </div>
+              <p className="text-secondary-500 max-w-md leading-relaxed">
+                ক্ষুদ্র ও মাঝারি ব্যবসার জন্য বাংলাদেশের সেরা ডিজিটাল হিসাবরক্ষণ
+                অ্যাপ। আমরা বিশ্বাস করি প্রযুক্তির ছোঁয়ায় বদলে যাবে ব্যবসার ধরন।
+              </p>
+            </div>
+
+            <div>
+              <h4 className="font-bold text-secondary-900 mb-4">লিংকসমূহ</h4>
+              <ul className="space-y-3 text-secondary-500">
+                <li>
+                  <a
+                    href="#"
+                    className="hover:text-primary-600 transition-colors"
+                  >
+                    হোম
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="hover:text-primary-600 transition-colors"
+                  >
+                    ফিচার
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="hover:text-primary-600 transition-colors"
+                  >
+                    সাহায্য
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="hover:text-primary-600 transition-colors"
+                  >
+                    যোগাযোগ
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="font-bold text-secondary-900 mb-4">আইনি তথ্য</h4>
+              <ul className="space-y-3 text-secondary-500">
+                <li>
+                  <a
+                    href="#"
+                    className="hover:text-primary-600 transition-colors"
+                  >
+                    গোপনীয়তা নীতি
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="hover:text-primary-600 transition-colors"
+                  >
+                    শর্তাবলী
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="border-t border-secondary-100 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+            <p className="text-secondary-400 text-sm">
+              © ২০২৪ বাকি খাতা। সর্বস্বত্ব সংরক্ষিত।
+            </p>
+            <div className="flex gap-4">
+              {/* Social Icons Placeholder */}
+              <div className="w-8 h-8 rounded-full bg-secondary-100 hover:bg-primary-100 transition-colors cursor-pointer" />
+              <div className="w-8 h-8 rounded-full bg-secondary-100 hover:bg-primary-100 transition-colors cursor-pointer" />
+              <div className="w-8 h-8 rounded-full bg-secondary-100 hover:bg-primary-100 transition-colors cursor-pointer" />
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
+  );
+}
+
+function FeatureCard({
+  icon,
+  title,
+  description,
+  delay,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+  delay: number;
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ delay, duration: 0.5 }}
+      whileHover={{ y: -5 }}
+      className="glass-card p-8 group hover:shadow-2xl transition-all duration-300 border-t-4 border-t-transparent hover:border-t-primary-500"
+    >
+      <div className="w-16 h-16 rounded-2xl bg-secondary-50 group-hover:bg-white flex items-center justify-center mb-6 shadow-sm group-hover:shadow-md transition-all">
+        {icon}
+      </div>
+      <h3 className="text-xl font-bold text-secondary-900 mb-3 group-hover:text-primary-600 transition-colors">
+        {title}
+      </h3>
+      <p className="text-secondary-500 leading-relaxed">{description}</p>
+    </motion.div>
   );
 }

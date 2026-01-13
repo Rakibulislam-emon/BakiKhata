@@ -1,8 +1,22 @@
 import React from "react";
-import { Plus, X, User, DollarSign, FileText } from "lucide-react";
-import { motion } from "framer-motion";
+import { Plus, User, DollarSign, FileText } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { cn } from "@/lib/utils";
 
 interface TransactionFormProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
   formData: {
     name: string;
     amount: string;
@@ -16,139 +30,132 @@ interface TransactionFormProps {
     type: "lend" | "borrow";
   }) => void;
   onSubmit: (e: React.FormEvent) => void;
-  onCancel: () => void;
-  isSubmitting?: boolean;
 }
 
 export const TransactionForm = ({
+  open,
+  onOpenChange,
   formData,
   setFormData,
   onSubmit,
-  onCancel,
 }: TransactionFormProps) => {
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSubmit(e);
+  };
+
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      className="max-w-4xl mx-auto px-4 mt-6"
-    >
-      <div className="glass-card p-6 md:p-8">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold text-secondary-900">
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[425px] md:max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle className="text-xl font-bold text-center sm:text-left">
             নতুন লেনদেন যোগ করুন
-          </h2>
-          <button
-            onClick={onCancel}
-            className="p-2 hover:bg-red-50 text-secondary-400 hover:text-red-500 rounded-full transition-colors"
+          </DialogTitle>
+        </DialogHeader>
+
+        <form onSubmit={handleSubmit} className="space-y-6 py-2">
+          {/* Type Toggle using Tabs */}
+          <Tabs
+            defaultValue={formData.type}
+            value={formData.type}
+            onValueChange={(val) =>
+              setFormData({ ...formData, type: val as "lend" | "borrow" })
+            }
+            className="w-full"
           >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger
+                value="lend"
+                className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white"
+              >
+                আমি দিয়েছি (পাওনা)
+              </TabsTrigger>
+              <TabsTrigger
+                value="borrow"
+                className="data-[state=active]:bg-red-600 data-[state=active]:text-white"
+              >
+                আমি নিয়েছি (দেনা)
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
 
-        <form onSubmit={onSubmit} className="space-y-5">
-          {/* Type Toggle */}
-          <div className="flex bg-secondary-100 p-1 rounded-xl">
-            <button
-              type="button"
-              onClick={() => setFormData({ ...formData, type: "lend" })}
-              className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all ${
-                formData.type === "lend"
-                  ? "bg-white text-emerald-600 shadow-sm"
-                  : "text-secondary-500 hover:text-secondary-700"
-              }`}
-            >
-              আমি দিয়েছি (পাওনা)
-            </button>
-            <button
-              type="button"
-              onClick={() => setFormData({ ...formData, type: "borrow" })}
-              className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all ${
-                formData.type === "borrow"
-                  ? "bg-white text-red-600 shadow-sm"
-                  : "text-secondary-500 hover:text-secondary-700"
-              }`}
-            >
-              আমি নিয়েছি (দেনা)
-            </button>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <div>
-              <label className="block text-sm font-medium text-secondary-700 mb-2 ml-1">
-                নাম *
-              </label>
-              <div className="relative group">
-                <User className="absolute left-3.5 top-1/2 -translate-y-1/2 text-secondary-400 w-5 h-5 group-focus-within:text-primary-500 transition-colors" />
-                <input
-                  type="text"
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <Label htmlFor="name" className="text-right">
+                নাম <span className="text-red-500">*</span>
+              </Label>
+              <div className="relative">
+                <User className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  id="name"
+                  placeholder="উদাহরণ: রাকিব"
+                  className="pl-9"
                   value={formData.name}
                   onChange={(e) =>
                     setFormData({ ...formData, name: e.target.value })
                   }
-                  placeholder="উদাহরণ: রাকিব"
-                  className="input-field"
                   required
-                  autoFocus
                 />
               </div>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-secondary-700 mb-2 ml-1">
-                টাকার পরিমাণ (টাকা) *
-              </label>
-              <div className="relative group">
-                <DollarSign className="absolute left-3.5 top-1/2 -translate-y-1/2 text-secondary-400 w-5 h-5 group-focus-within:text-primary-500 transition-colors" />
-                <input
+            <div className="space-y-2">
+              <Label htmlFor="amount" className="text-right">
+                টাকার পরিমাণ <span className="text-red-500">*</span>
+              </Label>
+              <div className="relative">
+                <DollarSign className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  id="amount"
                   type="number"
+                  placeholder="0.00"
+                  className="pl-9 font-mono"
+                  min="0"
+                  step="0.01"
                   value={formData.amount}
                   onChange={(e) =>
                     setFormData({ ...formData, amount: e.target.value })
                   }
-                  placeholder="0.00"
-                  min="0"
-                  step="0.01"
-                  className="input-field font-mono"
                   required
                 />
               </div>
             </div>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-secondary-700 mb-2 ml-1">
+          <div className="space-y-2">
+            <Label htmlFor="notes" className="text-right">
               নোট (ঐচ্ছিক)
-            </label>
-            <div className="relative group">
-              <FileText className="absolute left-3.5 top-3.5 text-secondary-400 w-5 h-5 group-focus-within:text-primary-500 transition-colors" />
-              <textarea
+            </Label>
+            <div className="relative">
+              <FileText className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+              <Textarea
+                id="notes"
+                placeholder="অতিরিক্ত তথ্য..."
+                className="pl-9 min-h-[80px]"
                 value={formData.notes}
                 onChange={(e) =>
                   setFormData({ ...formData, notes: e.target.value })
                 }
-                placeholder="অতিরিক্ত তথ্য..."
-                rows={2}
-                className="input-field pl-10"
               />
             </div>
           </div>
 
-          <div className="flex gap-4 pt-2">
-            <button type="submit" className="flex-1 btn-primary">
-              <Plus className="w-5 h-5" />
-              যোগ করুন
-            </button>
-            <button
+          <DialogFooter className="flex-col-reverse sm:flex-row gap-2">
+            <Button
               type="button"
-              onClick={onCancel}
-              className="px-6 btn-outline border-secondary-200 text-secondary-600 hover:text-red-600 hover:border-red-200 hover:bg-red-50"
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+              className="w-full sm:w-auto"
             >
               বাতিল
-            </button>
-          </div>
+            </Button>
+            <Button type="submit" className="w-full sm:w-auto btn-primary">
+              <Plus className="mr-2 h-4 w-4" />
+              যোগ করুন
+            </Button>
+          </DialogFooter>
         </form>
-      </div>
-    </motion.div>
+      </DialogContent>
+    </Dialog>
   );
 };
