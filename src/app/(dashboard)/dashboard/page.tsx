@@ -8,7 +8,6 @@ import { TransactionForm } from "@/components/TransactionForm";
 import { useMemo, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Plus } from "lucide-react";
-import { AnimatePresence } from "framer-motion";
 
 export default function DashboardPage() {
   const { session } = useAuth();
@@ -152,16 +151,13 @@ export default function DashboardPage() {
         </button>
       </div>
 
-      <AnimatePresence>
-        {showAddForm && (
-          <TransactionForm
-            formData={formData}
-            setFormData={setFormData}
-            onSubmit={handleAddTransaction}
-            onCancel={() => setShowAddForm(false)}
-          />
-        )}
-      </AnimatePresence>
+      <TransactionForm
+        open={showAddForm}
+        onOpenChange={setShowAddForm}
+        formData={formData}
+        setFormData={setFormData}
+        onSubmit={handleAddTransaction}
+      />
 
       <SummaryCards
         totalBaki={totalBaki}
