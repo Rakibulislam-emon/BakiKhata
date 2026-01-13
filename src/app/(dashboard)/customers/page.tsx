@@ -5,9 +5,9 @@ import { useTransactions } from "@/hooks/useTransactions";
 import { CustomerList } from "@/components/CustomerList";
 import { useMemo, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Search, Plus } from "lucide-react";
+import { Search, Plus, X } from "lucide-react";
 import { CustomerSummary } from "@/types";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function CustomersPage() {
   const { session } = useAuth();
@@ -81,8 +81,21 @@ export default function CustomersPage() {
                 placeholder="গ্রাহকের নাম খুঁজুন..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-12 pr-4 py-4 rounded-xl border border-secondary-200 bg-white/50 backdrop-blur-sm shadow-sm focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 outline-none transition-all placeholder:text-secondary-400 font-medium"
+                className="w-full pl-12 pr-10 py-4 rounded-xl border border-secondary-200 bg-white/50 backdrop-blur-sm shadow-sm focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 outline-none transition-all placeholder:text-secondary-400 font-medium"
               />
+              <AnimatePresence>
+                {searchTerm && (
+                  <motion.button
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    onClick={() => setSearchTerm("")}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 rounded-full bg-secondary-100 text-secondary-500 hover:bg-secondary-200 hover:text-red-500 transition-colors"
+                  >
+                    <X className="w-4 h-4" />
+                  </motion.button>
+                )}
+              </AnimatePresence>
             </div>
           </div>
         </div>
