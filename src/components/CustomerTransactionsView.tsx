@@ -6,9 +6,14 @@ import { CustomerDetail } from "@/components/CustomerDetail";
 import { useMemo, useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { toast } from "sonner";
-import { Transaction } from "@/types";
 
-export default function CustomerDetailPage() {
+interface CustomerTransactionsViewProps {
+  backPath: string; // Dynamic back navigation
+}
+
+export const CustomerTransactionsView = ({
+  backPath,
+}: CustomerTransactionsViewProps) => {
   const { session } = useAuth();
   const params = useParams();
   const router = useRouter();
@@ -35,7 +40,7 @@ export default function CustomerDetailPage() {
     notes: string;
     type: "lend" | "borrow";
   }>({
-    name: customerName, // Pre-fill with confirmed customer name
+    name: customerName,
     amount: "",
     notes: "",
     type: "lend",
@@ -47,7 +52,6 @@ export default function CustomerDetailPage() {
       fetchTransactions();
     } else {
       setTransactions([]);
-      // Redirect if no session? handled in layout
     }
   }, [session, fetchTransactions, setTransactions]);
 
@@ -56,8 +60,6 @@ export default function CustomerDetailPage() {
     const txns = transactions.filter(
       (t) => t.customerName.toLowerCase() === customerName.toLowerCase()
     );
-    // If no transactions found for this name (and it's not a new customer flow with 0 txns yet),
-    // we might want to handle 'not found', but for now we render empty state.
 
     return {
       name: txns[0]?.customerName || customerName,
@@ -78,8 +80,7 @@ export default function CustomerDetailPage() {
     };
   }, [selectedCustomerData]);
 
-  // Handlers (Copying logic from original page.tsx)
-
+  // Handlers
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -134,7 +135,7 @@ export default function CustomerDetailPage() {
             toast.error("মুছতে সমস্যা হয়েছে");
           } else {
             toast.success("সব লেনদেন মুছে ফেলা হয়েছে");
-            router.push("/customers"); // Go back to list
+            router.push(backPath); // Use dynamic back path
           }
         },
       },
@@ -177,7 +178,6 @@ export default function CustomerDetailPage() {
     id: string,
     updates: { amount?: number; notes?: string; type?: "lend" | "borrow" }
   ) => {
-    // Logic copied from page.tsx to determine sign flips
     let finalAmount = updates.amount;
 
     if (
@@ -219,7 +219,7 @@ export default function CustomerDetailPage() {
     <CustomerDetail
       customer={selectedCustomerData}
       totals={customerTotals}
-      onBack={() => router.push("/customers")}
+      onBack={() => router.push(backPath)} // Use dynamic back path
       onDeleteAll={handleDeleteAllTransactions}
       onToggleAllPaid={handleToggleAllPaid}
       onTogglePaid={togglePaid}
@@ -233,4 +233,4 @@ export default function CustomerDetailPage() {
       onSubmit={handleSubmit}
     />
   );
-}
+};

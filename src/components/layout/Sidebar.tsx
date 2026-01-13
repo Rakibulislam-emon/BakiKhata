@@ -9,9 +9,9 @@ import { motion } from "framer-motion";
 
 const navItems = [
   { icon: Home, label: "ড্যাশবোর্ড", href: "/dashboard" },
-  { icon: TrendingUp, label: "পাওনা তালিকা", href: "/receivables" },
-  { icon: TrendingDown, label: "দেনা তালিকা", href: "/payables" },
-  { icon: Settings, label: "সেটিংস", href: "/settings" },
+  { icon: TrendingUp, label: "পাওনা তালিকা", href: "/dashboard/receivables" },
+  { icon: TrendingDown, label: "দেনা তালিকা", href: "/dashboard/payables" },
+  { icon: Settings, label: "সেটিংস", href: "/dashboard/settings" },
 ];
 
 export function Sidebar() {
@@ -38,7 +38,7 @@ export function Sidebar() {
           বাকি খাতা
         </h1>
         <p className="text-xs md:pl-2 text-secondary-500 font-medium mt-1">
-           ডিজিটাল সমাধান
+          ডিজিটাল সমাধান
         </p>
       </div>
 
@@ -53,13 +53,13 @@ export function Sidebar() {
           let iconActive = "text-white";
           let iconInactive = "text-secondary-400 group-hover:text-primary-500";
 
-          if (item.href === "/customers") {
+          if (item.href === "/dashboard/receivables") {
             activeClass =
               "bg-emerald-500 text-white shadow-lg shadow-emerald-500/30";
             inactiveClass =
               "text-secondary-600 hover:bg-emerald-50 hover:text-emerald-600";
             iconInactive = "text-emerald-500 group-hover:text-emerald-600";
-          } else if (item.href === "/payables") {
+          } else if (item.href === "/dashboard/payables") {
             activeClass = "bg-red-500 text-white shadow-lg shadow-red-500/30";
             inactiveClass =
               "text-secondary-600 hover:bg-red-50 hover:text-red-600";

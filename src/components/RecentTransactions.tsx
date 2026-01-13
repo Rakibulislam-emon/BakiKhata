@@ -54,11 +54,15 @@ export const RecentTransactions = ({
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
               transition={{ delay: index * 0.05 }}
-              onClick={() =>
+              onClick={() => {
+                const isReceivable = transaction.amount >= 0;
+                const route = isReceivable ? "receivables" : "payables";
                 router.push(
-                  `/customers/${encodeURIComponent(transaction.customerName)}`
-                )
-              }
+                  `/dashboard/${route}/${encodeURIComponent(
+                    transaction.customerName
+                  )}`
+                );
+              }}
               className={`glass-card p-4 flex items-center justify-between group border-l-4 cursor-pointer hover:shadow-md transition-all ${
                 transaction.isPaid
                   ? "border-l-primary-500 bg-primary-50/30"
