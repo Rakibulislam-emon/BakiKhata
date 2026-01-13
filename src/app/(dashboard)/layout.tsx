@@ -2,6 +2,7 @@
 
 import { Sidebar } from "@/components/layout/Sidebar";
 import { MobileSidebar } from "@/components/layout/MobileSidebar";
+import { BottomNav } from "@/components/layout/BottomNav";
 import { Header } from "@/components/layout/Header";
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
@@ -42,12 +43,14 @@ export default function DashboardLayout({
         onClose={() => setMobileMenuOpen(false)}
       />
 
-      <main className="md:ml-64 relative z-10 min-h-screen flex flex-col transition-all duration-300">
+      <main className="md:ml-64 relative z-10 min-h-screen flex flex-col transition-all duration-300 pb-24 md:pb-0">
         <Header onMenuClick={() => setMobileMenuOpen(true)} />
         <div className="flex-1 p-4 md:p-8 max-w-7xl mx-auto w-full">
           {children}
         </div>
       </main>
+
+      <BottomNav />
     </div>
   );
 }

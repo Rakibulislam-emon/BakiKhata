@@ -145,11 +145,8 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-8">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-secondary-900">ড্যাশবোর্ড</h1>
-          <p className="text-secondary-500">আপনার ব্যবসার সংক্ষিপ্তসার</p>
-        </div>
+      <div className="flex justify-end gap-4">
+        
         <button
           onClick={() => setShowAddForm(true)}
           className="btn-primary w-full md:w-auto py-4 md:py-2.5 text-lg md:text-sm font-semibold shadow-xl md:shadow-none justify-center active:scale-95 transition-all"
