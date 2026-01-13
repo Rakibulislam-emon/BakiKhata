@@ -144,9 +144,9 @@ export default function DashboardPage() {
         </div>
         <button
           onClick={() => setShowAddForm(true)}
-          className="btn-primary self-start md:self-auto"
+          className="btn-primary w-full md:w-auto py-4 md:py-2.5 text-lg md:text-sm font-semibold shadow-xl md:shadow-none justify-center active:scale-95 transition-all"
         >
-          <Plus className="w-5 h-5" />
+          <Plus className="w-6 h-6 md:w-5 md:h-5" />
           নতুন লেনদেন
         </button>
       </div>

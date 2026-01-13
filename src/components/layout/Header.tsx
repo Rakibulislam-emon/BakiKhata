@@ -1,7 +1,7 @@
 "use client";
 
 import { useAuth } from "@/hooks/useAuth";
-import { Bell, Menu, LogOut } from "lucide-react";
+import { Menu, LogOut } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -33,7 +33,10 @@ export function Header({ onMenuClick }: HeaderProps) {
           <Menu className="w-6 h-6" />
         </button>
         <div>
-          <Link href="/dashboard" className="text-lg md:text-xl font-bold text-secondary-800">
+          <Link
+            href="/dashboard"
+            className="text-lg md:text-xl font-bold text-secondary-800"
+          >
             স্বাগতম 👋
           </Link>
           <p className="text-xs md:text-sm text-secondary-500 hidden sm:block">
@@ -43,11 +46,6 @@ export function Header({ onMenuClick }: HeaderProps) {
       </div>
 
       <div className="flex items-center gap-2 md:gap-4">
-        <button className="p-2.5 bg-white/50 hover:bg-white rounded-full text-secondary-500 hover:text-primary-600 transition-all relative shadow-sm hover:shadow-md">
-          <Bell className="w-5 h-5" />
-          <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
-        </button>
-
         <div className="relative">
           <button
             onClick={() => setShowUserMenu(!showUserMenu)}

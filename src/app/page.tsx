@@ -18,6 +18,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
+import { DashboardPreview } from "@/components/landing/DashboardPreview";
 
 export default function LandingPage() {
   const { session, loading } = useAuth();
@@ -184,10 +185,13 @@ export default function LandingPage() {
                 এখনই শুরু করুন
                 <ArrowRight className="w-5 h-5" />
               </button>
-              <button className="btn-secondary w-full sm:w-auto text-lg px-10 py-5 group">
+              <a
+                href="#features"
+                className="btn-secondary w-full sm:w-auto text-lg px-10 py-5 group inline-flex items-center justify-center gap-2"
+              >
                 আরও জানুন
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </button>
+              </a>
             </div>
           </motion.div>
 
@@ -199,16 +203,11 @@ export default function LandingPage() {
             className="mt-20 relative"
           >
             <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent z-10 h-full w-full pointer-events-none" />
-            <div className="glass-card p-4 md:p-6 rounded-[2.5rem] bg-white/40 border-white/60 shadow-2xl relative overflow-hidden group">
+            <div className="glass-card p-2 md:p-3 rounded-[1.5rem] md:rounded-[2.5rem] bg-white/40 border-white/60 shadow-2xl relative overflow-hidden group">
               <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-primary-500/5 to-purple-500/5 group-hover:opacity-100 transition-opacity duration-500" />
               {/* Mockup UI Elements representing the dashboard */}
-              <div className="bg-white rounded-2xl shadow-sm border border-secondary-100 overflow-hidden aspect-[16/9] relative">
-                <div className="absolute inset-0 flex items-center justify-center bg-secondary-50">
-                  <p className="text-secondary-400 font-medium">
-                    ড্যাশবোর্ড প্রিভিউ
-                  </p>
-                  {/* In a real app, put an actual screenshot here */}
-                </div>
+              <div className="bg-white rounded-xl md:rounded-2xl shadow-sm border border-secondary-100 overflow-hidden h-[500px] md:h-auto md:aspect-[16/9] relative">
+                <DashboardPreview />
               </div>
             </div>
           </motion.div>
@@ -251,8 +250,66 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* How it works Section */}
+      <section id="how-it-works" className="py-24 relative bg-secondary-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-secondary-900 mb-4">
+              কিভাবে কাজ করে? (How It Works)
+            </h2>
+            <p className="text-lg text-secondary-600 max-w-2xl mx-auto">
+              মাত্র ৩টি সহজ ধাপে শুরু করুন আপনার ডিজিটাল হিসাবরক্ষণ যাত্রা।
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8 relative">
+            {/* Connecting Line (Desktop) */}
+            <div className="hidden md:block absolute top-12 left-[16%] right-[16%] h-0.5 bg-gradient-to-r from-primary-200 via-purple-200 to-primary-200 -z-10" />
+
+            <div className="relative flex flex-col items-center text-center group">
+              <div className="w-24 h-24 rounded-full bg-white shadow-lg border-4 border-white flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 relative z-10">
+                <span className="text-3xl font-bold text-primary-600">১</span>
+              </div>
+              <h3 className="text-xl font-bold text-secondary-900 mb-3">
+                অ্যাকাউন্ট খুলুন
+              </h3>
+              <p className="text-secondary-600">
+                মাত্র ১ মিনিটে আপনার মোবাইল নম্বর বা ইমেইল দিয়ে ফ্রি অ্যাকাউন্ট
+                খুলুন।
+              </p>
+            </div>
+
+            <div className="relative flex flex-col items-center text-center group">
+              <div className="w-24 h-24 rounded-full bg-white shadow-lg border-4 border-white flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 relative z-10">
+                <span className="text-3xl font-bold text-primary-600">২</span>
+              </div>
+              <h3 className="text-xl font-bold text-secondary-900 mb-3">
+                লেনদেন যোগ করুন
+              </h3>
+              <p className="text-secondary-600">
+                বাকির বা জমার হিসাব এন্ট্রি করুন। কাস্টমারের নাম ও টাকার পরিমাণ
+                লিখুন।
+              </p>
+            </div>
+
+            <div className="relative flex flex-col items-center text-center group">
+              <div className="w-24 h-24 rounded-full bg-white shadow-lg border-4 border-white flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 relative z-10">
+                <span className="text-3xl font-bold text-primary-600">৩</span>
+              </div>
+              <h3 className="text-xl font-bold text-secondary-900 mb-3">
+                রিপোর্ট দেখুন
+              </h3>
+              <p className="text-secondary-600">
+                ড্যাশবোর্ডে দেখুন আপনার মোট পাওনা ও দেনা। ব্যবসার অবস্থা বুঝুন
+                সহজেই।
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* CTA Section */}
-      <section className="py-24 relative overflow-hidden">
+      <section id="pricing" className="py-24 relative overflow-hidden">
         <div className="absolute inset-0 bg-primary-900 z-0">
           <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay"></div>
           <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-primary-600/50 to-purple-900/90" />
@@ -302,16 +359,16 @@ export default function LandingPage() {
               <h4 className="font-bold text-secondary-900 mb-4">লিংকসমূহ</h4>
               <ul className="space-y-3 text-secondary-500">
                 <li>
-                  <a
-                    href="#"
+                  <Link
+                    href="/"
                     className="hover:text-primary-600 transition-colors"
                   >
                     হোম
-                  </a>
+                  </Link>
                 </li>
                 <li>
                   <a
-                    href="#"
+                    href="#features"
                     className="hover:text-primary-600 transition-colors"
                   >
                     ফিচার
@@ -319,7 +376,7 @@ export default function LandingPage() {
                 </li>
                 <li>
                   <a
-                    href="#"
+                    href="mailto:support@bakikhata.com"
                     className="hover:text-primary-600 transition-colors"
                   >
                     সাহায্য
@@ -327,7 +384,7 @@ export default function LandingPage() {
                 </li>
                 <li>
                   <a
-                    href="#"
+                    href="tel:+8801700000000"
                     className="hover:text-primary-600 transition-colors"
                   >
                     যোগাযোগ

@@ -6,6 +6,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -51,6 +52,9 @@ export const TransactionForm = ({
           <DialogTitle className="text-xl font-bold text-center sm:text-left">
             নতুন লেনদেন যোগ করুন
           </DialogTitle>
+          <DialogDescription className="text-center sm:text-left text-secondary-500">
+            লেনদেনের বিবরণ নিচে পূরণ করুন
+          </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-6 py-2">
@@ -66,13 +70,13 @@ export const TransactionForm = ({
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger
                 value="lend"
-                className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white"
+                className="data-[state=active]:bg-emerald-600 py-2 data-[state=active]:text-white"
               >
                 আমি দিয়েছি (পাওনা)
               </TabsTrigger>
               <TabsTrigger
                 value="borrow"
-                className="data-[state=active]:bg-red-600 data-[state=active]:text-white"
+                className="data-[state=active]:bg-red-600 py-2 data-[state=active]:text-white"
               >
                 আমি নিয়েছি (দেনা)
               </TabsTrigger>
