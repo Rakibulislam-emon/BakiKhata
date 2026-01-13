@@ -13,13 +13,18 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 
 const getBengaliErrorMessage = (error: string) => {
-  if (error.includes("Invalid login credentials"))
+  const err = error.toLowerCase();
+  if (err.includes("invalid login credentials"))
     return "ইমেইল বা পাসওয়ার্ড সঠিক নয়";
-  if (error.includes("User already registered"))
+  if (
+    err.includes("user already registered") ||
+    err.includes("already registered") ||
+    err.includes("email already exists")
+  )
     return "এই ইমেইল দিয়ে ইতিমধ্যে একটি একাউন্ট খোলা আছে";
-  if (error.includes("Password should be at least 6 characters"))
+  if (err.includes("password should be at least 6 characters"))
     return "পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে";
-  if (error.includes("rate limit"))
+  if (err.includes("rate limit") || err.includes("too many requests"))
     return "অতিরিক্ত চেষ্টার কারণে সাময়িকভাবে বন্ধ আছে। কিছুক্ষণ পর আবার চেষ্টা করুন";
   return "একটি সমস্যা হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন";
 };

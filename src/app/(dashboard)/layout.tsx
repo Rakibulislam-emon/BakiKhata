@@ -6,7 +6,7 @@ import { BottomNav } from "@/components/layout/BottomNav";
 import { Header } from "@/components/layout/Header";
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Auth } from "@/components/Auth";
 
 export default function DashboardLayout({
@@ -17,6 +17,14 @@ export default function DashboardLayout({
   const { session, loading } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!loading && !session) {
+      router.push("/login");
+    }
+  }, [session, loading, router]);
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
@@ -26,7 +34,7 @@ export default function DashboardLayout({
   }
 
   if (!session) {
-    return <Auth />;
+    return null; // Prevent rendering anything while redirecting
   }
 
   return (
