@@ -307,12 +307,9 @@ export const CustomerList = ({
                         className={`w-14 h-14 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg ${
                           !isPaidOff
                             ? balance > 0
-                              ? "bg-gradient-to-br from-red-500 to-red-600" // Receivable (Baki) -> Red
-                              : "bg-gradient-to-br from-emerald-400 to-emerald-600" // Payable (Dena) -> Green (or keep red? user said 'paid hoyey jabey' -> green based. If I owe them, it's not 'paid' yet. But user focused on 'Baki jader thekey pabo' (Receivables) -> Red. 'Paid' -> Green. Let's make Settled/Zero -> Green based, and Payable -> different?
-                            : // Re-reading: "baki jader thekey pabo tader ta red... ar jader ta paid hoyey jabey tader ta green"
-                              // If balance == 0, it's paid. If balance < 0 (I owe), it's nominally 'paid' by them (overpaid even).
-                              // Let's stick to: Receivable (>0) = RED. Everything else (<=0) = GREEN/SLATE.
-                              "bg-gradient-to-br from-emerald-400 to-emerald-600" // Settled -> Green
+                              ? "bg-gradient-to-br from-emerald-400 to-emerald-600" // Receivable (Paona) -> Green
+                              : "bg-gradient-to-br from-red-500 to-red-600" // Payable (Dena) -> Red
+                            : "bg-gradient-to-br from-emerald-400 to-emerald-600" // Settled -> Green
                         }`}
                       >
                         {customer.name.charAt(0).toUpperCase()}
@@ -349,8 +346,8 @@ export const CustomerList = ({
                           className={`text-2xl font-bold font-mono tracking-tight ${
                             !isPaidOff
                               ? balance > 0
-                                ? "text-red-500" // Receivable -> Red
-                                : "text-emerald-600" // Payable -> Green
+                                ? "text-emerald-600" // Receivable -> Green
+                                : "text-red-500" // Payable -> Red
                               : "text-emerald-600" // Settled -> Green
                           }`}
                         >
@@ -360,15 +357,15 @@ export const CustomerList = ({
                           {!isPaidOff ? (
                             balance > 0 ? (
                               <>
-                                <AlertCircle className="w-3 h-3 text-red-500" />
-                                <p className="text-xs font-semibold text-red-500">
+                                <TrendingDown className="w-3 h-3 text-emerald-600 rotate-180" />
+                                <p className="text-xs font-semibold text-emerald-600">
                                   পাওনা
                                 </p>
                               </>
                             ) : (
                               <>
-                                <CheckCircle2 className="w-3 h-3 text-emerald-600" />
-                                <p className="text-xs font-semibold text-emerald-600">
+                                <AlertCircle className="w-3 h-3 text-red-500" />
+                                <p className="text-xs font-semibold text-red-500">
                                   দেনা
                                 </p>
                               </>

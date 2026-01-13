@@ -24,7 +24,7 @@ export const SummaryCards = ({
         <div className="absolute top-0 right-0 w-32 h-32 bg-primary-500/10 rounded-full blur-2xl -mr-10 -mt-10 transition-all duration-500 group-hover:bg-primary-500/20" />
         <div className="relative z-10">
           <div className="text-secondary-500 font-medium mb-2 flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
             মোট বাকি (মার্কেট পাওনা)
           </div>
           <div className="flex items-baseline gap-1">
