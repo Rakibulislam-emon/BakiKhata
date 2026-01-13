@@ -19,7 +19,7 @@ export function BottomNav() {
     {
       icon: TrendingUp,
       label: "পাওনা",
-      href: "/customers",
+      href: "/receivables",
       color: "bg-emerald-500",
       textColor: "text-emerald-500",
     },

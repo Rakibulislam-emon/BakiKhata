@@ -146,7 +146,6 @@ export default function DashboardPage() {
   return (
     <div className="space-y-8">
       <div className="flex justify-end gap-4">
-        
         <button
           onClick={() => setShowAddForm(true)}
           className="btn-primary w-full md:w-auto py-4 md:py-2.5 text-lg md:text-sm font-semibold shadow-xl md:shadow-none justify-center active:scale-95 transition-all"

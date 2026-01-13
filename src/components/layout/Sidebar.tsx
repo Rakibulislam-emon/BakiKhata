@@ -9,7 +9,7 @@ import { motion } from "framer-motion";
 
 const navItems = [
   { icon: Home, label: "ড্যাশবোর্ড", href: "/dashboard" },
-  { icon: TrendingUp, label: "পাওনা তালিকা", href: "/customers" },
+  { icon: TrendingUp, label: "পাওনা তালিকা", href: "/receivables" },
   { icon: TrendingDown, label: "দেনা তালিকা", href: "/payables" },
   { icon: Settings, label: "সেটিংস", href: "/settings" },
 ];
