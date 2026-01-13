@@ -18,6 +18,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
+import { DashboardPreview } from "@/components/landing/DashboardPreview";
 
 export default function LandingPage() {
   const { session, loading } = useAuth();
@@ -199,16 +200,11 @@ export default function LandingPage() {
             className="mt-20 relative"
           >
             <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent z-10 h-full w-full pointer-events-none" />
-            <div className="glass-card p-4 md:p-6 rounded-[2.5rem] bg-white/40 border-white/60 shadow-2xl relative overflow-hidden group">
+            <div className="glass-card p-2 md:p-3 rounded-[1.5rem] md:rounded-[2.5rem] bg-white/40 border-white/60 shadow-2xl relative overflow-hidden group">
               <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-primary-500/5 to-purple-500/5 group-hover:opacity-100 transition-opacity duration-500" />
               {/* Mockup UI Elements representing the dashboard */}
-              <div className="bg-white rounded-2xl shadow-sm border border-secondary-100 overflow-hidden aspect-[16/9] relative">
-                <div className="absolute inset-0 flex items-center justify-center bg-secondary-50">
-                  <p className="text-secondary-400 font-medium">
-                    ড্যাশবোর্ড প্রিভিউ
-                  </p>
-                  {/* In a real app, put an actual screenshot here */}
-                </div>
+              <div className="bg-white rounded-xl md:rounded-2xl shadow-sm border border-secondary-100 overflow-hidden aspect-[16/9] relative">
+                <DashboardPreview />
               </div>
             </div>
           </motion.div>
