@@ -25,7 +25,7 @@ export const RecentTransactions = ({
   if (transactions.length === 0) return null;
 
   return (
-    <div className="max-w-4xl mx-auto px-4 mt-12 pb-24">
+    <div className="w-full px-4 mt-12 pb-24">
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-xl font-bold text-secondary-900 flex items-center gap-2">
           <Clock className="w-5 h-5 text-primary-500" />
