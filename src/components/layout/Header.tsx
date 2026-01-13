@@ -2,6 +2,7 @@
 
 import { useAuth } from "@/hooks/useAuth";
 import { Bell, Menu, LogOut } from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -32,9 +33,9 @@ export function Header({ onMenuClick }: HeaderProps) {
           <Menu className="w-6 h-6" />
         </button>
         <div>
-          <h2 className="text-lg md:text-xl font-bold text-secondary-800">
+          <Link href="/dashboard" className="text-lg md:text-xl font-bold text-secondary-800">
             স্বাগতম 👋
-          </h2>
+          </Link>
           <p className="text-xs md:text-sm text-secondary-500 hidden sm:block">
             {session?.user.email}
           </p>
