@@ -58,29 +58,34 @@ export default function CustomersPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-secondary-900">
-            গ্রাহক তালিকা
-          </h1>
-          <p className="text-secondary-500">
-            আপনার সকল গ্রাহকের হিসাব এখানে দেখুন
-          </p>
+      <div className="glass-card p-6 md:p-8 relative overflow-hidden">
+        {/* Background Decoration */}
+        <div className="absolute top-0 right-0 w-64 h-64 bg-primary-500/5 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
+
+        <div className="relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div className="flex-1">
+            <h1 className="text-3xl font-bold text-secondary-900 tracking-tight mb-2">
+              গ্রাহক তালিকা
+            </h1>
+            <p className="text-secondary-500 max-w-lg leading-relaxed">
+              আপনার সকল গ্রাহকের হিসাব এবং লেনদেনের তথ্য এখানে দেখুন। নাম দিয়ে
+              খুঁজুন এবং বিস্তারিত দেখতে ক্লিক করুন।
+            </p>
+          </div>
+
+          <div className="w-full md:w-auto min-w-[300px]">
+            <div className="relative group">
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-secondary-400 w-5 h-5 group-focus-within:text-primary-500 transition-colors" />
+              <input
+                type="text"
+                placeholder="গ্রাহকের নাম খুঁজুন..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-12 pr-4 py-4 rounded-xl border border-secondary-200 bg-white/50 backdrop-blur-sm shadow-sm focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 outline-none transition-all placeholder:text-secondary-400 font-medium"
+              />
+            </div>
+          </div>
         </div>
-
-        {/* Placeholder for Add Customer Action if needed explicitly, 
-            though usually flows start from creating a transaction */}
-      </div>
-
-      <div className="relative group max-w-lg">
-        <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-secondary-400 w-5 h-5 group-focus-within:text-primary-500 transition-colors" />
-        <input
-          type="text"
-          placeholder="নাম অনুসন্ধান..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full pl-12 pr-4 py-3 rounded-2xl border border-secondary-200 bg-white shadow-soft focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 outline-none transition-all placeholder:text-secondary-400"
-        />
       </div>
 
       <CustomerList
