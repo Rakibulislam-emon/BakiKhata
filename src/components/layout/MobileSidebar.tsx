@@ -1,6 +1,6 @@
 "use client";
 
-import { Home, Users, Settings, LogOut, X } from "lucide-react";
+import { Home, Users, Settings, LogOut, X, TrendingDown } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
@@ -10,6 +10,7 @@ import { motion, AnimatePresence } from "framer-motion";
 const navItems = [
   { icon: Home, label: "ড্যাশবোর্ড", href: "/dashboard" },
   { icon: Users, label: "গ্রাহক তালিকা", href: "/customers" },
+  { icon: TrendingDown, label: "দেনা তালিকা", href: "/payables" },
   { icon: Settings, label: "সেটিংস", href: "/settings" },
 ];
 
