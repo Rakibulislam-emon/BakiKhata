@@ -14,13 +14,9 @@ export function Header({ onMenuClick }: HeaderProps) {
   const { session, logout } = useAuth();
   const [showUserMenu, setShowUserMenu] = useState(false);
 
-  const handleLogout = () => {
-    toast("আপনি কি নিশ্চিত যে লগআউট করতে চান?", {
-      action: {
-        label: "লগআউট",
-        onClick: () => logout(),
-      },
-    });
+  const handleLogout = async () => {
+    setShowUserMenu(false);
+    await logout();
   };
 
   return (
