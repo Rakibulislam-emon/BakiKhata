@@ -197,74 +197,132 @@ export const CustomerDetail = ({
 
       {/* Add New Transaction Form */}
       <div className="max-w-4xl mx-auto px-4 mt-8">
-        <div className="glass-card p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-bold text-secondary-900 flex items-center gap-2">
-              <Plus className="w-5 h-5 text-primary-500" />
-              নতুন লেনদেন
+        <div className="glass-card p-6 bg-gradient-to-br from-white to-slate-50/80 border border-slate-200/60 shadow-lg">
+          {/* Header with Type Toggle */}
+          <div className="flex flex-col sm:flex-row sm:items-center  gap-4 mb-6">
+            <h2 className="text-lg font-bold text-secondary-900 flex items-center gap-3">
+              <div className="p-2 bg-primary-100 rounded-xl">
+                <Plus className="w-5 h-5 text-primary-600" />
+              </div>
+              নতুন লেনদেন যোগ করুন
             </h2>
-            <div className="flex bg-secondary-100 p-0.5 rounded-lg">
+
+            {/* Type Toggle - Larger & More Prominent */}
+            <div className="flex justify-between mx-8 bg-slate-100 p-1 rounded-xl border border-slate-200 shadow-inner">
               <button
                 type="button"
                 onClick={() => setFormData({ type: "lend" })}
-                className={`px-3 py-1 text-xs font-semibold rounded-md transition-all ${
+                className={`flex items-center gap-2 px-4 py-2.5 text-sm font-bold rounded-lg transition-all duration-200 ${
                   formData.type === "lend"
-                    ? "bg-white text-emerald-600 shadow-sm"
-                    : "text-secondary-500 hover:text-emerald-600"
+                    ? "bg-emerald-500 text-white shadow-md shadow-emerald-500/30"
+                    : "text-slate-500 hover:text-emerald-600 hover:bg-white/50"
                 }`}
               >
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
+                  />
+                </svg>
                 পাওনা
               </button>
               <button
                 type="button"
                 onClick={() => setFormData({ type: "borrow" })}
-                className={`px-3 py-1 text-xs font-semibold rounded-md transition-all ${
+                className={`flex items-center gap-2 px-4 py-2.5 text-sm font-bold rounded-lg transition-all duration-200 ${
                   formData.type === "borrow"
-                    ? "bg-white text-red-600 shadow-sm"
-                    : "text-secondary-500 hover:text-red-600"
+                    ? "bg-red-500 text-white shadow-md shadow-red-500/30"
+                    : "text-slate-500 hover:text-red-600 hover:bg-white/50"
                 }`}
               >
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M12 5l-9-2 9 18 9-18-9 2zm0 0v8"
+                  />
+                </svg>
                 দেনা
               </button>
             </div>
           </div>
-          <form onSubmit={onSubmit} className="flex gap-3">
-            <div className="flex-1 relative group">
-              <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 text-secondary-400 w-4 h-4 group-focus-within:text-primary-500 transition-colors" />
-              <input
-                type="number"
-                value={formData.amount}
-                onChange={(e) =>
-                  setFormData({ ...formData, amount: e.target.value })
-                }
-                placeholder="পরিমাণ"
-                min="0"
-                step="0.01"
-                className="w-full pl-9 pr-4 py-3 rounded-xl border border-secondary-200 bg-secondary-50/50 
-                focus:border-primary-500 focus:ring-2 focus:ring-primary-500/10 
-                outline-none transition-all font-mono text-sm"
-                required
-              />
+
+          {/* Form Fields */}
+          <form onSubmit={onSubmit} className="space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* Amount Input */}
+              <div className="relative group">
+                <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
+                  টাকার পরিমাণ
+                </label>
+                <div className="relative">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-lg font-bold text-slate-400 group-focus-within:text-primary-500 transition-colors">
+                    ৳
+                  </span>
+                  <input
+                    type="number"
+                    value={formData.amount}
+                    onChange={(e) =>
+                      setFormData({ ...formData, amount: e.target.value })
+                    }
+                    placeholder="0.00"
+                    min="0"
+                    step="0.01"
+                    className="w-full pl-10 pr-4 py-4 rounded-xl border-2 border-slate-200 bg-white
+                    focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 
+                    outline-none transition-all font-mono text-lg font-semibold placeholder:text-slate-300"
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Notes Input */}
+              <div className="relative group">
+                <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
+                  বিবরণ / নোট
+                </label>
+                <div className="relative">
+                  <FileText className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5 group-focus-within:text-primary-500 transition-colors" />
+                  <input
+                    type="text"
+                    value={formData.notes}
+                    onChange={(e) =>
+                      setFormData({ ...formData, notes: e.target.value })
+                    }
+                    placeholder="যেমন: চা নাস্তা, মালামাল..."
+                    className="w-full pl-12 pr-4 py-4 rounded-xl border-2 border-slate-200 bg-white
+                    focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 
+                    outline-none transition-all text-base placeholder:text-slate-300"
+                  />
+                </div>
+              </div>
             </div>
-            <div className="flex-[2] relative group">
-              <FileText className="absolute left-3 top-1/2 -translate-y-1/2 text-secondary-400 w-4 h-4 group-focus-within:text-primary-500 transition-colors" />
-              <input
-                type="text"
-                value={formData.notes}
-                onChange={(e) =>
-                  setFormData({ ...formData, notes: e.target.value })
-                }
-                placeholder="নোট (যেমন: চা নাস্তা)..."
-                className="w-full pl-9 pr-4 py-3 rounded-xl border border-secondary-200 bg-secondary-50/50 
-                focus:border-primary-500 focus:ring-2 focus:ring-primary-500/10 
-                outline-none transition-all text-sm"
-              />
-            </div>
+
+            {/* Submit Button - Full Width on Mobile */}
             <button
               type="submit"
-              className="bg-primary-600 hover:bg-primary-700 text-white p-3 rounded-xl transition-all shadow-lg shadow-primary-600/20 active:scale-95 flex items-center justify-center"
+              className={`w-full py-4 rounded-xl font-bold text-white text-base transition-all duration-200 
+                shadow-lg active:scale-[0.98] flex items-center justify-center gap-2 ${
+                  formData.type === "lend"
+                    ? "bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 shadow-emerald-500/25"
+                    : "bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 shadow-red-500/25"
+                }`}
             >
-              <Plus className="w-6 h-6" />
+              <Plus className="w-5 h-5" />
+              {formData.type === "lend" ? "পাওনা যোগ করুন" : "দেনা যোগ করুন"}
             </button>
           </form>
         </div>
