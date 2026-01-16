@@ -26,12 +26,6 @@ export function Header({ onMenuClick }: HeaderProps) {
   return (
     <header className="h-20 px-4 md:px-8 flex items-center justify-between bg-white/40 backdrop-blur-lg border-b border-white/20 sticky top-0 z-40 transition-all">
       <div className="flex items-center gap-4">
-        <button
-          onClick={onMenuClick}
-          className="md:hidden p-2 text-secondary-500 hover:bg-white/50 rounded-xl"
-        >
-          <Menu className="w-6 h-6" />
-        </button>
         <div>
           <Link
             href="/dashboard"
