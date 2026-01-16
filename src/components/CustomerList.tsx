@@ -22,7 +22,7 @@ interface CustomerListProps {
 }
 
 type FilterStatus = "all" | "unpaid" | "paid";
-type SortOption = "recent" | "highest_balance" | "name_asc";
+type SortOption = "recent" | "highest_balance" | "lowest_balance" | "name_asc";
 
 export const CustomerList = ({
   customerSummaries,
@@ -75,6 +75,15 @@ export const CustomerList = ({
           .reduce((sum, t) => sum + t.amount, 0);
         return Math.abs(balanceB) - Math.abs(balanceA);
       }
+      if (sortBy === "lowest_balance") {
+        const balanceA = a.transactions
+          .filter((t) => !t.isPaid)
+          .reduce((sum, t) => sum + t.amount, 0);
+        const balanceB = b.transactions
+          .filter((t) => !t.isPaid)
+          .reduce((sum, t) => sum + t.amount, 0);
+        return Math.abs(balanceA) - Math.abs(balanceB);
+      }
       // Default: recent (latest transaction date)
       const lastA = a.transactions[0]?.date || a.lastTransaction;
       const lastB = b.transactions[0]?.date || b.lastTransaction;
@@ -87,6 +96,8 @@ export const CustomerList = ({
         return "সম্প্রতি সক্রিয়";
       case "highest_balance":
         return "সর্বোচ্চ পরিমাণ";
+      case "lowest_balance":
+        return "সর্বনিম্ন পরিমাণ";
       case "name_asc":
         return "নাম (A-Z)";
     }
@@ -144,7 +155,12 @@ export const CustomerList = ({
                   className="absolute right-0 top-full mt-2 w-48 bg-white rounded-xl shadow-xl border border-slate-100 overflow-hidden z-50 p-1"
                 >
                   {(
-                    ["recent", "highest_balance", "name_asc"] as SortOption[]
+                    [
+                      "recent",
+                      "highest_balance",
+                      "lowest_balance",
+                      "name_asc",
+                    ] as SortOption[]
                   ).map((option) => (
                     <button
                       key={option}
