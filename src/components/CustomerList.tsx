@@ -56,7 +56,7 @@ export const CustomerList = ({
       const lowerTerm = searchTerm.toLowerCase();
       const matchesSearch =
         c.name.toLowerCase().includes(lowerTerm) ||
-        balance.toString().includes(lowerTerm);
+        Math.abs(balance).toString().includes(lowerTerm);
 
       let matchesFilter = true;
       if (filterStatus === "unpaid") matchesFilter = !isPaidOff;
@@ -194,10 +194,10 @@ export const CustomerList = ({
           {paginatedCustomers.map((customer, index) => {
             const totalBaki = customer.transactions
               .filter((t) => !t.isPaid)
-              .reduce((sum, t) => sum + t.amount, 0);
+              .reduce((sum, t) => sum + Number(t.amount || 0), 0);
 
             const balance = totalBaki;
-            const isPaidOff = balance === 0;
+            const isPaidOff = Math.abs(balance) < 0.01;
 
             // SaaS Color Palette
             const statusColor = isPaidOff

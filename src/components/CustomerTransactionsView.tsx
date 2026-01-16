@@ -1,9 +1,8 @@
 "use client";
 
-import { useAuth } from "@/hooks/useAuth";
-import { useTransactions } from "@/hooks/useTransactions";
+import { useTransactionsContext } from "@/context/TransactionsContext";
 import { CustomerDetail } from "@/components/CustomerDetail";
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { toast } from "sonner";
 
@@ -14,7 +13,6 @@ interface CustomerTransactionsViewProps {
 export const CustomerTransactionsView = ({
   backPath,
 }: CustomerTransactionsViewProps) => {
-  const { session } = useAuth();
   const params = useParams();
   const router = useRouter();
 
@@ -23,7 +21,6 @@ export const CustomerTransactionsView = ({
 
   const {
     transactions,
-    fetchTransactions,
     addTransaction,
     togglePaid,
     deleteTransaction,
@@ -31,8 +28,7 @@ export const CustomerTransactionsView = ({
     deleteAllForCustomer,
     toggleAllPaidForCustomer,
     deleteAllPaidForCustomer,
-    setTransactions,
-  } = useTransactions(session);
+  } = useTransactionsContext();
 
   const [formData, setFormData] = useState<{
     name: string;
@@ -46,14 +42,6 @@ export const CustomerTransactionsView = ({
     type: "lend",
   });
   const [showAddForm, setShowAddForm] = useState(false);
-
-  useEffect(() => {
-    if (session) {
-      fetchTransactions();
-    } else {
-      setTransactions([]);
-    }
-  }, [session, fetchTransactions, setTransactions]);
 
   // Derived Data
   const selectedCustomerData = useMemo(() => {
@@ -90,17 +78,17 @@ export const CustomerTransactionsView = ({
     }
 
     const amountValue = parseFloat(formData.amount);
-    const finalAmount = formData.type === "borrow" ? -amountValue : amountValue;
 
+    // Pass raw positive amount - addTransaction will handle the sign based on type
     const res = await addTransaction({
       customerName,
-      amount: parseFloat(finalAmount.toString()),
+      amount: amountValue,
       type: formData.type,
       notes: formData.notes,
     });
 
     if (res.error) {
-      toast.error("বিল যোগ করতে সমস্যা হয়েছে");
+      toast.error("বিল যোগ করতে সমস্যা হয়েছে");
     } else {
       setFormData((prev) => ({ ...prev, amount: "", notes: "" }));
       setShowAddForm(false);

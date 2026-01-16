@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { useAuth } from "@/hooks/useAuth";
-import { useTransactions } from "@/hooks/useTransactions";
+import { useTransactionsContext } from "@/context/TransactionsContext";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { User, LogOut, Trash2, Shield } from "lucide-react";
@@ -29,7 +29,7 @@ import {
 
 export default function SettingsPage() {
   const { session, logout } = useAuth();
-  const { deleteAllTransactions } = useTransactions(session);
+  const { deleteAllTransactions } = useTransactionsContext();
   const router = useRouter();
 
   const handleLogout = async () => {
