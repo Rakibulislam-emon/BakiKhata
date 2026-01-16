@@ -30,13 +30,9 @@ export function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
   const pathname = usePathname();
   const { logout } = useAuth();
 
-  const handleLogout = () => {
-    toast("আপনি কি নিশ্চিত যে লগআউট করতে চান?", {
-      action: {
-        label: "লগআউট",
-        onClick: () => logout(),
-      },
-    });
+  const handleLogout = async () => {
+    onClose();
+    await logout();
   };
 
   return (

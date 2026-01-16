@@ -1,32 +1,27 @@
 "use client";
 
-import { useAuth } from "@/hooks/useAuth";
-import { useTransactions } from "@/hooks/useTransactions";
+import { useTransactionsContext } from "@/context/TransactionsContext";
 import { CustomerList } from "@/components/CustomerList";
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Search, X, TrendingDown } from "lucide-react";
 import { CustomerSummary } from "@/types";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function PayablesPage() {
-  const { session } = useAuth();
-  const { transactions, fetchTransactions, setTransactions } =
-    useTransactions(session);
+  const { transactions, loading } = useTransactionsContext();
   const [searchTerm, setSearchTerm] = useState("");
   const router = useRouter();
 
-  useEffect(() => {
-    if (session) {
-      fetchTransactions();
-    } else {
-      setTransactions([]);
-    }
-  }, [session, fetchTransactions, setTransactions]);
-
   const customerSummaries = useMemo(() => {
     const customerMap = new Map<string, any[]>();
-    transactions.forEach((transaction) => {
+
+    // STRICT FILTER: Only consider PAYABLE (negative) transactions
+    const payableTransactions = transactions.filter(
+      (t) => Number(t.amount) < 0
+    );
+
+    payableTransactions.forEach((transaction) => {
       const name = transaction.customerName.toLowerCase().trim();
       if (!customerMap.has(name)) customerMap.set(name, []);
       customerMap.get(name)!.push(transaction);
@@ -34,15 +29,14 @@ export default function PayablesPage() {
 
     const summaries: CustomerSummary[] = [];
     customerMap.forEach((txns) => {
-      // Calculate balance
+      // Calculate balance (will be sum of negatives)
       const totalBaki = txns
         .filter((t) => !t.isPaid)
-        .reduce((sum, t) => sum + t.amount, 0);
+        .reduce((sum, t) => sum + Number(t.amount || 0), 0);
 
-      // Only include if balance is NEGATIVE (Payable/Dena) OR settled but historically negative
-      const hasNegativeHistory = txns.some((t) => t.amount < 0);
-
-      if (totalBaki < 0 || (totalBaki === 0 && hasNegativeHistory)) {
+      // Include if there's any unpaid balance OR if there are any transactions at all (history)
+      // Since we already filtered for negatives, we just need to check if there are transactions
+      if (txns.length > 0) {
         const sortedTxns = txns.sort(
           (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
         );

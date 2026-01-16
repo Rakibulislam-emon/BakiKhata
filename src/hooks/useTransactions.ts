@@ -26,8 +26,8 @@ export const useTransactions = (session: any) => {
       const mappedTransactions: Transaction[] = data.map((t) => ({
         id: t.id,
         customerName: t.customer_name,
-        amount: t.amount,
-        isPaid: t.is_paid,
+        amount: Number(t.amount),
+        isPaid: Boolean(t.is_paid),
         date: t.date,
         notes: t.notes,
         createdAt: t.created_at,
@@ -83,8 +83,8 @@ export const useTransactions = (session: any) => {
       const newTransaction: Transaction = {
         id: data.id,
         customerName: data.customer_name,
-        amount: data.amount,
-        isPaid: data.is_paid,
+        amount: Number(data.amount),
+        isPaid: Boolean(data.is_paid),
         date: data.date,
         notes: data.notes,
         createdAt: data.created_at,

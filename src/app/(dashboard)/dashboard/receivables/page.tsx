@@ -1,33 +1,28 @@
 "use client";
 
-import { useAuth } from "@/hooks/useAuth";
-import { useTransactions } from "@/hooks/useTransactions";
+import { useTransactionsContext } from "@/context/TransactionsContext";
 import { CustomerList } from "@/components/CustomerList";
 import { FullPageLoader } from "@/components/ui/LoadingSpinner";
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Search, Plus, X, TrendingUp } from "lucide-react";
 import { CustomerSummary } from "@/types";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function CustomersPage() {
-  const { session } = useAuth();
-  const { transactions, loading, fetchTransactions, setTransactions } =
-    useTransactions(session);
+  const { transactions, loading } = useTransactionsContext();
   const [searchTerm, setSearchTerm] = useState("");
   const router = useRouter();
 
-  useEffect(() => {
-    if (session) {
-      fetchTransactions();
-    } else {
-      setTransactions([]);
-    }
-  }, [session, fetchTransactions, setTransactions]);
-
   const customerSummaries = useMemo(() => {
     const customerMap = new Map<string, any[]>();
-    transactions.forEach((transaction) => {
+
+    // STRICT FILTER: Only consider RECEIVABLE (positive) transactions
+    const receivableTransactions = transactions.filter(
+      (t) => Number(t.amount) > 0
+    );
+
+    receivableTransactions.forEach((transaction) => {
       const name = transaction.customerName.toLowerCase().trim();
       if (!customerMap.has(name)) customerMap.set(name, []);
       customerMap.get(name)!.push(transaction);
@@ -35,15 +30,13 @@ export default function CustomersPage() {
 
     const summaries: CustomerSummary[] = [];
     customerMap.forEach((txns) => {
-      // Calculate balance to filter for Paona (Receivables)
-      // Include if currently positive OR if settled (0) but historically had positive transactions
+      // Calculate balance (will be sum of positives)
       const totalBaki = txns
         .filter((t) => !t.isPaid)
-        .reduce((sum, t) => sum + t.amount, 0);
+        .reduce((sum, t) => sum + Number(t.amount || 0), 0);
 
-      const hasPositiveHistory = txns.some((t) => t.amount > 0);
-
-      if (totalBaki > 0 || (totalBaki === 0 && hasPositiveHistory)) {
+      // Include if there are transactions (since we pre-filtered for positives)
+      if (txns.length > 0) {
         const sortedTxns = txns.sort(
           (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
         );

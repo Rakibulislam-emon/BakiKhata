@@ -71,7 +71,7 @@ export const SummaryCards = ({
               <CheckCircle2 className="w-5 h-5" />
             </div>
             <span className="text-xs font-bold text-emerald-600 bg-emerald-100 px-2 py-0.5 rounded-full">
-              আদালকৃত
+              আদায়কৃত
             </span>
           </div>
           <p className="text-secondary-500 text-sm font-medium">মোট আদায়</p>
