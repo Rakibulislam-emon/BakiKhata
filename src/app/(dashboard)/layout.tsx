@@ -8,6 +8,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { Auth } from "@/components/Auth";
+import { TransactionsProvider } from "@/context/TransactionsContext";
 
 export default function DashboardLayout({
   children,
@@ -45,20 +46,22 @@ export default function DashboardLayout({
         <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-secondary-400/5 rounded-full blur-[120px]" />
       </div>
 
-      <Sidebar />
-      <MobileSidebar
-        isOpen={mobileMenuOpen}
-        onClose={() => setMobileMenuOpen(false)}
-      />
+      <TransactionsProvider>
+        <Sidebar />
+        <MobileSidebar
+          isOpen={mobileMenuOpen}
+          onClose={() => setMobileMenuOpen(false)}
+        />
 
-      <main className="md:ml-64 relative z-10 min-h-screen flex flex-col transition-all duration-300 pb-24 md:pb-0">
-        <Header onMenuClick={() => setMobileMenuOpen(true)} />
-        <div className="flex-1 p-4 md:p-8 max-w-7xl mx-auto w-full">
-          {children}
-        </div>
-      </main>
+        <main className="md:ml-64 relative z-10 min-h-screen flex flex-col transition-all duration-300 pb-24 md:pb-0">
+          <Header onMenuClick={() => setMobileMenuOpen(true)} />
+          <div className="flex-1 p-4 md:p-8 max-w-7xl mx-auto w-full">
+            {children}
+          </div>
+        </main>
 
-      <BottomNav />
+        <BottomNav />
+      </TransactionsProvider>
     </div>
   );
 }

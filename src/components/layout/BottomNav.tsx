@@ -1,12 +1,14 @@
 "use client";
 
-import { Home, Settings, TrendingDown, TrendingUp } from "lucide-react";
+import { Home, Settings, TrendingDown, TrendingUp, Plus } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
+import { useTransactionsContext } from "@/context/TransactionsContext";
 
 export function BottomNav() {
   const pathname = usePathname();
+  const { openAddModal } = useTransactionsContext();
 
   const navItems = [
     {
@@ -22,6 +24,12 @@ export function BottomNav() {
       href: "/dashboard/receivables",
       color: "bg-emerald-500",
       textColor: "text-emerald-500",
+    },
+    {
+      type: "fab", // Marker for FAB
+      href: "#",
+      label: "",
+      icon: Plus,
     },
     {
       icon: TrendingDown,
@@ -41,8 +49,21 @@ export function BottomNav() {
 
   return (
     <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-lg border-t border-secondary-200 pb-safe">
-      <nav className="flex justify-around items-center h-16">
-        {navItems.map((item) => {
+      <nav className="flex justify-around items-center h-16 relative">
+        {navItems.map((item, index) => {
+          if (item.type === "fab") {
+            return (
+              <div key="add-button" className="relative -top-5">
+                <button
+                  onClick={openAddModal}
+                  className="w-14 h-14 rounded-full bg-primary-600 text-white shadow-lg shadow-primary-600/30 flex items-center justify-center hover:scale-105 transition-transform active:scale-95"
+                >
+                  <Plus className="w-8 h-8" />
+                </button>
+              </div>
+            );
+          }
+
           const isActive = pathname === item.href;
           const Icon = item.icon;
 

@@ -1,74 +1,21 @@
 "use client";
 
-import { useAuth } from "@/hooks/useAuth";
-import { useTransactions } from "@/hooks/useTransactions";
+import { useTransactionsContext } from "@/context/TransactionsContext";
 import { SummaryCards } from "@/components/SummaryCards";
 import { RecentTransactions } from "@/components/RecentTransactions";
-import { TransactionForm } from "@/components/TransactionForm";
 import { FullPageLoader } from "@/components/ui/LoadingSpinner";
-import { useMemo, useEffect, useState } from "react";
+import { useMemo, useEffect } from "react";
 import { toast } from "sonner";
 import { Plus } from "lucide-react";
 
 export default function DashboardPage() {
-  const { session } = useAuth();
   const {
     transactions,
     loading,
-    fetchTransactions,
-    addTransaction,
     deleteTransaction,
     clearRecent,
-    setTransactions,
-  } = useTransactions(session);
-
-  const [showAddForm, setShowAddForm] = useState(false);
-  const [formData, setFormData] = useState({
-    name: "",
-    amount: "",
-    notes: "",
-    type: "lend" as "lend" | "borrow",
-  });
-
-  useEffect(() => {
-    if (session) {
-      fetchTransactions();
-    } else {
-      setTransactions([]);
-    }
-  }, [session, fetchTransactions, setTransactions]);
-
-  const handleAddTransaction = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!formData.name || !formData.amount) {
-      toast.error("অনুগ্রহ করে নাম এবং টাকার পরিমাণ দিন");
-      return;
-    }
-
-    const res = await addTransaction({
-      customerName: formData.name,
-      amount: parseFloat(formData.amount),
-      type: formData.type,
-      notes: formData.notes,
-    });
-
-    if (res.error) {
-      // res.error might be a string or object depending on previous edits
-      // ensuring it's handled gracefully
-      const errorMessage =
-        typeof res.error === "string" ? res.error : "Failed to add transaction";
-      toast.error(errorMessage);
-    } else {
-      toast.success("লেনদেন সফলভাবে যোগ করা হয়েছে");
-      setShowAddForm(false);
-      setFormData({
-        name: "",
-        amount: "",
-        notes: "",
-        type: "lend",
-      });
-    }
-  };
+    openAddModal,
+  } = useTransactionsContext();
 
   const totalBaki = useMemo(
     () =>
@@ -151,23 +98,15 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-8">
-      <div className="flex justify-end gap-4">
+      <div className="hidden md:flex justify-end gap-4">
         <button
-          onClick={() => setShowAddForm(true)}
+          onClick={openAddModal}
           className="btn-primary w-full md:w-auto py-4 md:py-2.5 text-lg md:text-sm font-semibold shadow-xl md:shadow-none justify-center active:scale-95 transition-all"
         >
           <Plus className="w-6 h-6 md:w-5 md:h-5" />
           নতুন লেনদেন
         </button>
       </div>
-
-      <TransactionForm
-        open={showAddForm}
-        onOpenChange={setShowAddForm}
-        formData={formData}
-        setFormData={setFormData}
-        onSubmit={handleAddTransaction}
-      />
 
       <SummaryCards
         totalBaki={totalBaki}
