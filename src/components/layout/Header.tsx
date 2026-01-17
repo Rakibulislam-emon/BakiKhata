@@ -27,7 +27,7 @@ export function Header({ onMenuClick }: HeaderProps) {
             href="/dashboard"
             className="text-lg md:text-xl font-bold text-secondary-800"
           >
-            স্বাগতম 👋
+            WELCOME 👋
           </Link>
           <p className="text-xs md:text-sm text-secondary-500 hidden sm:block">
             {session?.user.email}
