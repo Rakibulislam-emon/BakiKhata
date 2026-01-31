@@ -1,14 +1,9 @@
+"use client";
+
 import React from "react";
 import { Transaction } from "@/types";
 import { formatCurrency, formatDateTime } from "@/lib/utils";
-import {
-  Clock,
-  Trash2,
-  X,
-  ChevronRight,
-  TrendingDown,
-  TrendingUp,
-} from "lucide-react";
+import { Clock, X, ChevronRight, TrendingDown, TrendingUp } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 
@@ -28,40 +23,39 @@ export const RecentTransactions = ({
   if (transactions.length === 0) return null;
 
   return (
-    <div className="w-full px-4 mt-6 pb-32">
-      <div className="flex items-center justify-between mb-6 px-2">
-        <h3 className="text-xl font-bold text-slate-800 tracking-tight">
-          সাম্প্রতিক লেনদেন
+    <div className="w-full">
+      <h3 className="text-xl  text-center font-black text-slate-900 dark:text-white tracking-tight  gap-3">
+        সাম্প্রতিক অ্যাক্টিভিটি
+      </h3>
+      <div className="flex items-center justify-between mb-6">
+        <h3 className="text-xl  font-black text-slate-900 dark:text-white tracking-tight  gap-3">
+          <span className="px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-[10px] font-black uppercase tracking-widest">
+            সর্বশেষ ৫টি
+          </span>
         </h3>
-        <button
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
           onClick={onClearRecent}
-          className="p-2 bg-slate-100 text-slate-500 rounded-full hover:bg-red-50 hover:text-red-500 transition-colors"
-          title="সব মুছুন"
+          className="text-xs font-bold text- text-slate-400 hover:text-rose-500 transition-colors px-3 py-1 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-900/10"
         >
-          <X className="w-4 h-4" />
-        </button>
+          ক্লিয়ার করুন
+        </motion.button>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-3">
         <AnimatePresence mode="popLayout">
           {transactions.map((transaction, index) => {
             const isReceivable = transaction.amount >= 0;
             const isPaid = transaction.isPaid;
 
-            // Dynamic Styles based on status
-            const themeColor = isPaid
-              ? "bg-slate-500"
-              : isReceivable
-              ? "bg-emerald-500"
-              : "bg-red-500";
-
             const textColor = isPaid
               ? "text-slate-500"
               : isReceivable
-              ? "text-emerald-600"
-              : "text-red-600";
+                ? "text-emerald-600"
+                : "text-rose-600";
 
-            const Icon = isReceivable ? TrendingUp : TrendingDown;
+            const route = isReceivable ? "receivables" : "payables";
 
             return (
               <motion.div
@@ -70,70 +64,77 @@ export const RecentTransactions = ({
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95 }}
-                transition={{ delay: index * 0.05 }}
+                transition={{ delay: index * 0.08, duration: 0.4 }}
                 onClick={() => {
-                  const route = isReceivable ? "receivables" : "payables";
                   router.push(
                     `/dashboard/${route}/${encodeURIComponent(
-                      transaction.customerName
-                    )}`
+                      transaction.customerName,
+                    )}`,
                   );
                 }}
-                className="group relative bg-white rounded-[1.5rem] p-4 shadow-sm hover:shadow-md transition-all border border-slate-200/60 cursor-pointer overflow-hidden"
+                className="group relative flex items-center justify-between p-4 rounded-[1.5rem] bg-white dark:bg-slate-900/50 hover:bg-slate-50 dark:hover:bg-slate-800/80 border border-slate-100 dark:border-white/5 shadow-sm hover:shadow-xl hover:shadow-slate-200/50 dark:hover:shadow-none transition-all duration-300 cursor-pointer overflow-hidden"
               >
-                {/* Curved Side Indicator Bar */}
                 <div
-                  className={`absolute left-0 top-3 bottom-3 w-1.5 rounded-r-full ${themeColor}`}
+                  className="absolute inset-y-0 left-0 w-1 bg-gradient-to-b from-transparent via-current to-transparent opacity-0 group-hover:opacity-100 transition-opacity"
+                  style={{
+                    color: isPaid
+                      ? "#94a3b8"
+                      : isReceivable
+                        ? "#10b981"
+                        : "#f43f5e",
+                  }}
                 />
 
-                <div className="flex items-center justify-between pl-3">
-                  <div className="flex items-center gap-4 min-w-0">
-                    {/* Modern Squircle Avatar */}
-                    <div
-                      className={`w-14 h-14 rounded-2xl ${themeColor} flex items-center justify-center text-white text-xl font-bold border border-white shadow-sm shrink-0`}
-                    >
-                      {transaction.customerName.charAt(0).toUpperCase()}
-                    </div>
-
-                    <div className="min-w-0">
-                      <h4 className="text-base font-bold text-slate-800 leading-snug group-hover:text-indigo-600 transition-colors truncate">
-                        {transaction.customerName}
-                      </h4>
-                      {/* Refined Date Pill */}
-                      <div className="mt-1.5 inline-flex items-center gap-1.5 px-2 py-0.5 bg-slate-50 border border-slate-100 rounded-md">
-                        <Clock className="w-3 h-3 text-slate-400" />
-                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-tight">
-                          {formatDateTime(transaction.date)}
-                        </span>
-                      </div>
+                <div className="flex items-center gap-4 relative z-10">
+                  <div
+                    className={`w-12 h-12 rounded-2xl flex items-center justify-center text-base font-black transition-transform group-hover:scale-110 duration-500 ${
+                      isPaid
+                        ? "bg-slate-100 text-slate-500"
+                        : isReceivable
+                          ? "bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10"
+                          : "bg-rose-50 text-rose-600 dark:bg-rose-500/10"
+                    }`}
+                  >
+                    {transaction.customerName.charAt(0).toUpperCase()}
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-bold text-slate-800 dark:text-slate-200 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
+                      {transaction.customerName}
+                    </h4>
+                    <div className="flex items-center gap-2 text-[10px] font-medium text-slate-400 mt-0.5">
+                      <span className="flex items-center gap-1">
+                        <Clock className="w-3 h-3" />{" "}
+                        {formatDateTime(transaction.date)}
+                      </span>
+                      <span>•</span>
+                      <span className="truncate max-w-[120px]">
+                        {transaction.description || "কোনো বিবরণ নেই"}
+                      </span>
                     </div>
                   </div>
+                </div>
 
-                  <div className="flex items-center gap-4 pl-2 shrink-0">
-                    <div className="text-right">
-                      <div
-                        className={`text-lg font-bold font-mono tracking-tighter tabular-nums ${textColor}`}
-                      >
-                        {formatCurrency(Math.abs(transaction.amount))}
-                      </div>
-                      <div
-                        className={`flex items-center justify-end gap-1 text-[10px] font-bold uppercase tracking-wider mt-0.5 opacity-90 ${textColor}`}
-                      >
-                        {isPaid ? (
-                          <>পরিশোধিত</>
-                        ) : (
-                          <>
-                            <Icon className="w-3 h-3" />
-                            {isReceivable ? "পাওনা" : "দেনা"}
-                          </>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Navigation Arrow */}
-                    <div className="h-9 w-9 rounded-full bg-slate-50 flex items-center justify-center text-slate-300 group-hover:bg-slate-100 group-hover:text-slate-600 transition-colors">
-                      <ChevronRight className="w-5 h-5" />
-                    </div>
+                <div className="text-right flex flex-col items-end relative z-10">
+                  <div
+                    className={`text-base font-black font-mono tracking-tighter ${textColor} flex items-center gap-1`}
+                  >
+                    {isReceivable ? (
+                      <TrendingUp className="w-3 h-3" />
+                    ) : (
+                      <TrendingDown className="w-3 h-3" />
+                    )}
+                    {formatCurrency(transaction.amount)}
+                  </div>
+                  <div
+                    className={`text-[9px] font-black uppercase tracking-[0.1em] mt-1 px-2 py-0.5 rounded-md ${
+                      isPaid
+                        ? "bg-slate-100 text-slate-500 dark:bg-slate-800"
+                        : isReceivable
+                          ? "bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20"
+                          : "bg-rose-50 text-rose-600 dark:bg-rose-900/20"
+                    }`}
+                  >
+                    {isPaid ? "পরিশোধিত" : isReceivable ? "পাওনা" : "দেনা"}
                   </div>
                 </div>
               </motion.div>
