@@ -7,6 +7,7 @@ export interface Transaction {
   notes: string;
   createdAt: string;
   isHiddenFromRecent?: boolean;
+  description?: string;
 }
 
 export interface CustomerSummary {

@@ -99,34 +99,10 @@ export function Header({ onMenuClick }: HeaderProps) {
             <ChevronRight className="w-3 h-3" />
             <span className="text-primary-600">{getBreadcrumbs()}</span>
           </motion.div>
-
-          <motion.h1
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-lg md:text-xl font-bold bg-gradient-to-r from-secondary-900 to-secondary-600 bg-clip-text text-transparent flex items-center gap-2"
-          >
-            {greeting}
-            <span className="text-secondary-400 font-normal hidden sm:inline">
-              , {session?.user.email?.split("@")[0]}
-            </span>
-          </motion.h1>
         </div>
       </div>
 
       <div className="flex items-center gap-3 md:gap-6">
-        {/* Desktop Quick Add */}
-        <div className="hidden md:block">
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={openAddModal}
-            className="flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-full font-medium shadow-lg shadow-primary-600/20 hover:shadow-primary-600/40 transition-all"
-          >
-            <Plus className="w-4 h-4" />
-            <span>নতুন লেনদেন</span>
-          </motion.button>
-        </div>
-
         {/* Notifications */}
         <div className="relative group">
           <motion.button
