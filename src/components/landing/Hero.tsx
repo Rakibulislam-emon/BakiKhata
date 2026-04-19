@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useScroll, useTransform } from "framer-motion";
+import { m, useScroll, useTransform } from "framer-motion";
 import { ArrowRight, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { useRef } from "react";
@@ -13,14 +13,14 @@ export function Hero() {
     offset: ["start start", "end start"],
   });
 
-  const y = useTransform(scrollYProgress, [0, 1], [0, 200]);
-  const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
-  const scale = useTransform(scrollYProgress, [0, 0.5], [1, 0.9]);
+  const y = useTransform(scrollYProgress, [0, 1], [0, 100]);
+  const opacity = useTransform(scrollYProgress, [0, 0.8], [1, 1]); // Keeping it fully opaque
+  const scale = useTransform(scrollYProgress, [0, 0.5], [1, 1]); // Removing scale shrink
 
   return (
     <section
       ref={containerRef}
-      className="relative min-h-[120vh] flex flex-col items-center pt-32 lg:pt-48 overflow-hidden bg-white"
+      className="relative min-h-[120vh] flex flex-col items-center py-32 lg:pt-48 overflow-hidden bg-white"
     >
       {/* Aurora Background */}
       <div className="absolute inset-0 z-0 pointer-events-none">
@@ -31,7 +31,7 @@ export function Hero() {
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         {/* Badge */}
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
@@ -41,10 +41,10 @@ export function Hero() {
           <span className="text-sm font-semibold bg-gradient-to-r from-secondary-900 to-secondary-600 bg-clip-text text-transparent">
             নতুন প্রজন্মের জন্য তৈরি
           </span>
-        </motion.div>
+        </m.div>
 
         {/* Headline */}
-        <motion.h1
+        <m.h1
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{
@@ -58,10 +58,10 @@ export function Hero() {
           <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary-600 via-purple-600 to-primary-600 animate-gradient bg-300%">
             সব হিসাব এক সাথেই
           </span>
-        </motion.h1>
+        </m.h1>
 
         {/* Subtext */}
-        <motion.p
+        <m.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
@@ -69,10 +69,10 @@ export function Hero() {
         >
           বন্ধু-বান্ধব, মেস মেম্বার কিংবা ব্যবসার কাস্টমার - সবার সাথে লেনদেনের
           হিসাব রাখুন এখন এক অ্যাপেই। খাতা-কলমের ঝামেলা এড়িয়ে হোন স্মার্ট।
-        </motion.p>
+        </m.p>
 
         {/* Buttons */}
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
@@ -88,33 +88,36 @@ export function Hero() {
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </span>
           </Link>
-          <a
-            href="#features"
+          <button
+            onClick={() => {
+              const element = document.getElementById("features");
+              element?.scrollIntoView({ behavior: "smooth" });
+            }}
             className="px-8 py-4 bg-white/50 text-secondary-700 rounded-full font-semibold text-lg border border-white/60 shadow-lg hover:shadow-xl hover:bg-white hover:scale-105 transition-all duration-300"
           >
             ফিচার দেখুন
-          </a>
-        </motion.div>
+          </button>
+        </m.div>
 
         {/* Dashboard Preview Container with 3D Title Effect and Parallax */}
-        <motion.div
+        <m.div
           style={{ y, opacity, scale }}
           className="relative w-full max-w-6xl mx-auto"
         >
-          <div className="absolute inset-x-0 -top-20 h-[500px] bg-gradient-to-b from-primary-100/20 to-transparent blur-3xl -z-10" />
+          <div className="absolute inset-x-0 -top-20 h-[500px] bg-gradient-to-b from-primary-200/10 to-transparent blur-3xl -z-10" />
 
-          <div className="relative rounded-[2rem] border border-white/40 bg-white/20 backdrop-blur-sm p-2 md:p-4 shadow-2xl shadow-secondary-900/5 group">
-            <div className="absolute inset-0 rounded-[2rem] bg-gradient-to-br from-white/40 to-white/0 pointer-events-none" />
+          <div className="relative rounded-[2rem] border border-slate-200/60 bg-white p-2 md:p-3 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.1)] group">
+            <div className="absolute inset-0 rounded-[2rem] bg-gradient-to-br from-white to-slate-50 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
 
             {/* The Actual Dashboard Preview */}
-            <div className="rounded-xl md:rounded-2xl overflow-hidden border border-secondary-200/50 shadow-inner bg-white">
+            <div className="rounded-xl md:rounded-2xl overflow-hidden border border-slate-200 shadow-inner bg-white relative z-10">
               <DashboardPreview />
             </div>
 
             {/* Reflections/Glows */}
-            <div className="absolute -inset-1 rounded-[2.1rem] bg-gradient-to-br from-primary-500/20 to-purple-500/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 -z-10" />
+            <div className="absolute -inset-1 rounded-[2.1rem] bg-gradient-to-br from-primary-500/10 to-purple-500/10 blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 -z-10" />
           </div>
-        </motion.div>
+        </m.div>
       </div>
     </section>
   );

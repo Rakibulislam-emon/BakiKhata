@@ -9,7 +9,7 @@ import dynamic from "next/dynamic";
 import { toast } from "sonner";
 import { Plus, BarChart3, TrendingUp } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import {
   format,
   subDays,
@@ -250,7 +250,7 @@ export default function DashboardPage() {
       <div className="relative z-10 space-y-8">
         {/* Header Section */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -265,23 +265,12 @@ export default function DashboardPage() {
             <p className="text-slate-500 dark:text-slate-400 text-sm font-medium mt-1">
               আজকের হিসাব নিকাশ শুরু করুন
             </p>
-          </motion.div>
+          </m.div>
 
-          <motion.button
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={openAddModal}
-            className="group relative inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-2xl font-bold transition-all shadow-xl shadow-slate-200 dark:shadow-none hover:shadow-2xl hover:shadow-primary-500/20"
-          >
-            <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-primary-600/20 to-emerald-600/20 opacity-0 group-hover:opacity-100 transition-opacity" />
-            <Plus className="w-5 h-5" />
-            <span>নতুন লেনদেন</span>
-          </motion.button>
+
         </div>
 
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }}
@@ -293,9 +282,9 @@ export default function DashboardPage() {
             transactionCount={transactions.length}
             customerCount={customerSummaries}
           />
-        </motion.div>
+        </m.div>
 
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
@@ -387,7 +376,7 @@ export default function DashboardPage() {
               </div>
             </div>
           </div>
-        </motion.div>
+        </m.div>
       </div>
     </div>
   );

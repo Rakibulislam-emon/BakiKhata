@@ -3,7 +3,7 @@
 import { Home, Settings, TrendingDown, TrendingUp, Plus } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { useTransactionsContext } from "@/context/TransactionsContext";
 
 export function BottomNav() {
@@ -54,7 +54,7 @@ export function BottomNav() {
           if (item.type === "fab") {
             return (
               <div key="add-button" className="relative -top-6">
-                <motion.div
+                <m.div
                   className="absolute inset-0 bg-primary-500/30 rounded-full blur-xl scale-110"
                   animate={{
                     scale: [1.1, 1.25, 1.1],
@@ -66,14 +66,14 @@ export function BottomNav() {
                     ease: "easeInOut",
                   }}
                 />
-                <motion.button
+                <m.button
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
                   onClick={openAddModal}
                   className="relative w-14 h-14 rounded-full bg-gradient-to-br from-primary-500 to-primary-700 text-white shadow-[0_8px_25px_-5px_rgba(16,185,129,0.5)] flex items-center justify-center ring-4 ring-white dark:ring-slate-900"
                 >
                   <Plus className="w-8 h-8" />
-                </motion.button>
+                </m.button>
               </div>
             );
           }
@@ -88,7 +88,7 @@ export function BottomNav() {
               className="relative flex flex-col items-center justify-center w-full h-full group"
             >
               {isActive && (
-                <motion.div
+                <m.div
                   layoutId="bottomNavIndicator"
                   className={`absolute top-0 w-10 h-1 rounded-b-full ${item.color}`}
                   initial={false}
@@ -101,7 +101,7 @@ export function BottomNav() {
                   isActive ? "-translate-y-0.5" : ""
                 }`}
               >
-                <motion.div
+                <m.div
                   animate={isActive ? { scale: 1.2 } : { scale: 1 }}
                   className={`p-1.5 rounded-xl transition-all duration-300 ${
                     isActive ? item.color + "/10" : "transparent"
@@ -115,7 +115,7 @@ export function BottomNav() {
                     }`}
                     strokeWidth={isActive ? 2.5 : 1.5}
                   />
-                </motion.div>
+                </m.div>
                 <span
                   className={`text-[10px] font-bold tracking-tight transition-all duration-300 ${
                     isActive

@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import {
   ShieldCheck,
   Zap,
@@ -54,7 +54,7 @@ export function Features() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="text-center mb-16">
-          <motion.h2
+          <m.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
@@ -62,8 +62,8 @@ export function Features() {
             className="text-3xl md:text-5xl font-bold text-secondary-900 mb-6"
           >
             কেন বেছে নেবেন <span className="text-primary-600">বাকি খাতা?</span>
-          </motion.h2>
-          <motion.p
+          </m.h2>
+          <m.p
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
@@ -72,12 +72,12 @@ export function Features() {
           >
             আধুনিক জীবনের জন্য আধুনিক সব ফিচার। আপনার দৈনন্দিন হিসাব সহজ করতে
             আমরা আছি আপনার পাশে।
-          </motion.p>
+          </m.p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {features.map((feature, i) => (
-            <motion.div
+            <m.div
               key={i}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -113,7 +113,7 @@ export function Features() {
                   {feature.description}
                 </p>
               </div>
-            </motion.div>
+            </m.div>
           ))}
         </div>
       </div>

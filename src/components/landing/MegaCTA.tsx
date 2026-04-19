@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 
@@ -13,7 +13,7 @@ export function MegaCTA() {
       </div>
 
       <div className="max-w-4xl mx-auto px-4 relative z-10 text-center">
-        <motion.h2
+        <m.h2
           initial={{ opacity: 0, scale: 0.9 }}
           whileInView={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.6 }}
@@ -22,9 +22,9 @@ export function MegaCTA() {
         >
           হিসাব রাখার ধরন বদলানোর <br />
           <span className="text-primary-400">সময় এখনই</span>
-        </motion.h2>
+        </m.h2>
 
-        <motion.p
+        <m.p
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }}
@@ -33,9 +33,9 @@ export function MegaCTA() {
         >
           হাজারো মানুষ বাকি খাতা ব্যবহার করে তাদের হিসাব রাখার দুশ্চিন্তা
           কমিয়েছেন। আপনি কেন পিছিয়ে থাকবেন?
-        </motion.p>
+        </m.p>
 
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
@@ -51,7 +51,7 @@ export function MegaCTA() {
           <p className="mt-4 text-sm text-secondary-400 font-medium">
             ১ মিনিটেই সেটআপ • সম্পূর্ণ ফ্রি
           </p>
-        </motion.div>
+        </m.div>
       </div>
     </section>
   );

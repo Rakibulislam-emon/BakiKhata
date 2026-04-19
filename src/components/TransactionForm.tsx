@@ -7,7 +7,7 @@ import {
   TrendingUp,
   TrendingDown,
 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 
 interface TransactionFormProps {
   open: boolean;
@@ -44,7 +44,7 @@ export const TransactionForm = ({
       {open && (
         <div className="fixed inset-0 z-[9999] flex items-end sm:items-center justify-center p-0 sm:p-4">
           {/* Backdrop */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -53,39 +53,38 @@ export const TransactionForm = ({
           />
 
           {/* Modal Content */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0, scale: 0.95, y: 100 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 100 }}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="w-full max-w-lg bg-white dark:bg-slate-900 rounded-t-[3rem] sm:rounded-[2.5rem] p-8 pb-32 sm:pb-10 border-t sm:border border-white/20 dark:border-white/5 shadow-2xl relative overflow-visible z-10"
+            className="w-full max-w-lg bg-white dark:bg-slate-900 rounded-t-[2.5rem] sm:rounded-3xl p-5 sm:p-6 pb-24 sm:pb-6 border-t sm:border border-white/20 dark:border-white/5 shadow-2xl relative overflow-visible z-10"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Header */}
-            <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center justify-between mb-5">
               <h2 className="text-2xl font-black text-slate-900 dark:text-white flex items-center gap-3">
                 <div className="w-12 h-12 rounded-2xl bg-primary-500/10 flex items-center justify-center">
                   <Plus className="w-7 h-7 text-primary-500" />
                 </div>
                 নতুন লেনদেন
               </h2>
-              <motion.button
+              <m.button
                 whileHover={{ scale: 1.1, rotate: 90 }}
                 whileTap={{ scale: 0.9 }}
                 onClick={() => onOpenChange(false)}
                 className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500"
               >
                 <X className="w-5 h-5" />
-              </motion.button>
+              </m.button>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-4">
               {/* Type Toggle */}
               <div className="flex p-1.5 bg-slate-100 dark:bg-slate-800 rounded-2xl border border-slate-200/50 dark:border-white/5 shadow-inner">
                 <button
                   type="button"
                   onClick={() => setFormData({ ...formData, type: "lend" })}
-                  className={`flex-1 flex items-center justify-center gap-2 px-6 py-3.5 text-xs font-black rounded-xl transition-all duration-300 ${
+                  className={`flex-1 flex items-center justify-center gap-2 px-6 py-2.5 text-xs font-black rounded-xl transition-all duration-300 ${
                     formData.type === "lend"
                       ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/30"
                       : "text-slate-500 hover:text-emerald-500"
@@ -97,7 +96,7 @@ export const TransactionForm = ({
                 <button
                   type="button"
                   onClick={() => setFormData({ ...formData, type: "borrow" })}
-                  className={`flex-1 flex items-center justify-center gap-2 px-6 py-3.5 text-xs font-black rounded-xl transition-all duration-300 ${
+                  className={`flex-1 flex items-center justify-center gap-2 px-6 py-2.5 text-xs font-black rounded-xl transition-all duration-300 ${
                     formData.type === "borrow"
                       ? "bg-rose-500 text-white shadow-lg shadow-rose-500/30"
                       : "text-slate-500 hover:text-rose-500"
@@ -109,7 +108,7 @@ export const TransactionForm = ({
               </div>
 
               {/* Name Input */}
-              <div className="space-y-3">
+              <div className="space-y-1.5">
                 <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
                   গ্রাহকের নাম
                 </label>
@@ -122,14 +121,14 @@ export const TransactionForm = ({
                     onChange={(e) =>
                       setFormData({ ...formData, name: e.target.value })
                     }
-                    className="w-full h-14 pl-14 pr-6 rounded-2xl border-2 border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 focus:border-primary-500 outline-none text-sm font-bold transition-all"
+                    className="w-full h-12 pl-14 pr-6 rounded-2xl border-2 border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 focus:border-primary-500 outline-none text-sm font-bold transition-all"
                     placeholder="নাম লিখুন..."
                   />
                 </div>
               </div>
 
               {/* Amount Input */}
-              <div className="space-y-3">
+              <div className="space-y-1.5">
                 <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
                   টাকার পরিমাণ
                 </label>
@@ -146,14 +145,14 @@ export const TransactionForm = ({
                     onChange={(e) =>
                       setFormData({ ...formData, amount: e.target.value })
                     }
-                    className="w-full h-14 pl-12 pr-6 rounded-2xl border-2 border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 focus:border-primary-500 outline-none text-lg font-black font-mono transition-all"
+                    className="w-full h-12 pl-12 pr-6 rounded-2xl border-2 border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 focus:border-primary-500 outline-none text-lg font-black font-mono transition-all"
                     placeholder="0.00"
                   />
                 </div>
               </div>
 
               {/* Notes Input */}
-              <div className="space-y-3">
+              <div className="space-y-1.5">
                 <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
                   বিবরণ (নোট)
                 </label>
@@ -165,7 +164,7 @@ export const TransactionForm = ({
                     onChange={(e) =>
                       setFormData({ ...formData, notes: e.target.value })
                     }
-                    className="w-full h-14 pl-14 pr-6 rounded-2xl border-2 border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 focus:border-primary-500 outline-none text-sm font-bold transition-all"
+                    className="w-full h-12 pl-14 pr-6 rounded-2xl border-2 border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 focus:border-primary-500 outline-none text-sm font-bold transition-all"
                     placeholder="নোট লিখুন..."
                   />
                 </div>
@@ -173,18 +172,18 @@ export const TransactionForm = ({
 
               {/* Submit Button */}
               <div className="pt-4">
-                <motion.button
+                <m.button
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   type="submit"
-                  className="w-full h-14 bg-primary-500 hover:bg-primary-600 text-white font-black uppercase tracking-widest text-xs rounded-2xl shadow-lg shadow-primary-500/20 transition-all flex items-center justify-center gap-2"
+                  className="w-full h-12 bg-primary-500 hover:bg-primary-600 text-white font-black uppercase tracking-widest text-xs rounded-2xl shadow-lg shadow-primary-500/20 transition-all flex items-center justify-center gap-2"
                 >
                   <Plus className="w-5 h-5" />
                   নতুন লেনদেন যোগ করুন
-                </motion.button>
+                </m.button>
               </div>
             </form>
-          </motion.div>
+          </m.div>
         </div>
       )}
     </AnimatePresence>

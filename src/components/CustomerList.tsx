@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { CustomerSummary } from "@/types";
 import { formatCurrency, formatDateTime } from "@/lib/utils"; // Using formatDateTime for consistency
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import {
   Trash2,
   Users,
@@ -134,7 +134,7 @@ export const CustomerList = ({
 
           {/* Sort Dropdown - Minimal SaaS Style */}
           <div className="relative" ref={sortRef}>
-            <motion.button
+            <m.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => setIsSortOpen(!isSortOpen)}
@@ -147,11 +147,11 @@ export const CustomerList = ({
                   isSortOpen ? "rotate-180" : ""
                 }`}
               />
-            </motion.button>
+            </m.button>
 
             <AnimatePresence>
               {isSortOpen && (
-                <motion.div
+                <m.div
                   initial={{ opacity: 0, y: 12, scale: 0.95 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: 12, scale: 0.95 }}
@@ -180,7 +180,7 @@ export const CustomerList = ({
                       {getSortLabel(option)}
                     </button>
                   ))}
-                </motion.div>
+                </m.div>
               )}
             </AnimatePresence>
           </div>
@@ -238,7 +238,7 @@ export const CustomerList = ({
                 : "bg-rose-500";
 
             return (
-              <motion.div
+              <m.div
                 layout
                 key={customer.name}
                 initial={{ opacity: 0, y: 15 }}
@@ -320,14 +320,14 @@ export const CustomerList = ({
                     <ChevronRight className="w-5 h-5" />
                   </div>
                 </div>
-              </motion.div>
+              </m.div>
             );
           })}
         </AnimatePresence>
 
         {/* Empty State */}
         {filteredAndSortedCustomers.length === 0 && (
-          <motion.div
+          <m.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             className="py-20 text-center"
@@ -336,14 +336,14 @@ export const CustomerList = ({
               <Users className="w-10 h-10" />
             </div>
             <p className="text-slate-400 font-bold">কোনো গ্রাহক পাওয়া যায়নি</p>
-          </motion.div>
+          </m.div>
         )}
       </div>
 
       {/* Pagination (Simplified SaaS Style) */}
       {totalPages > 1 && (
         <div className="flex items-center justify-center gap-6 mt-12 pt-8 border-t border-slate-100 dark:border-white/5 relative z-10">
-          <motion.button
+          <m.button
             whileHover={{ x: -2 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
@@ -351,12 +351,12 @@ export const CustomerList = ({
             className="px-6 py-2.5 text-xs font-black uppercase tracking-widest text-slate-500 hover:text-primary-600 disabled:opacity-30 transition-all duration-300 bg-white/60 dark:bg-slate-800/60 backdrop-blur-md rounded-2xl border border-slate-200/60 dark:border-white/5"
           >
             পূর্ববর্তী
-          </motion.button>
+          </m.button>
           <span className="text-[10px] font-black font-mono text-slate-400 bg-slate-50 dark:bg-slate-800 px-4 py-1.5 rounded-full border border-slate-100 dark:border-white/5">
             {currentPage} <span className="opacity-30 mx-1">/</span>{" "}
             {totalPages}
           </span>
-          <motion.button
+          <m.button
             whileHover={{ x: 2 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
@@ -364,7 +364,7 @@ export const CustomerList = ({
             className="px-6 py-2.5 text-xs font-black uppercase tracking-widest text-slate-500 hover:text-primary-600 disabled:opacity-30 transition-all duration-300 bg-white/60 dark:bg-slate-800/60 backdrop-blur-md rounded-2xl border border-slate-200/60 dark:border-white/5"
           >
             পরবর্তী
-          </motion.button>
+          </m.button>
         </div>
       )}
     </div>
@@ -373,7 +373,7 @@ export const CustomerList = ({
 
 // Helper Components
 const FilterPill = ({ active, onClick, label, dotColor }: any) => (
-  <motion.button
+  <m.button
     whileHover={{ y: -2 }}
     whileTap={{ scale: 0.95 }}
     onClick={onClick}
@@ -385,7 +385,7 @@ const FilterPill = ({ active, onClick, label, dotColor }: any) => (
   >
     {dotColor && <div className={`w-2 h-2 rounded-full ${dotColor}`} />}
     {label}
-  </motion.button>
+  </m.button>
 );
 
 const ArrowIcon = () => (

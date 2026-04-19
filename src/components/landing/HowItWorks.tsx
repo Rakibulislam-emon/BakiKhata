@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { UserPlus, Wallet, BarChart3 } from "lucide-react";
 
 const steps = [
@@ -38,14 +38,14 @@ export function HowItWorks() {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="text-center mb-20">
-          <motion.h2
+          <m.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             className="text-3xl md:text-5xl font-bold text-secondary-900 mb-6"
           >
             কিভাবে কাজ করে?
-          </motion.h2>
+          </m.h2>
           <p className="text-lg text-secondary-600">
             মাত্র ৩টি সহজ ধাপে শুরু করুন
           </p>
@@ -56,7 +56,7 @@ export function HowItWorks() {
           <div className="hidden md:block absolute top-8 left-[16%] right-[16%] h-0.5 bg-gradient-to-r from-secondary-200 via-primary-200 to-secondary-200" />
 
           {steps.map((step, i) => (
-            <motion.div
+            <m.div
               key={i}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -75,7 +75,7 @@ export function HowItWorks() {
               <p className="text-secondary-600 leading-relaxed max-w-xs">
                 {step.description}
               </p>
-            </motion.div>
+            </m.div>
           ))}
         </div>
       </div>

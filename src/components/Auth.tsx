@@ -10,7 +10,7 @@ import {
   Eye,
   EyeOff,
 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 
 const getBengaliErrorMessage = (error: string) => {
   const err = error.toLowerCase();
@@ -78,14 +78,14 @@ export const Auth = () => {
       <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary-400/20 rounded-full blur-[100px] pointer-events-none" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-primary-600/20 rounded-full blur-[100px] pointer-events-none" />
 
-      <motion.div
+      <m.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
         className="max-w-md w-full glass-card p-8 relative z-10"
       >
         <div className="text-center mb-8">
-          <motion.div
+          <m.div
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ delay: 0.2 }}
@@ -96,7 +96,7 @@ export const Auth = () => {
             ) : (
               <UserPlus className="w-8 h-8" />
             )}
-          </motion.div>
+          </m.div>
           <h1 className="text-3xl font-bold text-secondary-900 mb-2">
             বাকি খাতা
           </h1>
@@ -110,7 +110,7 @@ export const Auth = () => {
         <form onSubmit={handleAuth} className="space-y-6">
           <AnimatePresence mode="wait">
             {error && (
-              <motion.div
+              <m.div
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
@@ -118,10 +118,10 @@ export const Auth = () => {
               >
                 <span className="w-1.5 h-1.5 rounded-full bg-red-500 flex-shrink-0" />
                 {error}
-              </motion.div>
+              </m.div>
             )}
             {message && (
-              <motion.div
+              <m.div
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
@@ -129,7 +129,7 @@ export const Auth = () => {
               >
                 <span className="w-1.5 h-1.5 rounded-full bg-primary-500 flex-shrink-0" />
                 {message}
-              </motion.div>
+              </m.div>
             )}
           </AnimatePresence>
 
@@ -214,7 +214,7 @@ export const Auth = () => {
               : "আগেই একাউন্ট আছে? লগ ইন করুন"}
           </button>
         </div>
-      </motion.div>
+      </m.div>
     </div>
   );
 };

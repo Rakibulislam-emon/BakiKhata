@@ -20,7 +20,7 @@ import {
   Calendar,
   Settings,
 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 
 interface CustomerDetailProps {
   customer: {
@@ -139,7 +139,7 @@ export const CustomerDetail = ({
   };
 
   return (
-    <motion.div
+    <m.div
       variants={containerVariants}
       initial="initial"
       animate="animate"
@@ -160,14 +160,14 @@ export const CustomerDetail = ({
         <header className="sticky top-0 z-40 bg-white/60 dark:bg-slate-900/60 backdrop-blur-2xl border-b border-white/20 dark:border-white/5 py-4 px-4 sm:px-6 mb-8">
           <div className="max-w-4xl mx-auto flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <motion.button
+              <m.button
                 whileHover={{ scale: 1.1, x: -2 }}
                 whileTap={{ scale: 0.9 }}
                 onClick={onBack}
                 className="w-10 h-10 rounded-xl bg-white dark:bg-slate-800 flex items-center justify-center text-slate-500 dark:text-slate-400 border border-slate-200/50 dark:border-white/5 shadow-sm hover:text-primary-500 transition-colors"
               >
                 <ChevronLeft className="w-6 h-6" />
-              </motion.button>
+              </m.button>
               <div>
                 <h1 className="text-2xl font-black text-slate-900 dark:text-white tracking-tighter leading-tight">
                   {customer.name}
@@ -180,7 +180,7 @@ export const CustomerDetail = ({
             </div>
 
             <div className="flex items-center gap-2">
-              <motion.button
+              <m.button
                 whileHover={{
                   scale: 1.05,
                   backgroundColor: "rgba(239, 68, 68, 0.1)",
@@ -191,19 +191,19 @@ export const CustomerDetail = ({
                 title="সব মুছুন"
               >
                 <Trash2 className="w-5 h-5" />
-              </motion.button>
+              </m.button>
             </div>
           </div>
         </header>
 
         {/* Hero Section & Bento Stats */}
-        <motion.div
+        <m.div
           variants={itemVariants}
           className="max-w-4xl mx-auto px-4 sm:px-6"
         >
           <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch">
             {/* Primary Balance Card */}
-            <motion.div
+            <m.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               className="md:col-span-8 bg-white/95 dark:bg-slate-900/50 backdrop-blur-2xl rounded-[2.5rem] p-8 md:p-12 border border-white/20 dark:border-white/5 shadow-2xl shadow-slate-200/50 dark:shadow-none relative overflow-hidden group"
@@ -217,11 +217,22 @@ export const CustomerDetail = ({
                   বর্তমান মোট বাকি
                 </p>
                 <div className="flex flex-col">
-                  <span
-                    className={`text-6xl md:text-7xl font-black font-mono tracking-tighter tabular-nums mb-4 drop-shadow-sm ${totals.totalBaki >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}
-                  >
-                    {formatCurrency(Math.abs(totals.totalBaki))}
-                  </span>
+                  <div className="flex items-center gap-4 mb-4">
+                    <span
+                      className={`text-6xl md:text-7xl font-black font-mono tracking-tighter tabular-nums drop-shadow-sm ${totals.totalBaki >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}
+                    >
+                      {formatCurrency(Math.abs(totals.totalBaki))}
+                    </span>
+                    <m.button
+                      whileHover={{ scale: 1.1, rotate: 90 }}
+                      whileTap={{ scale: 0.9 }}
+                      onClick={() => setShowAddForm(true)}
+                      className={`w-12 h-12 md:w-14 md:h-14 rounded-2xl flex items-center justify-center text-white shadow-xl transition-all ${totals.totalBaki >= 0 ? "bg-emerald-500 shadow-emerald-500/30 hover:bg-emerald-600" : "bg-rose-500 shadow-rose-500/30 hover:bg-rose-600"}`}
+                      title="নতুন লেনদেন"
+                    >
+                      <Plus className="w-8 h-8" />
+                    </m.button>
+                  </div>
                   <div className="flex items-center gap-3">
                     {totals.totalBaki >= 0 ? (
                       <span className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-black uppercase tracking-widest ring-1 ring-emerald-500/20">
@@ -237,11 +248,11 @@ export const CustomerDetail = ({
                   </div>
                 </div>
               </div>
-            </motion.div>
+            </m.div>
 
             {/* Secondary Stats Column */}
             <div className="md:col-span-4 grid grid-cols-2 md:grid-cols-1 gap-4">
-              <motion.div
+              <m.div
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.1 }}
@@ -253,9 +264,9 @@ export const CustomerDetail = ({
                 <p className="text-4xl font-black text-slate-900 dark:text-white font-mono">
                   {customer.transactions.length}
                 </p>
-              </motion.div>
+              </m.div>
 
-              <motion.div
+              <m.div
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.2 }}
@@ -267,13 +278,13 @@ export const CustomerDetail = ({
                 <p className="text-4xl font-black text-slate-900 dark:text-white font-mono">
                   {totals.paidCount}
                 </p>
-              </motion.div>
+              </m.div>
             </div>
           </div>
-        </motion.div>
+        </m.div>
 
         {/* Transaction Lists */}
-        <motion.div
+        <m.div
           variants={itemVariants}
           className="max-w-4xl mx-auto px-4 sm:px-6 mt-12 mb-20 space-y-12"
         >
@@ -286,20 +297,20 @@ export const CustomerDetail = ({
                   চলমান লেনদেন ({allUnpaid.length})
                 </h3>
               </div>
-              <motion.button
+              <m.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={onToggleAllPaid}
                 className="px-4 py-2 rounded-xl bg-primary-500/10 hover:bg-primary-500 text-primary-500 hover:text-white transition-all duration-300 text-[10px] font-black uppercase tracking-widest border border-primary-500/20"
               >
                 সব পরিশোধ করুন
-              </motion.button>
+              </m.button>
             </div>
 
             <div className="space-y-4">
               <AnimatePresence mode="popLayout">
                 {allUnpaid.map((transaction, index) => (
-                  <motion.div
+                  <m.div
                     layout
                     key={transaction.id}
                     initial={{ opacity: 0, y: 10 }}
@@ -314,7 +325,7 @@ export const CustomerDetail = ({
                     className="group relative bg-white/90 dark:bg-slate-900/40 backdrop-blur-xl rounded-[2rem] p-5 border border-slate-200/60 dark:border-white/5 flex items-center justify-between gap-6 shadow-sm hover:shadow-xl hover:shadow-slate-200/50 dark:hover:shadow-none transition-all duration-500"
                   >
                     {editingId === transaction.id ? (
-                      <motion.div
+                      <m.div
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: "auto" }}
                         exit={{ opacity: 0, height: 0 }}
@@ -437,11 +448,11 @@ export const CustomerDetail = ({
                             সেভ করুন
                           </button>
                         </div>
-                      </motion.div>
+                      </m.div>
                     ) : (
                       <>
                         <div className="flex items-center gap-6">
-                          <motion.button
+                          <m.button
                             whileTap={{ scale: 0.8 }}
                             onClick={() => onTogglePaid(transaction.id)}
                             className={`w-14 h-14 rounded-[1.25rem] flex items-center justify-center transition-all duration-500 shadow-sm ${
@@ -451,7 +462,7 @@ export const CustomerDetail = ({
                             }`}
                           >
                             <Square className="w-7 h-7" />
-                          </motion.button>
+                          </m.button>
 
                           <div className="flex flex-col gap-1">
                             <div className="flex items-baseline gap-3">
@@ -485,7 +496,7 @@ export const CustomerDetail = ({
 
                     {editingId !== transaction.id && (
                       <div className="flex items-center gap-1 ml-auto sm:opacity-0 sm:group-hover:opacity-100 transition-all duration-300 sm:transform sm:translate-x-2 sm:group-hover:translate-x-0">
-                        <motion.button
+                        <m.button
                           whileHover={{
                             scale: 1.1,
                             backgroundColor: "rgba(59, 130, 246, 0.08)",
@@ -495,8 +506,8 @@ export const CustomerDetail = ({
                           className="p-1.5 sm:p-2.5 text-slate-400 hover:text-primary-500 rounded-xl transition-colors"
                         >
                           <Settings className="w-4 h-4 sm:w-5 sm:h-5" />
-                        </motion.button>
-                        <motion.button
+                        </m.button>
+                        <m.button
                           whileHover={{
                             scale: 1.1,
                             backgroundColor: "rgba(239, 68, 68, 0.08)",
@@ -506,10 +517,10 @@ export const CustomerDetail = ({
                           className="p-1.5 sm:p-2.5 text-slate-400 hover:text-red-500 rounded-xl transition-colors"
                         >
                           <Trash2 className="w-4 h-4 sm:w-5 sm:h-5" />
-                        </motion.button>
+                        </m.button>
                       </div>
                     )}
-                  </motion.div>
+                  </m.div>
                 ))}
               </AnimatePresence>
             </div>
@@ -567,33 +578,18 @@ export const CustomerDetail = ({
               </div>
             </section>
           )}
-        </motion.div>
+        </m.div>
       </div>
 
       {/* Floating Action Button (FAB) */}
-      <AnimatePresence>
-        {!showAddForm && (
-          <motion.button
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0, opacity: 0 }}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            onClick={() => setShowAddForm(true)}
-            className="fixed bottom-24 right-6 z-[60] w-14 h-14 rounded-full bg-primary-500 text-white shadow-2xl shadow-primary-500/40 flex items-center justify-center group overflow-hidden sm:bottom-10 sm:right-10 sm:w-16 sm:h-16"
-          >
-            <motion.div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
-            <Plus className="w-8 h-8 relative z-10" />
-          </motion.button>
-        )}
-      </AnimatePresence>
+
 
       {/* Add Transaction Modal & Bottom Sheet */}
       <AnimatePresence>
         {showAddForm && (
           <div className="fixed inset-0 z-[9999] flex items-end sm:items-center justify-center p-0 sm:p-4">
             {/* Backdrop */}
-            <motion.div
+            <m.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -602,33 +598,32 @@ export const CustomerDetail = ({
             />
 
             {/* Modal Content */}
-            <motion.div
+            <m.div
               initial={{ opacity: 0, scale: 0.95, y: 100 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 100 }}
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="w-full max-w-lg bg-white dark:bg-slate-900 rounded-t-[3rem] sm:rounded-[2.5rem] p-8 pb-32 sm:pb-10 border-t sm:border border-white/20 dark:border-white/5 shadow-2xl relative overflow-visible z-10"
+              className="w-full max-w-lg bg-white dark:bg-slate-900 rounded-t-[2.5rem] sm:rounded-3xl p-5 sm:p-6 pb-24 sm:pb-6 border-t sm:border border-white/20 dark:border-white/5 shadow-2xl relative overflow-visible z-10"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="flex items-center justify-between mb-8">
+              <div className="flex items-center justify-between mb-5">
                 <h2 className="text-2xl font-black text-slate-900 dark:text-white flex items-center gap-3">
                   <div className="w-12 h-12 rounded-2xl bg-primary-500/10 flex items-center justify-center">
                     <Plus className="w-7 h-7 text-primary-500" />
                   </div>
                   নতুন লেনদেন
                 </h2>
-                <motion.button
+                <m.button
                   whileHover={{ scale: 1.1, rotate: 90 }}
                   whileTap={{ scale: 0.9 }}
                   onClick={() => setShowAddForm(false)}
                   className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500"
                 >
                   <X className="w-5 h-5" />
-                </motion.button>
+                </m.button>
               </div>
 
-              {/* Type Toggle */}
-              <div className="flex p-1.5 bg-slate-100 dark:bg-slate-800 rounded-2xl border border-slate-200/50 dark:border-white/5 shadow-inner mb-8">
+              <div className="flex p-1.5 bg-slate-100 dark:bg-slate-800 rounded-2xl border border-slate-200/50 dark:border-white/5 shadow-inner mb-5">
                 <button
                   type="button"
                   onClick={() => setFormData({ type: "lend" })}
@@ -644,7 +639,7 @@ export const CustomerDetail = ({
                 <button
                   type="button"
                   onClick={() => setFormData({ type: "borrow" })}
-                  className={`flex-1 flex items-center justify-center gap-2 px-6 py-3.5 text-xs font-black rounded-xl transition-all duration-300 ${
+                  className={`flex-1 flex items-center justify-center gap-2 px-6 py-2.5 text-xs font-black rounded-xl transition-all duration-300 ${
                     formData.type === "borrow"
                       ? "bg-rose-500 text-white shadow-lg shadow-rose-500/30"
                       : "text-slate-500 hover:text-rose-500"
@@ -660,7 +655,7 @@ export const CustomerDetail = ({
                   onSubmit(e);
                   setShowAddForm(false);
                 }}
-                className="space-y-6"
+                className="space-y-4"
               >
                 <div>
                   <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 ml-1">
@@ -678,13 +673,13 @@ export const CustomerDetail = ({
                         setFormData({ ...formData, amount: e.target.value })
                       }
                       placeholder="0.00"
-                      className="w-full pl-14 pr-8 py-5 rounded-[1.5rem] border-2 border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 focus:border-primary-500/50 focus:bg-white dark:focus:bg-slate-900 outline-none transition-all font-mono text-2xl font-black tracking-tighter"
+                      className="w-full pl-14 pr-8 py-3 rounded-2xl border-2 border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 focus:border-primary-500/50 focus:bg-white dark:focus:bg-slate-900 outline-none transition-all font-mono text-2xl font-black tracking-tighter"
                       required
                     />
                   </div>
                 </div>
 
-                <div>
+                <div className="space-y-1.5">
                   <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 ml-1">
                     বিবরণ (ঐচ্ছিক)
                   </label>
@@ -703,7 +698,7 @@ export const CustomerDetail = ({
                 </div>
 
                 <div className="pt-4">
-                  <motion.button
+                  <m.button
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     type="submit"
@@ -715,13 +710,13 @@ export const CustomerDetail = ({
                   >
                     <Plus className="w-6 h-6" />
                     যোগ করুন
-                  </motion.button>
+                  </m.button>
                 </div>
               </form>
-            </motion.div>
+            </m.div>
           </div>
         )}
       </AnimatePresence>
-    </motion.div>
+    </m.div>
   );
 };

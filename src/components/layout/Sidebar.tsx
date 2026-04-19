@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 
 const navItems = [
   { icon: Home, label: "ড্যাশবোর্ড", href: "/dashboard" },
@@ -23,7 +23,7 @@ export function Sidebar() {
   };
 
   return (
-    <motion.aside
+    <m.aside
       initial={{ x: -20, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       className="hidden md:flex flex-col w-64 h-screen fixed left-0 top-0 border-r border-white/20 bg-white/40 backdrop-blur-xl z-50 shadow-2xl shadow-primary-500/5"
@@ -87,6 +87,6 @@ export function Sidebar() {
           <span className="font-medium">লগআউট</span>
         </button>
       </div>
-    </motion.aside>
+    </m.aside>
   );
 }

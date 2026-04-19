@@ -12,6 +12,7 @@
     "incremental": true,
     "module": "esnext",
     "esModuleInterop": true,
+    "allowArbitraryExtensions": true,
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
