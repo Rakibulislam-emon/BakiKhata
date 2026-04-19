@@ -6,7 +6,7 @@ import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Search, X, TrendingDown, ChevronLeft } from "lucide-react";
 import { CustomerSummary } from "@/types";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 
 export default function PayablesPage() {
   const { transactions, loading } = useTransactionsContext();
@@ -68,11 +68,11 @@ export default function PayablesPage() {
       </div>
 
       <div className="relative z-10 space-y-6">
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="bg-white/40 dark:bg-slate-900/40 backdrop-blur-2xl rounded-[2.5rem] p-8 md:p-10 border border-white/20 dark:border-white/5 shadow-xl shadow-slate-200/50 dark:shadow-none relative overflow-visible group"
+          className="bg-white/40 dark:bg-slate-900/40 backdrop-blur-2xl rounded-3xl sm:rounded-[2.5rem] p-5 sm:p-8 border border-white/20 dark:border-white/5 shadow-xl shadow-slate-200/50 dark:shadow-none relative overflow-visible group"
         >
           {/* Animated Background Decoration */}
           <div className="absolute top-0 right-0 w-64 h-64 bg-rose-500/10 rounded-full blur-3xl -mr-20 -mt-20 group-hover:bg-rose-500/20 transition-all duration-1000 pointer-events-none" />
@@ -80,14 +80,14 @@ export default function PayablesPage() {
           <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-8">
             <div className="flex-1">
               <div className="flex items-center gap-4 mb-3">
-                <motion.button
+                <m.button
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
                   onClick={() => router.back()}
                   className="w-10 h-10 rounded-xl bg-white/50 dark:bg-slate-800/50 flex items-center justify-center text-slate-500 dark:text-slate-400 border border-slate-200/50 dark:border-white/5 shadow-sm hover:text-rose-500 transition-colors"
                 >
                   <ChevronLeft className="w-6 h-6" />
-                </motion.button>
+                </m.button>
                 <div className="w-12 h-12 rounded-2xl bg-rose-500/10 flex items-center justify-center ring-1 ring-rose-500/20 backdrop-blur-sm">
                   <TrendingDown className="w-6 h-6 text-rose-600" />
                 </div>
@@ -114,7 +114,7 @@ export default function PayablesPage() {
                 <AnimatePresence>
                   {searchTerm && (
                     <div className="absolute right-3 top-1/2 -translate-y-1/2 z-10">
-                      <motion.button
+                      <m.button
                         initial={{ opacity: 0, scale: 0.8 }}
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.8 }}
@@ -122,14 +122,14 @@ export default function PayablesPage() {
                         className="p-2 rounded-xl bg-slate-100 dark:bg-slate-700 text-slate-400 hover:text-rose-500 transition-colors shadow-sm"
                       >
                         <X className="w-4 h-4" />
-                      </motion.button>
+                      </m.button>
                     </div>
                   )}
                 </AnimatePresence>
               </div>
             </div>
           </div>
-        </motion.div>
+        </m.div>
 
         <CustomerList
           customerSummaries={customerSummaries}

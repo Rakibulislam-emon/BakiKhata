@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useScroll, useTransform } from "framer-motion";
+import { m, useScroll, useTransform } from "framer-motion";
 import { ArrowRight, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { useRef } from "react";
@@ -31,7 +31,7 @@ export function Hero() {
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         {/* Badge */}
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
@@ -41,10 +41,10 @@ export function Hero() {
           <span className="text-sm font-semibold bg-gradient-to-r from-secondary-900 to-secondary-600 bg-clip-text text-transparent">
             নতুন প্রজন্মের জন্য তৈরি
           </span>
-        </motion.div>
+        </m.div>
 
         {/* Headline */}
-        <motion.h1
+        <m.h1
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{
@@ -58,10 +58,10 @@ export function Hero() {
           <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary-600 via-purple-600 to-primary-600 animate-gradient bg-300%">
             সব হিসাব এক সাথেই
           </span>
-        </motion.h1>
+        </m.h1>
 
         {/* Subtext */}
-        <motion.p
+        <m.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
@@ -69,10 +69,10 @@ export function Hero() {
         >
           বন্ধু-বান্ধব, মেস মেম্বার কিংবা ব্যবসার কাস্টমার - সবার সাথে লেনদেনের
           হিসাব রাখুন এখন এক অ্যাপেই। খাতা-কলমের ঝামেলা এড়িয়ে হোন স্মার্ট।
-        </motion.p>
+        </m.p>
 
         {/* Buttons */}
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
@@ -97,10 +97,10 @@ export function Hero() {
           >
             ফিচার দেখুন
           </button>
-        </motion.div>
+        </m.div>
 
         {/* Dashboard Preview Container with 3D Title Effect and Parallax */}
-        <motion.div
+        <m.div
           style={{ y, opacity, scale }}
           className="relative w-full max-w-6xl mx-auto"
         >
@@ -117,7 +117,7 @@ export function Hero() {
             {/* Reflections/Glows */}
             <div className="absolute -inset-1 rounded-[2.1rem] bg-gradient-to-br from-primary-500/10 to-purple-500/10 blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 -z-10" />
           </div>
-        </motion.div>
+        </m.div>
       </div>
     </section>
   );

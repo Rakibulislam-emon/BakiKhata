@@ -4,7 +4,7 @@ import React from "react";
 import { Transaction } from "@/types";
 import { formatCurrency, formatDateTime } from "@/lib/utils";
 import { Clock, X, ChevronRight, TrendingDown, TrendingUp } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 
 interface RecentTransactionsProps {
@@ -33,14 +33,14 @@ export const RecentTransactions = ({
             সর্বশেষ ৫টি
           </span>
         </h3>
-        <motion.button
+        <m.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={onClearRecent}
           className="text-xs font-bold text- text-slate-400 hover:text-rose-500 transition-colors px-3 py-1 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-900/10"
         >
           ক্লিয়ার করুন
-        </motion.button>
+        </m.button>
       </div>
 
       <div className="space-y-3">
@@ -58,7 +58,7 @@ export const RecentTransactions = ({
             const route = isReceivable ? "receivables" : "payables";
 
             return (
-              <motion.div
+              <m.div
                 layout
                 key={transaction.id}
                 initial={{ opacity: 0, y: 10 }}
@@ -137,7 +137,7 @@ export const RecentTransactions = ({
                     {isPaid ? "পরিশোধিত" : isReceivable ? "পাওনা" : "দেনা"}
                   </div>
                 </div>
-              </motion.div>
+              </m.div>
             );
           })}
         </AnimatePresence>

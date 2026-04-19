@@ -10,7 +10,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { formatCurrency } from "@/lib/utils";
 
 interface AnalyticsData {
@@ -27,7 +27,7 @@ interface AnalyticsChartProps {
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
     return (
-      <motion.div
+      <m.div
         initial={{ opacity: 0, scale: 0.95, y: 10 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl border border-slate-200/50 dark:border-white/10 p-4 rounded-2xl shadow-2xl ring-1 ring-black/5 dark:ring-white/5 space-y-3"
@@ -61,7 +61,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
             </div>
           ))}
         </div>
-      </motion.div>
+      </m.div>
     );
   }
   return null;
@@ -153,6 +153,7 @@ export function AnalyticsChart({ data }: AnalyticsChartProps) {
               dataKey="date"
               axisLine={false}
               tickLine={false}
+              tickFormatter={(value) => typeof value === 'string' ? value.split(' ')[0] : value}
               tick={{ fill: "currentColor", fontSize: 9, fontWeight: 900 }}
               className="text-slate-400 uppercase tracking-tighter"
               dy={15}

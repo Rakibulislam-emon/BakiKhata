@@ -12,7 +12,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 
 const navItems = [
   { icon: Home, label: "ড্যাশবোর্ড", href: "/dashboard" },
@@ -40,7 +40,7 @@ export function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
       {isOpen && (
         <>
           {/* Backdrop */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -49,7 +49,7 @@ export function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
           />
 
           {/* Sidebar Panel */}
-          <motion.aside
+          <m.aside
             initial={{ x: "-100%", opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: "-100%", opacity: 0 }}
@@ -57,7 +57,7 @@ export function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
             className="fixed left-0 top-0 h-full w-[280px] bg-white/80 dark:bg-slate-900/80 backdrop-blur-2xl z-50 shadow-[20px_0_50px_-10px_rgba(0,0,0,0.1)] md:hidden border-r border-white/20 dark:border-white/5"
           >
             <div className="flex items-center justify-between p-8">
-              <motion.div
+              <m.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
@@ -68,14 +68,14 @@ export function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
                 <p className="text-[10px] uppercase tracking-widest text-slate-400 font-bold mt-1">
                   Premium Edition
                 </p>
-              </motion.div>
-              <motion.button
+              </m.div>
+              <m.button
                 whileTap={{ scale: 0.9 }}
                 onClick={onClose}
                 className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full text-slate-400 transition-colors"
               >
                 <X className="w-5 h-5" />
-              </motion.button>
+              </m.button>
             </div>
 
             <nav className="flex-1 px-4 space-y-1.5 mt-4">
@@ -105,7 +105,7 @@ export function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
                 }
 
                 return (
-                  <motion.div
+                  <m.div
                     key={item.href}
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
@@ -128,13 +128,13 @@ export function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
                         {item.label}
                       </span>
                     </Link>
-                  </motion.div>
+                  </m.div>
                 );
               })}
             </nav>
 
             <div className="absolute bottom-0 left-0 w-full p-6 border-t border-slate-100 dark:border-white/5">
-              <motion.button
+              <m.button
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.4 }}
@@ -143,9 +143,9 @@ export function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
               >
                 <LogOut className="w-5 h-5 text-slate-400 group-hover:text-rose-500" />
                 <span>লগআউট</span>
-              </motion.button>
+              </m.button>
             </div>
-          </motion.aside>
+          </m.aside>
         </>
       )}
     </AnimatePresence>
