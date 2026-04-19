@@ -68,6 +68,22 @@ export const useTransactions = (session: any) => {
       is_hidden_from_recent: false,
     };
 
+    // 1. Optimistic Update
+    const tempId = `temp-${Date.now()}`;
+    const optimisticTransaction: Transaction = {
+      id: tempId,
+      customerName: transactionData.customer_name,
+      amount: Number(transactionData.amount),
+      isPaid: false,
+      date: transactionData.date,
+      notes: transactionData.notes,
+      createdAt: transactionData.created_at,
+      isHiddenFromRecent: false,
+    };
+    
+    setTransactions((prev) => [optimisticTransaction, ...prev]);
+
+    // 2. Network Request
     const { data, error } = await supabase
       .from("transactions")
       .insert([transactionData])
@@ -76,6 +92,8 @@ export const useTransactions = (session: any) => {
 
     if (error) {
       console.error("Error adding transaction:", error);
+      // Revert if error
+      setTransactions((prev) => prev.filter((t) => t.id !== tempId));
       return { error: error.message };
     }
 
@@ -90,7 +108,8 @@ export const useTransactions = (session: any) => {
         createdAt: data.created_at,
         isHiddenFromRecent: data.is_hidden_from_recent,
       };
-      setTransactions((prev) => [newTransaction, ...prev]);
+      // Replace optimistic transaction with real one containing actual ID
+      setTransactions((prev) => prev.map((t) => (t.id === tempId ? newTransaction : t)));
       return { data: newTransaction };
     }
     return { error: "Unknown error" };

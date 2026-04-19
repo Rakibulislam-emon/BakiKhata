@@ -9,7 +9,7 @@ import dynamic from "next/dynamic";
 import { toast } from "sonner";
 import { Plus, BarChart3, TrendingUp } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import { m } from "framer-motion";
+import { m } from "@/lib/framer";
 import {
   format,
   subDays,

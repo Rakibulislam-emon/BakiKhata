@@ -1,6 +1,6 @@
 "use client";
 
-import { m, useScroll, useTransform } from "framer-motion";
+import { m, useScroll, useTransform } from "@/lib/framer";
 import { ArrowRight, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { useRef } from "react";

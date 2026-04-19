@@ -10,7 +10,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import { m } from "framer-motion";
+import { m } from "@/lib/framer";
 import { formatCurrency } from "@/lib/utils";
 
 interface AnalyticsData {

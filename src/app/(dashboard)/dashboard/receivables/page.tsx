@@ -7,7 +7,7 @@ import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Search, Plus, X, TrendingUp, ChevronLeft } from "lucide-react";
 import { CustomerSummary } from "@/types";
-import { m, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "@/lib/framer";
 
 export default function CustomersPage() {
   const { transactions, loading } = useTransactionsContext();

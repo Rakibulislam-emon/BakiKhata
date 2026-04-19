@@ -10,7 +10,7 @@ import {
   Eye,
   EyeOff,
 } from "lucide-react";
-import { m, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "@/lib/framer";
 
 const getBengaliErrorMessage = (error: string) => {
   const err = error.toLowerCase();

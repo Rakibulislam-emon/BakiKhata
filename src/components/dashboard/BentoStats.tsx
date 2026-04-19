@@ -1,7 +1,7 @@
 "use client";
 
 import { formatCurrency } from "@/lib/utils";
-import { m } from "framer-motion";
+import { m } from "@/lib/framer";
 import {
   ArrowDownLeft,
   ArrowUpRight,

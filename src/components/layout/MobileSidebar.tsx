@@ -12,7 +12,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
-import { m, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "@/lib/framer";
 
 const navItems = [
   { icon: Home, label: "ড্যাশবোর্ড", href: "/dashboard" },
