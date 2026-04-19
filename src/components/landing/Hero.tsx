@@ -1,27 +1,13 @@
 "use client";
 
-import { m, useScroll, useTransform } from "@/lib/framer";
+import { m } from "@/lib/framer";
 import { ArrowRight, Sparkles } from "lucide-react";
 import Link from "next/link";
-import { useRef } from "react";
 import { DashboardPreview } from "./DashboardPreview";
 
 export function Hero() {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end start"],
-  });
-
-  const y = useTransform(scrollYProgress, [0, 1], [0, 100]);
-  const opacity = useTransform(scrollYProgress, [0, 0.8], [1, 1]); // Keeping it fully opaque
-  const scale = useTransform(scrollYProgress, [0, 0.5], [1, 1]); // Removing scale shrink
-
   return (
-    <section
-      ref={containerRef}
-      className="relative min-h-[120vh] flex flex-col items-center py-32 lg:pt-48 overflow-hidden bg-white"
-    >
+    <section className="relative min-h-[120vh] flex flex-col items-center py-32 lg:pt-48 overflow-hidden bg-white">
       {/* Aurora Background */}
       <div className="absolute inset-0 z-0 pointer-events-none">
         <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-primary-200/40 rounded-full blur-[120px] mix-blend-multiply animate-pulse" />
@@ -99,11 +85,8 @@ export function Hero() {
           </button>
         </m.div>
 
-        {/* Dashboard Preview Container with 3D Title Effect and Parallax */}
-        <m.div
-          style={{ y, opacity, scale }}
-          className="relative w-full max-w-6xl mx-auto"
-        >
+        {/* Dashboard Preview Container */}
+        <div className="relative w-full max-w-6xl mx-auto mt-20">
           <div className="absolute inset-x-0 -top-20 h-[500px] bg-gradient-to-b from-primary-200/10 to-transparent blur-3xl -z-10" />
 
           <div className="relative rounded-[2rem] border border-slate-200/60 bg-white p-2 md:p-3 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.1)] group">
@@ -117,7 +100,7 @@ export function Hero() {
             {/* Reflections/Glows */}
             <div className="absolute -inset-1 rounded-[2.1rem] bg-gradient-to-br from-primary-500/10 to-purple-500/10 blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 -z-10" />
           </div>
-        </m.div>
+        </div>
       </div>
     </section>
   );
