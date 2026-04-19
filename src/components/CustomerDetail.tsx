@@ -20,7 +20,7 @@ import {
   Calendar,
   Settings,
 } from "lucide-react";
-import { m, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "@/lib/framer";
 
 interface CustomerDetailProps {
   customer: {

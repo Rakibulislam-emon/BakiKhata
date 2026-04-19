@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { CustomerSummary } from "@/types";
 import { formatCurrency, formatDateTime } from "@/lib/utils"; // Using formatDateTime for consistency
-import { m, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "@/lib/framer";
 import {
   Trash2,
   Users,

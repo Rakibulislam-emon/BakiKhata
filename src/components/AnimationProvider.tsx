@@ -1,6 +1,6 @@
 "use client";
 
-import { LazyMotion, domAnimation } from "framer-motion";
+import { LazyMotion, domAnimation } from "@/lib/framer";
 import { ReactNode } from "react";
 
 export function AnimationProvider({ children }: { children: ReactNode }) {

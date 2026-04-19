@@ -1,6 +1,6 @@
 "use client";
 
-import { m } from "framer-motion";
+import { m } from "@/lib/framer";
 import { UserPlus, Wallet, BarChart3 } from "lucide-react";
 
 const steps = [

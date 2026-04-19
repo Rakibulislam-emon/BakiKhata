@@ -4,7 +4,7 @@ import React from "react";
 import { Transaction } from "@/types";
 import { formatCurrency, formatDateTime } from "@/lib/utils";
 import { Clock, X, ChevronRight, TrendingDown, TrendingUp } from "lucide-react";
-import { m, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "@/lib/framer";
 import { useRouter } from "next/navigation";
 
 interface RecentTransactionsProps {
