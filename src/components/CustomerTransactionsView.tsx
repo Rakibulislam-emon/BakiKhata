@@ -2,7 +2,7 @@
 
 import { useTransactionsContext } from "@/context/TransactionsContext";
 import { CustomerDetail } from "@/components/CustomerDetail";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { toast } from "sonner";
 
@@ -17,7 +17,11 @@ export const CustomerTransactionsView = ({
   const router = useRouter();
 
   // Decode the customer name from the URL
-  const customerName = decodeURIComponent(params.id as string);
+  const customerName = useMemo(() => decodeURIComponent(params.id as string), [params.id]);
+
+  useEffect(() => {
+    if (backPath) router.prefetch(backPath);
+  }, [backPath, router]);
 
   const {
     transactions,
@@ -46,7 +50,7 @@ export const CustomerTransactionsView = ({
   // Derived Data
   const selectedCustomerData = useMemo(() => {
     const txns = transactions.filter(
-      (t) => t.customerName.toLowerCase() === customerName.toLowerCase()
+      (t) => t.customerName.localeCompare(customerName, undefined, { sensitivity: 'accent' }) === 0
     );
 
     return {

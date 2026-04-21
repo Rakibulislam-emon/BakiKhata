@@ -33,10 +33,10 @@ export function BottomNav() {
     },
     {
       icon: TrendingDown,
-      label: "দেনা",
+      label: "জমা",
       href: "/dashboard/payables",
-      color: "bg-red-500",
-      textColor: "text-red-500",
+      color: "bg-indigo-600",
+      textColor: "text-indigo-600",
     },
     {
       icon: Settings,

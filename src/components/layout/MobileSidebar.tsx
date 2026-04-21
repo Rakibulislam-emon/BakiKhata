@@ -17,7 +17,7 @@ import { m, AnimatePresence } from "@/lib/framer";
 const navItems = [
   { icon: Home, label: "ড্যাশবোর্ড", href: "/dashboard" },
   { icon: TrendingUp, label: "পাওনা তালিকা", href: "/dashboard/receivables" },
-  { icon: TrendingDown, label: "দেনা তালিকা", href: "/dashboard/payables" },
+  { icon: TrendingDown, label: "জমা তালিকা", href: "/dashboard/payables" },
   { icon: Settings, label: "সেটিংস", href: "/dashboard/settings" },
 ];
 
@@ -98,10 +98,10 @@ export function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
                   iconInactive = "text-emerald-500 transition-colors";
                 } else if (item.href === "/dashboard/payables") {
                   activeClass =
-                    "bg-rose-500 text-white shadow-lg shadow-rose-500/30";
+                    "bg-indigo-600 text-white shadow-lg shadow-indigo-600/30";
                   inactiveClass =
-                    "text-slate-600 dark:text-slate-400 hover:bg-rose-50 dark:hover:bg-rose-900/10 hover:text-rose-600";
-                  iconInactive = "text-rose-500 transition-colors";
+                    "text-slate-600 dark:text-slate-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/10 hover:text-indigo-600";
+                  iconInactive = "text-indigo-500 transition-colors";
                 }
 
                 return (

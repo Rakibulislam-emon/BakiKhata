@@ -49,7 +49,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
                   style={{ backgroundColor: entry.color }}
                 />
                 <span className="text-xs font-bold text-slate-600 dark:text-slate-300">
-                  {entry.name === "receivable" ? "পাওনা" : "দেনা"}:
+                  {entry.name === "receivable" ? "পাওনা" : "জমা"}:
                 </span>
               </span>
               <span
@@ -113,15 +113,15 @@ export function AnalyticsChart({ data }: AnalyticsChartProps) {
           onClick={() => toggleSeries("payable")}
           className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border-2 transition-all duration-300 ${
             activeSeries.payable
-              ? "bg-rose-500/10 border-rose-500/20 text-rose-600 dark:text-rose-400 shadow-sm"
+              ? "bg-indigo-500/10 border-indigo-500/20 text-indigo-600 dark:text-indigo-400 shadow-sm"
               : "bg-slate-100 dark:bg-slate-800/50 border-transparent text-slate-500 dark:text-slate-400"
           }`}
         >
           <div
-            className={`w-2 h-2 rounded-full ${activeSeries.payable ? "bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.5)]" : "bg-slate-300 dark:bg-slate-600"}`}
+            className={`w-2 h-2 rounded-full ${activeSeries.payable ? "bg-indigo-500 shadow-[0_0_8px_rgba(79,70,229,0.5)]" : "bg-slate-300 dark:bg-slate-600"}`}
           />
           <span className="text-[9px] font-black uppercase tracking-widest">
-            দেনা
+            জমা
           </span>
         </button>
       </div>
@@ -138,8 +138,8 @@ export function AnalyticsChart({ data }: AnalyticsChartProps) {
                 <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
               </linearGradient>
               <linearGradient id="colorPayable" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#f43f5e" stopOpacity={0.3} />
-                <stop offset="95%" stopColor="#f43f5e" stopOpacity={0} />
+                <stop offset="5%" stopColor="#4f46e5" stopOpacity={0.3} />
+                <stop offset="95%" stopColor="#4f46e5" stopOpacity={0} />
               </linearGradient>
             </defs>
             <CartesianGrid
@@ -198,7 +198,7 @@ export function AnalyticsChart({ data }: AnalyticsChartProps) {
               type="monotone"
               dataKey="payable"
               name="payable"
-              stroke="#f43f5e"
+              stroke="#4f46e5"
               strokeWidth={3}
               fillOpacity={1}
               fill="url(#colorPayable)"
@@ -207,7 +207,7 @@ export function AnalyticsChart({ data }: AnalyticsChartProps) {
               hide={!activeSeries.payable}
               activeDot={{
                 r: 6,
-                stroke: "#f43f5e",
+                stroke: "#4f46e5",
                 strokeWidth: 2,
                 fill: "#fff",
               }}

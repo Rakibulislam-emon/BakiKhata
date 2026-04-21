@@ -6,7 +6,7 @@ import { FullPageLoader } from "@/components/ui/LoadingSpinner";
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Search, Plus, X, TrendingUp, ChevronLeft } from "lucide-react";
-import { CustomerSummary } from "@/types";
+import { CustomerSummary, Transaction } from "@/types";
 import { m, AnimatePresence } from "@/lib/framer";
 
 export default function CustomersPage() {
@@ -15,28 +15,24 @@ export default function CustomersPage() {
   const router = useRouter();
 
   const customerSummaries = useMemo(() => {
-    const customerMap = new Map<string, any[]>();
+    const customerMap = new Map<string, Transaction[]>();
 
-    // STRICT FILTER: Only consider RECEIVABLE (positive) transactions
-    const receivableTransactions = transactions.filter(
-      (t) => Number(t.amount) > 0,
-    );
-
-    receivableTransactions.forEach((transaction) => {
+    // Process all transactions to get accurate balances
+    transactions.forEach((transaction) => {
       const name = transaction.customerName.toLowerCase().trim();
       if (!customerMap.has(name)) customerMap.set(name, []);
       customerMap.get(name)!.push(transaction);
     });
 
     const summaries: CustomerSummary[] = [];
-    customerMap.forEach((txns) => {
-      // Calculate balance (will be sum of positives)
+    customerMap.forEach((txns, name) => {
+      // Calculate net unpaid balance (sum of all unpaid transactions: +/-)
       const totalBaki = txns
         .filter((t) => !t.isPaid)
         .reduce((sum, t) => sum + Number(t.amount || 0), 0);
 
-      // Include if there are transactions (since we pre-filtered for positives)
-      if (txns.length > 0) {
+      // In the Receivables list, we show customers who have a positive balance (> 0)
+      if (totalBaki > 0) {
         const sortedTxns = txns.sort(
           (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
         );
@@ -140,6 +136,7 @@ export default function CustomersPage() {
           customerSummaries={customerSummaries}
           searchTerm={searchTerm}
           onSelectCustomer={handleSelectCustomer}
+          baseHref="/dashboard/receivables"
         />
       </div>
     </div>

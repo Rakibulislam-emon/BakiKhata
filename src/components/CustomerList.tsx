@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { CustomerSummary } from "@/types";
 import { formatCurrency, formatDateTime } from "@/lib/utils"; // Using formatDateTime for consistency
 import { m, AnimatePresence } from "@/lib/framer";
+import { useRouter } from "next/navigation";
 import {
   Trash2,
   Users,
@@ -22,6 +23,7 @@ interface CustomerListProps {
   customerSummaries: CustomerSummary[];
   searchTerm: string;
   onSelectCustomer: (name: string) => void;
+  baseHref?: string;
 }
 
 type FilterStatus = "all" | "unpaid" | "paid";
@@ -31,7 +33,9 @@ export const CustomerList = ({
   customerSummaries,
   searchTerm,
   onSelectCustomer,
+  baseHref,
 }: CustomerListProps) => {
+  const router = useRouter();
   const [filterStatus, setFilterStatus] = useState<FilterStatus>("all");
   const [sortBy, setSortBy] = useState<SortOption>("recent");
   const [isSortOpen, setIsSortOpen] = useState(false);
@@ -117,6 +121,14 @@ export const CustomerList = ({
     (currentPage - 1) * ITEMS_PER_PAGE,
     currentPage * ITEMS_PER_PAGE,
   );
+
+  useEffect(() => {
+    if (baseHref) {
+      paginatedCustomers.forEach((customer) => {
+        router.prefetch(`${baseHref}/${encodeURIComponent(customer.name)}`);
+      });
+    }
+  }, [paginatedCustomers, baseHref, router]);
 
   return (
     <div className="w-full mt-6 pb-24">
@@ -223,19 +235,19 @@ export const CustomerList = ({
               ? "text-emerald-600 dark:text-emerald-400"
               : balance > 0
                 ? "text-emerald-600 dark:text-emerald-400"
-                : "text-rose-600 dark:text-rose-400";
+                : "text-indigo-600 dark:text-indigo-400";
 
             const statusBg = isPaidOff
               ? "bg-emerald-50 dark:bg-emerald-500/10"
               : balance > 0
                 ? "bg-emerald-50 dark:bg-emerald-500/10 border-emerald-100 dark:border-emerald-500/20"
-                : "bg-rose-50 dark:bg-rose-500/10 border-rose-100 dark:border-rose-500/20";
+                : "bg-indigo-50 dark:bg-indigo-500/10 border-indigo-100 dark:border-indigo-500/20";
 
             const barColor = isPaidOff
               ? "bg-emerald-400"
               : balance > 0
                 ? "bg-emerald-500"
-                : "bg-rose-500";
+                : "bg-indigo-600";
 
             return (
               <m.div
@@ -296,7 +308,7 @@ export const CustomerList = ({
                           </span>
                         ) : (
                           <span
-                            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl ${balance > 0 ? "bg-emerald-100/50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 ring-emerald-500/20" : "bg-rose-100/50 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400 ring-rose-500/20"} text-[10px] font-black uppercase tracking-widest ring-1`}
+                            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl ${balance > 0 ? "bg-emerald-100/50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 ring-emerald-500/20" : "bg-indigo-100/50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 ring-indigo-500/20"} text-[10px] font-black uppercase tracking-widest ring-1`}
                           >
                             {balance > 0 ? (
                               <>
@@ -306,7 +318,7 @@ export const CustomerList = ({
                             ) : (
                               <>
                                 <TrendingDown className="w-3.5 h-3.5" />
-                                দেনা
+                                জমা
                               </>
                             )}
                           </span>
