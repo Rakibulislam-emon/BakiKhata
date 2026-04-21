@@ -155,35 +155,45 @@ export default function DashboardPage() {
     };
   }, [transactions, granularity]);
 
-  const { totalBaki, totalDena } = useMemo(() => {
-    const customerMap = new Map<string, number>();
-
-    transactions.forEach((t) => {
-      if (t.isPaid) return;
-      const name = t.customerName.toLowerCase().trim();
-      const current = customerMap.get(name) || 0;
-      customerMap.set(name, current + Number(t.amount || 0));
-    });
-
+  const stats = useMemo(() => {
+    const today = startOfDay(new Date());
     let baki = 0;
     let dena = 0;
+    let tBaki = 0;
+    let tJoma = 0;
+    let tPaid = 0;
 
-    customerMap.forEach((balance) => {
-      if (balance > 0) baki += balance;
-      else if (balance < 0) dena += balance;
+    transactions.forEach((t) => {
+      const isToday = isSameDay(new Date(t.date), today);
+      const amount = Number(t.amount || 0);
+
+      // Overall Unpaid Stats
+      if (!t.isPaid) {
+        if (amount > 0) baki += amount;
+        else dena += amount;
+      }
+
+      // Today's Stats
+      if (isToday) {
+        if (t.isPaid && amount > 0) {
+          // tPaid logic removed
+        } else if (amount > 0) {
+          tBaki += amount;
+        } else {
+          tJoma += Math.abs(amount);
+        }
+      }
     });
 
-    return { totalBaki: baki, totalDena: dena };
+    return {
+      totalBaki: baki,
+      totalDena: dena,
+      todayBaki: tBaki,
+      todayJoma: tJoma,
+    };
   }, [transactions]);
 
-  const todayPaid = useMemo(() => {
-    const today = startOfDay(new Date());
-    return transactions
-      .filter(
-        (t) => t.isPaid && t.amount > 0 && isSameDay(new Date(t.date), today),
-      )
-      .reduce((sum, t) => sum + t.amount, 0);
-  }, [transactions]);
+  const { totalBaki, totalDena, todayBaki, todayJoma } = stats;
 
   const customerSummaries = useMemo(() => {
     const customerMap = new Map<string, any[]>();
@@ -283,7 +293,8 @@ export default function DashboardPage() {
           <BentoStats
             totalBaki={totalBaki}
             totalDena={totalDena}
-            totalPaid={todayPaid}
+            todayBaki={todayBaki}
+            todayJoma={todayJoma}
             transactionCount={transactions.length}
             customerCount={customerSummaries}
           />

@@ -13,7 +13,8 @@ import {
 interface BentoStatsProps {
   totalBaki: number;
   totalDena: number;
-  totalPaid: number;
+  todayBaki: number;
+  todayJoma: number;
   transactionCount: number;
   customerCount: number;
 }
@@ -21,23 +22,17 @@ interface BentoStatsProps {
 export function BentoStats({
   totalBaki,
   totalDena,
-  totalPaid,
+  todayBaki,
+  todayJoma,
   transactionCount,
   customerCount,
 }: BentoStatsProps) {
-  // Logic check: totalDena is usually negative in the system (e.g. -500).
-  // Net Balance (what I actually HAVE or will have) = (Total Receivable) - (Total Payable)
-  // Since totalDena is already negative, we should ADD it if we want (Receivable - Payable),
-  // BUT if totalDena is sum of negative numbers, then:
-  // Net Position = totalBaki + totalDena.
-  // Example: I am owed 1000 (Baki). I owe 200 (Dena, represented as -200).
-  // Net = 1000 + (-200) = 800. Correct.
-
+  // Net Balance (Global market position)
   const netBalance = totalBaki + totalDena;
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
-      {/* Main Stats Cards */}
+    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 mb-8 auto-rows-fr">
+      {/* 1. Main Global Balance Card (2x2) */}
       <m.div
         initial={{ opacity: 0, y: 20 }}
         whileHover={{ y: -4 }}
@@ -89,7 +84,7 @@ export function BentoStats({
         </div>
       </m.div>
 
-      {/* Small Stats Cards */}
+      {/* 2. Today's Paona (Credit Given Today) */}
       <m.div
         initial={{ opacity: 0, y: 20 }}
         whileHover={{ y: -4 }}
@@ -99,18 +94,19 @@ export function BentoStats({
       >
         <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-full blur-3xl -mr-8 -mt-8" />
         <div className="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center text-emerald-600 mb-6 group-hover:scale-110 transition-transform duration-500">
-          <ArrowDownLeft className="w-6 h-6" />
+          <ArrowUpRight className="w-6 h-6" />
         </div>
         <div>
-          <p className="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-widest">
-            আজকের জমা
+          <p className="text-slate-500 dark:text-slate-400 text-[10px] font-black uppercase tracking-[0.15em]">
+            আজকের পাওনা
           </p>
-          <p className="text-3xl font-black text-slate-900 dark:text-white mt-1 font-mono tracking-tighter">
-            {formatCurrency(totalPaid)}
+          <p className="text-2xl md:text-3xl font-black text-slate-900 dark:text-white mt-1 font-mono tracking-tighter">
+            {formatCurrency(todayBaki)}
           </p>
         </div>
       </m.div>
 
+      {/* 3. Today's Joma (Collections Today) */}
       <m.div
         initial={{ opacity: 0, y: 20 }}
         whileHover={{ y: -4 }}
@@ -118,38 +114,56 @@ export function BentoStats({
         transition={{ duration: 0.6, delay: 0.2 }}
         className="col-span-1 group relative overflow-hidden bg-white dark:bg-slate-900 rounded-3xl sm:rounded-[2rem] p-5 sm:p-6 border border-slate-100 dark:border-slate-800 shadow-xl shadow-slate-200/50 dark:shadow-none flex flex-col justify-between"
       >
-        <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full blur-3xl -mr-8 -mt-8" />
-        <div className="w-12 h-12 rounded-2xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center text-blue-600 mb-6 group-hover:scale-110 transition-transform duration-500">
-          <Users className="w-6 h-6" />
+        <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 rounded-full blur-3xl -mr-8 -mt-8" />
+        <div className="w-12 h-12 rounded-2xl bg-indigo-50 dark:bg-indigo-500/10 flex items-center justify-center text-indigo-600 mb-6 group-hover:scale-110 transition-transform duration-500">
+          <ArrowDownLeft className="w-6 h-6" />
         </div>
         <div>
-          <p className="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-widest">
-            মোট কাস্টমার
+          <p className="text-slate-500 dark:text-slate-400 text-[10px] font-black uppercase tracking-[0.15em]">
+            আজকের জমা
           </p>
-          <p className="text-3xl font-black text-slate-900 dark:text-white mt-1 font-mono tracking-tighter">
-            {customerCount}
+          <p className="text-2xl md:text-3xl font-black text-slate-900 dark:text-white mt-1 font-mono tracking-tighter">
+            {formatCurrency(todayJoma)}
           </p>
         </div>
       </m.div>
 
+
+
+      {/* 5. Combined Information Card (Transactions & Customers) */}
       <m.div
         initial={{ opacity: 0, y: 20 }}
         whileHover={{ y: -4 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.3 }}
-        className="col-span-2 md:col-span-2 lg:col-span-2 group relative overflow-hidden bg-gradient-to-br from-white to-slate-50/50 dark:from-slate-900 dark:to-slate-800/50 rounded-[2rem] p-6 sm:p-8 border border-slate-100 dark:border-slate-800 shadow-xl shadow-slate-200/50 dark:shadow-none flex items-center justify-between"
+        className="col-span-2 md:col-span-1 lg:col-span-4 group relative overflow-hidden bg-gradient-to-br from-white to-slate-50/50 dark:from-slate-900 dark:to-slate-800/50 rounded-[2rem] p-6 sm:p-8 border border-slate-100 dark:border-slate-800 shadow-xl shadow-slate-200/50 dark:shadow-none"
       >
         <div className="absolute inset-0 bg-primary-500/5 dark:bg-primary-500/2 opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
-        <div>
-          <p className="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-widest mb-2">
-            মোট লেনদেন সংখ্যা
-          </p>
-          <p className="text-4xl font-black text-slate-900 dark:text-white font-mono tracking-tighter">
-            {transactionCount}
-          </p>
-        </div>
-        <div className="h-20 w-36 bg-slate-100 dark:bg-slate-800/50 rounded-3xl flex items-center justify-center ring-1 ring-slate-200 dark:ring-slate-700 transition-transform group-hover:scale-105 duration-500">
-          <TrendingUp className="w-10 h-10 text-primary-500 opacity-80" />
+        <div className="relative z-10 flex items-center justify-between">
+          <div className="flex gap-12">
+            <div>
+              <p className="text-slate-500 dark:text-slate-400 text-[10px] font-black uppercase tracking-widest mb-2 flex items-center gap-2">
+                <TrendingUp className="w-3 h-3 text-primary-500" />
+                মোট লেনদেন
+              </p>
+              <p className="text-4xl font-black text-slate-900 dark:text-white font-mono tracking-tighter">
+                {transactionCount}
+              </p>
+            </div>
+            <div className="border-l border-slate-200 dark:border-white/10 pl-12">
+              <p className="text-slate-500 dark:text-slate-400 text-[10px] font-black uppercase tracking-widest mb-2 flex items-center gap-2">
+                <Users className="w-3 h-3 text-blue-500" />
+                মোট কাস্টমার
+              </p>
+              <p className="text-4xl font-black text-slate-900 dark:text-white font-mono tracking-tighter">
+                {customerCount}
+              </p>
+            </div>
+          </div>
+          
+          <div className="hidden md:flex h-16 w-16 bg-slate-100 dark:bg-slate-800/50 rounded-2xl items-center justify-center ring-1 ring-slate-200 dark:ring-slate-700 transition-transform group-hover:scale-105 duration-500">
+            <TrendingUp className="w-8 h-8 text-primary-500 opacity-80" />
+          </div>
         </div>
       </m.div>
     </div>
