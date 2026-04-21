@@ -80,9 +80,9 @@ export function BentoStats({
           </div>
           <div className="bg-white/5 backdrop-blur-md rounded-3xl p-5 border border-white/10 group/item transition-all hover:bg-white/10">
             <p className="text-slate-400 text-[10px] font-black uppercase tracking-[0.2em] mb-2">
-              মোট দেনা
+              মোট জমা
             </p>
-            <p className="text-2xl font-bold text-rose-400 font-mono tracking-tight">
+            <p className="text-2xl font-bold text-indigo-400 font-mono tracking-tight">
               {formatCurrency(Math.abs(totalDena))}
             </p>
           </div>

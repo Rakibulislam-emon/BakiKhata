@@ -98,12 +98,12 @@ export const TransactionForm = ({
                   onClick={() => setFormData({ ...formData, type: "borrow" })}
                   className={`flex-1 flex items-center justify-center gap-2 px-6 py-2.5 text-xs font-black rounded-xl transition-all duration-300 ${
                     formData.type === "borrow"
-                      ? "bg-rose-500 text-white shadow-lg shadow-rose-500/30"
-                      : "text-slate-500 hover:text-rose-500"
+                      ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/30"
+                      : "text-slate-500 hover:text-indigo-600"
                   }`}
                 >
                   <TrendingDown className="w-4 h-4" />
-                  দেনা
+                  জমা
                 </button>
               </div>
 

@@ -122,19 +122,19 @@ export const CustomerDetail = ({
     animate: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.1,
-        delayChildren: 0.2,
+        staggerChildren: 0.05,
+        delayChildren: 0.05,
       },
     },
     exit: { opacity: 0 },
   };
 
   const itemVariants = {
-    initial: { opacity: 0, y: 20 },
+    initial: { opacity: 0, y: 15 },
     animate: {
       opacity: 1,
       y: 0,
-      transition: { type: "spring" as const, damping: 25, stiffness: 200 },
+      transition: { type: "spring", damping: 30, stiffness: 300 },
     },
   };
 
@@ -149,7 +149,7 @@ export const CustomerDetail = ({
       {/* Ambient backgrounds */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
         <div
-          className={`absolute top-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full blur-[120px] transition-colors duration-1000 ${totals.totalBaki >= 0 ? "bg-emerald-500/10" : "bg-rose-500/10"}`}
+          className={`absolute top-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full blur-[120px] transition-colors duration-1000 ${totals.totalBaki >= 0 ? "bg-emerald-500/10" : "bg-indigo-500/10"}`}
         />
         <div className="absolute bottom-[10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-primary-500/5 blur-[120px]" />
       </div>
@@ -209,7 +209,7 @@ export const CustomerDetail = ({
               className="md:col-span-8 bg-white/95 dark:bg-slate-900/50 backdrop-blur-2xl rounded-[2.5rem] p-8 md:p-12 border border-white/20 dark:border-white/5 shadow-2xl shadow-slate-200/50 dark:shadow-none relative overflow-hidden group"
             >
               <div
-                className={`absolute top-0 right-0 w-64 h-64 rounded-full blur-3xl -mr-20 -mt-20 group-hover:scale-110 transition-transform duration-1000 pointer-events-none ${totals.totalBaki >= 0 ? "bg-emerald-500/10" : "bg-rose-500/10"}`}
+                className={`absolute top-0 right-0 w-64 h-64 rounded-full blur-3xl -mr-20 -mt-20 group-hover:scale-110 transition-transform duration-1000 pointer-events-none ${totals.totalBaki >= 0 ? "bg-emerald-500/10" : "bg-indigo-500/10"}`}
               />
 
               <div className="relative z-10">
@@ -217,19 +217,19 @@ export const CustomerDetail = ({
                   বর্তমান মোট বাকি
                 </p>
                 <div className="flex flex-col">
-                  <div className="flex items-center gap-4 mb-4">
+                  <div className="flex items-center gap-8 mb-4">
                     <span
-                      className={`text-6xl md:text-7xl font-black font-mono tracking-tighter tabular-nums drop-shadow-sm ${totals.totalBaki >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}
+                      className={`text-6xl md:text-7xl font-black font-mono tracking-tighter tabular-nums drop-shadow-sm ${totals.totalBaki >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-indigo-600 dark:text-indigo-400"}`}
                     >
                       {formatCurrency(Math.abs(totals.totalBaki))}
                     </span>
-                    <m.button
-                      whileHover={{ scale: 1.1, rotate: 90 }}
-                      whileTap={{ scale: 0.9 }}
-                      onClick={() => setShowAddForm(true)}
-                      className={`w-12 h-12 md:w-14 md:h-14 rounded-2xl flex items-center justify-center text-white shadow-xl transition-all ${totals.totalBaki >= 0 ? "bg-emerald-500 shadow-emerald-500/30 hover:bg-emerald-600" : "bg-rose-500 shadow-rose-500/30 hover:bg-rose-600"}`}
-                      title="নতুন লেনদেন"
-                    >
+                      <m.button
+                        whileHover={{ scale: 1.1, rotate: 90 }}
+                        whileTap={{ scale: 0.9 }}
+                        onClick={() => setShowAddForm(true)}
+                        className={`w-12 h-12 md:w-14 md:h-14 rounded-2xl flex items-center justify-center text-white shadow-xl transition-all ${totals.totalBaki >= 0 ? "bg-emerald-500 shadow-emerald-500/30 hover:bg-emerald-600" : "bg-indigo-600 shadow-indigo-600/30 hover:bg-indigo-700"}`}
+                        title="নতুন লেনদেন"
+                      >
                       <Plus className="w-8 h-8" />
                     </m.button>
                   </div>
@@ -240,9 +240,9 @@ export const CustomerDetail = ({
                         পাওনা
                       </span>
                     ) : (
-                      <span className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-rose-500/10 text-rose-600 dark:text-rose-400 text-xs font-black uppercase tracking-widest ring-1 ring-rose-500/20">
+                      <span className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 text-xs font-black uppercase tracking-widest ring-1 ring-indigo-500/20">
                         <TrendingDown className="w-4 h-4" />
-                        দেনা
+                        জমা
                       </span>
                     )}
                   </div>
@@ -374,12 +374,12 @@ export const CustomerDetail = ({
                                 }
                                 className={`flex-1 flex items-center justify-center gap-2 py-3 text-[10px] font-black rounded-xl transition-all ${
                                   editForm.type === "borrow"
-                                    ? "bg-rose-500 text-white shadow-lg shadow-rose-500/30"
-                                    : "text-slate-500 hover:text-rose-500"
+                                    ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/30"
+                                    : "text-slate-500 hover:text-indigo-600"
                                 }`}
                               >
                                 <TrendingDown className="w-4 h-4" />
-                                দেনা
+                                জমা
                               </button>
                             </div>
                           </div>
@@ -467,7 +467,7 @@ export const CustomerDetail = ({
                           <div className="flex flex-col gap-1">
                             <div className="flex items-baseline gap-3">
                               <span
-                                className={`text-3xl font-black font-mono tracking-tighter tabular-nums ${transaction.amount >= 0 ? "text-emerald-600" : "text-rose-600"}`}
+                                className={`text-3xl font-black font-mono tracking-tighter tabular-nums ${transaction.amount >= 0 ? "text-emerald-600" : "text-indigo-600"}`}
                               >
                                 {formatCurrency(Math.abs(transaction.amount))}
                               </span>
@@ -641,12 +641,12 @@ export const CustomerDetail = ({
                   onClick={() => setFormData({ type: "borrow" })}
                   className={`flex-1 flex items-center justify-center gap-2 px-6 py-2.5 text-xs font-black rounded-xl transition-all duration-300 ${
                     formData.type === "borrow"
-                      ? "bg-rose-500 text-white shadow-lg shadow-rose-500/30"
-                      : "text-slate-500 hover:text-rose-500"
+                      ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/30"
+                      : "text-slate-500 hover:text-indigo-600"
                   }`}
                 >
                   <TrendingDown className="w-4 h-4" />
-                  দেনা
+                  জমা
                 </button>
               </div>
 
@@ -705,7 +705,7 @@ export const CustomerDetail = ({
                     className={`w-full py-5 rounded-[1.5rem] font-black text-white text-base shadow-2xl transition-all duration-300 flex items-center justify-center gap-3 ${
                       formData.type === "lend"
                         ? "bg-emerald-500 shadow-emerald-500/40 hover:bg-emerald-600"
-                        : "bg-rose-500 shadow-rose-500/40 hover:bg-rose-600"
+                        : "bg-indigo-600 shadow-indigo-600/40 hover:bg-indigo-700"
                     }`}
                   >
                     <Plus className="w-6 h-6" />

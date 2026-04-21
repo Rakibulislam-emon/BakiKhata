@@ -42,13 +42,13 @@ export const SummaryCards = ({
           </div>
         </div>
 
-        {/* Total Dena - Red Card */}
-        <div className="glass-card p-6 relative overflow-hidden group">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-red-500/10 rounded-full blur-2xl -mr-10 -mt-10 transition-all duration-500 group-hover:bg-red-500/20" />
+        {/* Total Joma - Indigo Card */}
+        <div className="glass-card p-6 relative overflow-hidden group border-t-indigo-500">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/10 rounded-full blur-2xl -mr-10 -mt-10 transition-all duration-500 group-hover:bg-indigo-500/20" />
           <div className="relative z-10">
             <div className="text-secondary-500 font-medium mb-2 flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-              মোট দেনা (ঋণ)
+              <span className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse" />
+              মোট জমা
             </div>
             <div className="flex items-baseline gap-1">
               <h3 className="text-4xl font-bold text-secondary-900 font-mono tracking-tighter">
@@ -56,7 +56,7 @@ export const SummaryCards = ({
               </h3>
             </div>
             <p className="text-xs text-secondary-400 mt-2">
-              আপনার মোট দেনার পরিমাণ
+              কাস্টমারদের কাছ থেকে মোট আদায়কৃত টাকা
             </p>
           </div>
         </div>

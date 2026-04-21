@@ -53,7 +53,7 @@ export const RecentTransactions = ({
               ? "text-slate-500"
               : isReceivable
                 ? "text-emerald-600"
-                : "text-rose-600";
+                : "text-indigo-600";
 
             const route = isReceivable ? "receivables" : "payables";
 
@@ -81,7 +81,7 @@ export const RecentTransactions = ({
                       ? "#94a3b8"
                       : isReceivable
                         ? "#10b981"
-                        : "#f43f5e",
+                        : "#4f46e5",
                   }}
                 />
 
@@ -92,7 +92,7 @@ export const RecentTransactions = ({
                         ? "bg-slate-100 text-slate-500"
                         : isReceivable
                           ? "bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10"
-                          : "bg-rose-50 text-rose-600 dark:bg-rose-500/10"
+                          : "bg-indigo-50 text-indigo-600 dark:bg-indigo-500/10"
                     }`}
                   >
                     {transaction.customerName.charAt(0).toUpperCase()}
@@ -131,10 +131,10 @@ export const RecentTransactions = ({
                         ? "bg-slate-100 text-slate-500 dark:bg-slate-800"
                         : isReceivable
                           ? "bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20"
-                          : "bg-rose-50 text-rose-600 dark:bg-rose-900/20"
+                          : "bg-indigo-50 text-indigo-600 dark:bg-indigo-900/20"
                     }`}
                   >
-                    {isPaid ? "পরিশোধিত" : isReceivable ? "পাওনা" : "দেনা"}
+                    {isPaid ? "পরিশোধিত" : isReceivable ? "পাওনা" : "জমা"}
                   </div>
                 </div>
               </m.div>

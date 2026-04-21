@@ -155,21 +155,26 @@ export default function DashboardPage() {
     };
   }, [transactions, granularity]);
 
-  const totalBaki = useMemo(
-    () =>
-      transactions
-        .filter((t) => !t.isPaid && t.amount > 0)
-        .reduce((sum, t) => sum + t.amount, 0),
-    [transactions],
-  );
+  const { totalBaki, totalDena } = useMemo(() => {
+    const customerMap = new Map<string, number>();
 
-  const totalDena = useMemo(
-    () =>
-      transactions
-        .filter((t) => !t.isPaid && t.amount < 0)
-        .reduce((sum, t) => sum + t.amount, 0),
-    [transactions],
-  );
+    transactions.forEach((t) => {
+      if (t.isPaid) return;
+      const name = t.customerName.toLowerCase().trim();
+      const current = customerMap.get(name) || 0;
+      customerMap.set(name, current + Number(t.amount || 0));
+    });
+
+    let baki = 0;
+    let dena = 0;
+
+    customerMap.forEach((balance) => {
+      if (balance > 0) baki += balance;
+      else if (balance < 0) dena += balance;
+    });
+
+    return { totalBaki: baki, totalDena: dena };
+  }, [transactions]);
 
   const todayPaid = useMemo(() => {
     const today = startOfDay(new Date());
@@ -345,9 +350,9 @@ export default function DashboardPage() {
                   </div>
                   <div className="space-y-1 relative z-10">
                     <p className="text-[8px] font-black uppercase tracking-[0.2em] text-slate-400">
-                      মোট দেনা
+                      মোট জমা
                     </p>
-                    <p className="text-[11px] font-black text-rose-600 dark:text-rose-400 font-mono">
+                    <p className="text-[11px] font-black text-indigo-600 dark:text-indigo-400 font-mono">
                       {formatCurrency(periodStats.payable)}
                     </p>
                   </div>

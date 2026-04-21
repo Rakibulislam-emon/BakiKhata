@@ -64,7 +64,7 @@ export function Header({ onMenuClick }: HeaderProps) {
       case "receivables":
         return "পাওনা তালিকা";
       case "payables":
-        return "দেনা তালিকা";
+        return "জমা তালিকা";
       case "settings":
         return "সেটিংস";
       default:
