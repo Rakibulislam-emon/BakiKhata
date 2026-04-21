@@ -472,9 +472,9 @@ export const CustomerDetail = ({
                                 {formatCurrency(Math.abs(transaction.amount))}
                               </span>
                               <span
-                                className={`text-[9px] font-black uppercase tracking-[0.15em] px-2.5 py-1 rounded-lg ${transaction.amount >= 0 ? "bg-emerald-100/50 text-emerald-700" : "bg-rose-100/50 text-rose-700"}`}
+                                className={`text-[9px] font-black uppercase tracking-[0.15em] px-2.5 py-1 rounded-lg ${transaction.amount >= 0 ? "bg-emerald-100/50 text-emerald-700" : "bg-indigo-100/50 text-indigo-700"}`}
                               >
-                                {transaction.amount >= 0 ? "পাওনা" : "দেনা"}
+                                {transaction.amount >= 0 ? "পাওনা" : "জমা"}
                               </span>
                             </div>
                             <div className="flex items-center gap-4 text-[10px] font-bold text-slate-400">

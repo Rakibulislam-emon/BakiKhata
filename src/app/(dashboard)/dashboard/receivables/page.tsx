@@ -31,8 +31,11 @@ export default function CustomersPage() {
         .filter((t) => !t.isPaid)
         .reduce((sum, t) => sum + Number(t.amount || 0), 0);
 
-      // In the Receivables list, we show customers who have a positive balance (> 0)
-      if (totalBaki > 0) {
+      // Include customers who have any history of receivables (amount > 0)
+      // This allows the "Settled" filter to work correctly.
+      const hasReceivableHistory = txns.some((t) => Number(t.amount || 0) > 0);
+
+      if (hasReceivableHistory) {
         const sortedTxns = txns.sort(
           (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
         );
