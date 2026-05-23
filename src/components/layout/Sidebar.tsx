@@ -55,7 +55,8 @@ export function Sidebar() {
               "text-secondary-600 hover:bg-emerald-50 hover:text-emerald-600";
             iconInactive = "text-emerald-500 group-hover:text-emerald-600";
           } else if (item.href === "/dashboard/payables") {
-            activeClass = "bg-indigo-600 text-white shadow-lg shadow-indigo-600/30";
+            activeClass =
+              "bg-indigo-600 text-white shadow-lg shadow-indigo-600/30";
             inactiveClass =
               "text-secondary-600 hover:bg-indigo-50 hover:text-indigo-600";
             iconInactive = "text-indigo-500 group-hover:text-indigo-600";
