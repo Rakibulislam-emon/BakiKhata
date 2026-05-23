@@ -283,13 +283,17 @@ export const CustomerList = ({
                       </h3>
                     </div>
 
-                    {/* Date Box */}
-                    <div className="mt-3">
+                    {/* Tags: Date and Transaction Count */}
+                    <div className="mt-3 flex items-center gap-2 flex-wrap">
                       <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100/80 dark:bg-slate-800/80 border border-slate-200/50 dark:border-white/5 text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest">
                         <Clock className="w-3.5 h-3.5" />
                         {formatDateTime(
                           customer.lastTransaction || new Date().toISOString(),
                         )}
+                      </div>
+                      <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-50/80 dark:bg-indigo-900/20 border border-indigo-100/50 dark:border-indigo-500/10 text-[10px] font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-widest">
+                        <ArrowUpDown className="w-3.5 h-3.5" />
+                        {customer.transactions.length} টি লেনদেন
                       </div>
                     </div>
 

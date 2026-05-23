@@ -49,7 +49,7 @@ export function BentoStats({
               <Wallet className="w-5 h-5 text-primary-400" />
             </div>
             <span className="font-bold text-sm uppercase tracking-wider">
-              নেট ব্যালেন্স
+              মোট বাকি
             </span>
           </div>
           <m.h2
