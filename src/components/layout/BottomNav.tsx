@@ -71,6 +71,7 @@ export function BottomNav() {
                   whileTap={{ scale: 0.9 }}
                   onClick={openAddModal}
                   className="relative w-14 h-14 rounded-full bg-gradient-to-br from-primary-500 to-primary-700 text-white shadow-[0_8px_25px_-5px_rgba(16,185,129,0.5)] flex items-center justify-center ring-4 ring-white dark:ring-slate-900"
+                  aria-label="নতুন হিসাব যোগ করুন"
                 >
                   <Plus className="w-8 h-8" />
                 </m.button>

@@ -165,6 +165,7 @@ export const CustomerDetail = ({
                 whileTap={{ scale: 0.9 }}
                 onClick={onBack}
                 className="w-10 h-10 rounded-xl bg-white dark:bg-slate-800 flex items-center justify-center text-slate-500 dark:text-slate-400 border border-slate-200/50 dark:border-white/5 shadow-sm hover:text-primary-500 transition-colors"
+                aria-label="পেছনে যান"
               >
                 <ChevronLeft className="w-6 h-6" />
               </m.button>
@@ -188,7 +189,7 @@ export const CustomerDetail = ({
                 whileTap={{ scale: 0.95 }}
                 onClick={onDeleteAll}
                 className="p-2.5 text-slate-400 hover:text-red-500 rounded-xl transition-all"
-                title="সব মুছুন"
+                aria-label="সব মুছুন"
               >
                 <Trash2 className="w-5 h-5" />
               </m.button>
@@ -228,7 +229,7 @@ export const CustomerDetail = ({
                         whileTap={{ scale: 0.9 }}
                         onClick={() => setShowAddForm(true)}
                         className={`w-12 h-12 md:w-14 md:h-14 rounded-2xl flex items-center justify-center text-white shadow-xl transition-all ${totals.totalBaki >= 0 ? "bg-emerald-500 shadow-emerald-500/30 hover:bg-emerald-600" : "bg-indigo-600 shadow-indigo-600/30 hover:bg-indigo-700"}`}
-                        title="নতুন লেনদেন"
+                        aria-label="নতুন লেনদেন"
                       >
                       <Plus className="w-8 h-8" />
                     </m.button>
@@ -460,6 +461,7 @@ export const CustomerDetail = ({
                                 ? "bg-emerald-50 text-emerald-600 ring-2 ring-emerald-100 hover:bg-emerald-500 hover:text-white"
                                 : "bg-rose-50 text-rose-600 ring-2 ring-rose-100 hover:bg-rose-500 hover:text-white"
                             }`}
+                            aria-label="পরিশোধ হিসেবে চিহ্নিত করুন"
                           >
                             <Square className="w-7 h-7" />
                           </m.button>
@@ -503,7 +505,8 @@ export const CustomerDetail = ({
                           }}
                           whileTap={{ scale: 0.9 }}
                           onClick={() => startEditing(transaction)}
-                          className="p-1.5 sm:p-2.5 text-slate-400 hover:text-primary-500 rounded-xl transition-colors"
+                          className="min-w-[44px] min-h-[44px] p-1.5 sm:p-2.5 flex items-center justify-center text-slate-400 hover:text-primary-500 rounded-xl transition-colors"
+                          aria-label="লেনদেন সংশোধন করুন"
                         >
                           <Settings className="w-4 h-4 sm:w-5 sm:h-5" />
                         </m.button>
@@ -514,7 +517,8 @@ export const CustomerDetail = ({
                           }}
                           whileTap={{ scale: 0.9 }}
                           onClick={() => onDeleteTransaction(transaction.id)}
-                          className="p-1.5 sm:p-2.5 text-slate-400 hover:text-red-500 rounded-xl transition-colors"
+                          className="min-w-[44px] min-h-[44px] p-1.5 sm:p-2.5 flex items-center justify-center text-slate-400 hover:text-red-500 rounded-xl transition-colors"
+                          aria-label="লেনদেন মুছুন"
                         >
                           <Trash2 className="w-4 h-4 sm:w-5 sm:h-5" />
                         </m.button>
@@ -553,7 +557,8 @@ export const CustomerDetail = ({
                     <div className="flex items-center gap-4">
                       <button
                         onClick={() => onTogglePaid(transaction.id)}
-                        className="w-10 h-10 rounded-xl bg-emerald-500 text-white flex items-center justify-center"
+                        className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl bg-emerald-500 text-white"
+                        aria-label="পরিশোধ বাতিল করুন"
                       >
                         <CheckCircle2 className="w-6 h-6" />
                       </button>
@@ -569,7 +574,8 @@ export const CustomerDetail = ({
                     </div>
                     <button
                       onClick={() => onDeleteTransaction(transaction.id)}
-                      className="p-2 text-slate-300 hover:text-red-500 transition-colors"
+                      className="min-w-[44px] min-h-[44px] flex items-center justify-center p-2 text-slate-300 hover:text-red-500 transition-colors"
+                      aria-label="লেনদেন মুছুন"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -618,6 +624,7 @@ export const CustomerDetail = ({
                   whileTap={{ scale: 0.9 }}
                   onClick={() => setShowAddForm(false)}
                   className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500"
+                  aria-label="বন্ধ করুন"
                 >
                   <X className="w-5 h-5" />
                 </m.button>

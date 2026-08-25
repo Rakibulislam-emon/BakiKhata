@@ -7,6 +7,9 @@ const nextConfig = {
       transform: "lucide-react/dist/esm/icons/{{kebabCase member}}",
     },
   },
+  experimental: {
+    optimizePackageImports: ["recharts", "date-fns", "lucide-react"],
+  },
 };
 
 module.exports = nextConfig;

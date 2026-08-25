@@ -87,6 +87,7 @@ export default function CustomersPage() {
                   whileTap={{ scale: 0.9 }}
                   onClick={() => router.back()}
                   className="w-10 h-10 rounded-xl bg-white/50 dark:bg-slate-800/50 flex items-center justify-center text-slate-500 dark:text-slate-400 border border-slate-200/50 dark:border-white/5 shadow-sm hover:text-primary-500 transition-colors"
+                  aria-label="পেছনে যান"
                 >
                   <ChevronLeft className="w-6 h-6" />
                 </m.button>
@@ -121,7 +122,8 @@ export default function CustomersPage() {
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.8 }}
                         onClick={() => setSearchTerm("")}
-                        className="p-2 rounded-xl bg-slate-100 dark:bg-slate-700 text-slate-400 hover:text-rose-500 transition-colors shadow-sm"
+                        className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-700 text-slate-400 hover:text-rose-500 transition-colors shadow-sm"
+                        aria-label="অনুসন্ধান মুছুন"
                       >
                         <X className="w-4 h-4" />
                       </m.button>

@@ -1,5 +1,7 @@
-import { redirect } from "next/navigation";
+"use client";
+
+import { Auth } from "@/components/Auth";
 
 export default function RootPage() {
-  redirect("/dashboard");
+  return <Auth />;
 }

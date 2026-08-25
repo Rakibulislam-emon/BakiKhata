@@ -19,7 +19,6 @@ export const metadata: Metadata = {
 export const viewport = {
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
 };
 
 import { Noto_Sans_Bengali } from "next/font/google";
@@ -38,6 +37,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="bn" data-scroll-behavior="smooth">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+      </head>
       <body className={notoSansBengali.className}>
         <AnimationProvider>
           {children}

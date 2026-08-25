@@ -73,6 +73,7 @@ export const TransactionForm = ({
                 whileTap={{ scale: 0.9 }}
                 onClick={() => onOpenChange(false)}
                 className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500"
+                aria-label="বন্ধ করুন"
               >
                 <X className="w-5 h-5" />
               </m.button>

@@ -73,6 +73,7 @@ export function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
                 whileTap={{ scale: 0.9 }}
                 onClick={onClose}
                 className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full text-slate-400 transition-colors"
+                aria-label="Close sidebar"
               >
                 <X className="w-5 h-5" />
               </m.button>
