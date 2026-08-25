@@ -2,7 +2,6 @@
 
 import { useAuth } from "@/hooks/useAuth";
 import {
-  Bell,
   ChevronRight,
   LogOut,
   Plus,
@@ -99,6 +98,9 @@ export function Header({ onMenuClick }: HeaderProps) {
             <ChevronRight className="w-3 h-3" />
             <span className="text-primary-600">{getBreadcrumbs()}</span>
           </m.div>
+          <p className="text-sm font-medium text-secondary-700">
+            {greeting}, {session?.user.email?.split("@")[0] || "ব্যবহারকারী"}
+          </p>
         </div>
       </div>
 
@@ -113,18 +115,6 @@ export function Header({ onMenuClick }: HeaderProps) {
         >
           <Plus className="w-5 h-5" />
         </m.button>
-
-        {/* Notifications */}
-        <div className="relative group">
-          <m.button
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            className="p-2 rounded-full hover:bg-secondary-100/50 text-secondary-500 transition-colors relative"
-          >
-            <Bell className="w-5 h-5" />
-            <span className="absolute top-2 right-2.5 w-2 h-2 bg-red-500 rounded-full ring-2 ring-white animate-pulse" />
-          </m.button>
-        </div>
 
         {/* User Menu */}
         <DropdownMenu>

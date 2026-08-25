@@ -257,32 +257,10 @@ export default function DashboardPage() {
   return (
     <div className="relative space-y-8 pb-32 pt-4">
       {/* Ambient background elements */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
-        <div className="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-primary-500/5 blur-[120px]" />
-        <div className="absolute bottom-[10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-emerald-500/5 blur-[120px]" />
-      </div>
+      
 
       <div className="relative z-10 space-y-8">
         {/* Header Section */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <m.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-              শুভ সকাল,{" "}
-              <span className="bg-gradient-to-r from-primary-600 to-emerald-600 bg-clip-text text-transparent">
-                {firstName}
-              </span>{" "}
-              👋
-            </h1>
-            <p className="text-slate-500 dark:text-slate-400 text-sm font-medium mt-1">
-              আজকের হিসাব নিকাশ শুরু করুন
-            </p>
-          </m.div>
-        </div>
-
         <m.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

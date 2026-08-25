@@ -4,6 +4,7 @@ import { useTransactionsContext } from "@/context/TransactionsContext";
 import { CustomerList } from "@/components/CustomerList";
 import { FullPageLoader } from "@/components/ui/LoadingSpinner";
 import { useMemo, useState } from "react";
+import { useScrollRestoration } from "@/hooks/useScrollRestoration";
 import { useRouter } from "next/navigation";
 import { Search, Plus, X, TrendingUp, ChevronLeft } from "lucide-react";
 import { CustomerSummary, Transaction } from "@/types";
@@ -13,6 +14,7 @@ export default function CustomersPage() {
   const { transactions, loading } = useTransactionsContext();
   const [searchTerm, setSearchTerm] = useState("");
   const router = useRouter();
+  const { saveScroll } = useScrollRestoration("receivables");
 
   const customerSummaries = useMemo(() => {
     const customerMap = new Map<string, Transaction[]>();
@@ -31,11 +33,7 @@ export default function CustomersPage() {
         .filter((t) => !t.isPaid)
         .reduce((sum, t) => sum + Number(t.amount || 0), 0);
 
-      // Include customers who have any history of receivables (amount > 0)
-      // This allows the "Settled" filter to work correctly.
-      const hasReceivableHistory = txns.some((t) => Number(t.amount || 0) > 0);
-
-      if (hasReceivableHistory) {
+      if (totalBaki > 0 || (totalBaki === 0 && txns.some(t => t.isPaid))) {
         const sortedTxns = txns.sort(
           (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
         );
@@ -55,7 +53,7 @@ export default function CustomersPage() {
   }, [transactions]);
 
   const handleSelectCustomer = (name: string) => {
-    // Navigate to dynamic route based on customer name (encoded)
+    saveScroll();
     router.push(`/dashboard/receivables/${encodeURIComponent(name)}`);
   };
 

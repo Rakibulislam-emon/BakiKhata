@@ -123,7 +123,7 @@ export const RecentTransactions = ({
                     ) : (
                       <TrendingDown className="w-3 h-3" />
                     )}
-                    {formatCurrency(transaction.amount)}
+                    {formatCurrency(Math.abs(transaction.amount))}
                   </div>
                   <div
                     className={`text-[9px] font-black uppercase tracking-[0.1em] mt-1 px-2 py-0.5 rounded-md ${
