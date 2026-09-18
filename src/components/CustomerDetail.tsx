@@ -17,6 +17,7 @@ import {
   TrendingUp,
   TrendingDown,
   ChevronLeft,
+  ChevronDown,
   Calendar,
   Settings,
 } from "lucide-react";
@@ -32,7 +33,16 @@ interface CustomerDetailProps {
     totalPaid: number;
     unpaidCount: number;
     paidCount: number;
+    sinceLastPayment?: {
+      amount: number;
+      count: number;
+      lastJomaDate: string;
+      lastJomaAmount: number;
+      lastJomaId: string;
+      balanceAtJoma: number;
+    } | null;
   } | null;
+  runningBalances?: Record<string, number>;
   onBack: () => void;
   onDeleteAll: () => void;
   onToggleAllPaid: () => void;
@@ -65,6 +75,7 @@ interface CustomerDetailProps {
 export const CustomerDetail = ({
   customer,
   totals,
+  runningBalances,
   onBack,
   onDeleteAll,
   onToggleAllPaid,
@@ -91,6 +102,36 @@ export const CustomerDetail = ({
     notes: string;
     type: "lend" | "borrow";
   }>({ amount: "", notes: "", type: "lend" });
+
+  // Checkpoint grouping: bills after the last joma stay open, older ones collapse.
+  // No joma yet -> show latest 20 with load-more. Running balances are computed
+  // over the full set upstream, so hiding rows never changes the math.
+  const [showOlder, setShowOlder] = React.useState(false);
+  const [visibleCount, setVisibleCount] = React.useState(20);
+  const lastJomaTime = totals?.sinceLastPayment
+    ? new Date(totals.sinceLastPayment.lastJomaDate).getTime()
+    : null;
+  const hasCheckpoint =
+    lastJomaTime !== null && (totals?.sinceLastPayment?.count ?? 0) > 0;
+  const isAfterJoma = (t: Transaction) =>
+    lastJomaTime !== null && new Date(t.date).getTime() > lastJomaTime;
+  // The last joma itself stays visible (pinned) so its amount is always seen.
+  const isLastJoma = (t: Transaction) =>
+    totals?.sinceLastPayment?.lastJomaId === t.id;
+  const recentBills = hasCheckpoint
+    ? allUnpaid.filter((t) => isAfterJoma(t) || isLastJoma(t))
+    : [];
+  const olderBills = hasCheckpoint
+    ? allUnpaid.filter((t) => !isAfterJoma(t) && !isLastJoma(t))
+    : [];
+  const remainingFallback = !hasCheckpoint
+    ? Math.max(allUnpaid.length - visibleCount, 0)
+    : 0;
+
+  React.useEffect(() => {
+    setShowOlder(false);
+    setVisibleCount(20);
+  }, [customer?.name]);
 
   const startEditing = (transaction: Transaction) => {
     setEditingId(transaction.id);
@@ -215,7 +256,9 @@ export const CustomerDetail = ({
 
               <div className="relative z-10">
                 <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400 mb-6">
-                  বর্তমান মোট বাকি
+                  {totals.totalBaki >= 0
+                    ? "বর্তমান মোট বাকি"
+                    : "অগ্রিম আছে (ফেরতযোগ্য)"}
                 </p>
                 <div className="flex flex-col">
                   <div className="flex items-center gap-8 mb-4">
@@ -284,6 +327,34 @@ export const CustomerDetail = ({
           </div>
         </m.div>
 
+        {/* Since last joma summary */}
+        {totals.sinceLastPayment && totals.sinceLastPayment.count > 0 && (
+          <m.div
+            variants={itemVariants}
+            className="max-w-4xl mx-auto px-4 sm:px-6 mt-6"
+          >
+            <div className="bg-emerald-50/80 dark:bg-emerald-950/20 backdrop-blur-xl rounded-[2rem] p-6 border border-emerald-500/20 shadow-xl flex flex-col sm:flex-row sm:items-center gap-4 justify-between">
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-600 dark:text-emerald-400 mb-2">
+                  শেষ জমার পর নতুন বাকি ({totals.sinceLastPayment.count}টি বিল)
+                </p>
+                <p className="text-4xl font-black font-mono tracking-tighter tabular-nums text-emerald-700 dark:text-emerald-300">
+                  {formatCurrency(Math.abs(totals.sinceLastPayment.amount))}
+                </p>
+                <p className="text-[11px] font-bold text-slate-500 dark:text-slate-400 mt-2">
+                  শেষ জমা: {formatCurrency(Math.abs(totals.sinceLastPayment.lastJomaAmount))} (
+                  {formatDateTime(totals.sinceLastPayment.lastJomaDate)}) • জমার
+                  সময় বাকি ছিল:{" "}
+                  {formatCurrency(Math.abs(totals.sinceLastPayment.balanceAtJoma))}
+                </p>
+              </div>
+              <div className="text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400 bg-white/70 dark:bg-slate-900/50 px-4 py-3 rounded-2xl border border-emerald-500/10 text-center">
+                বর্তমান মোট: {formatCurrency(Math.abs(totals.totalBaki))}
+              </div>
+            </div>
+          </m.div>
+        )}
+
         {/* Transaction Lists */}
         <m.div
           variants={itemVariants}
@@ -310,7 +381,46 @@ export const CustomerDetail = ({
 
             <div className="space-y-4">
               <AnimatePresence mode="popLayout">
-                {allUnpaid.map((transaction, index) => (
+                {allUnpaid.map((transaction, index) => {
+                  // Checkpoint mode: collapse pre-joma bills behind one toggle.
+                  // The last joma itself stays visible (pinned).
+                  if (
+                    hasCheckpoint &&
+                    !showOlder &&
+                    !isAfterJoma(transaction) &&
+                    !isLastJoma(transaction)
+                  ) {
+                    if (index !== recentBills.length) return null;
+                    return (
+                      <m.button
+                        key="older-toggle"
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        onClick={() => setShowOlder(true)}
+                        className="w-full bg-white/80 dark:bg-slate-900/40 backdrop-blur-xl rounded-[2rem] p-5 border border-dashed border-slate-300 dark:border-white/10 text-xs font-black uppercase tracking-widest text-slate-500 dark:text-slate-400 hover:text-primary-500 hover:border-primary-500/50 transition-all flex items-center justify-center gap-2"
+                      >
+                        <ChevronDown className="w-4 h-4" />
+                        আগের {olderBills.length}টি লেনদেন দেখুন
+                      </m.button>
+                    );
+                  }
+                  // No-joma fallback: latest 20 + load more.
+                  if (!hasCheckpoint && index >= visibleCount) {
+                    if (index !== visibleCount) return null;
+                    return (
+                      <m.button
+                        key="load-more"
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        onClick={() => setVisibleCount((c) => c + 20)}
+                        className="w-full bg-white/80 dark:bg-slate-900/40 backdrop-blur-xl rounded-[2rem] p-5 border border-dashed border-slate-300 dark:border-white/10 text-xs font-black uppercase tracking-widest text-slate-500 dark:text-slate-400 hover:text-primary-500 hover:border-primary-500/50 transition-all flex items-center justify-center gap-2"
+                      >
+                        <ChevronDown className="w-4 h-4" />
+                        আরও {remainingFallback}টি দেখুন
+                      </m.button>
+                    );
+                  }
+                  return (
                   <m.div
                     layout
                     key={transaction.id}
@@ -318,12 +428,12 @@ export const CustomerDetail = ({
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.95 }}
                     transition={{
-                      delay: index * 0.05,
+                      delay: Math.min(index, 12) * 0.05,
                       type: "spring",
                       damping: 20,
                       stiffness: 300,
                     }}
-                    className="group relative bg-white/90 dark:bg-slate-900/40 backdrop-blur-xl rounded-[2rem] p-5 border border-slate-200/60 dark:border-white/5 flex items-center justify-between gap-6 shadow-sm hover:shadow-xl hover:shadow-slate-200/50 dark:hover:shadow-none transition-all duration-500"
+                    className="group relative bg-white/90 dark:bg-slate-900/40 backdrop-blur-xl rounded-[2rem] p-4 sm:p-5 border border-slate-200/60 dark:border-white/5 flex items-center justify-between gap-3 sm:gap-6 shadow-sm hover:shadow-xl hover:shadow-slate-200/50 dark:hover:shadow-none transition-all duration-500"
                   >
                     {editingId === transaction.id ? (
                       <m.div
@@ -452,11 +562,11 @@ export const CustomerDetail = ({
                       </m.div>
                     ) : (
                       <>
-                        <div className="flex items-center gap-6">
+                        <div className="flex min-w-0 flex-1 items-center gap-3 sm:gap-6">
                           <m.button
                             whileTap={{ scale: 0.8 }}
                             onClick={() => onTogglePaid(transaction.id)}
-                            className={`w-14 h-14 rounded-[1.25rem] flex items-center justify-center transition-all duration-500 shadow-sm ${
+                            className={`w-14 h-14 shrink-0 rounded-[1.25rem] flex items-center justify-center transition-all duration-500 shadow-sm ${
                               transaction.amount >= 0
                                 ? "bg-emerald-50 text-emerald-600 ring-2 ring-emerald-100 hover:bg-emerald-500 hover:text-white"
                                 : "bg-rose-50 text-rose-600 ring-2 ring-rose-100 hover:bg-rose-500 hover:text-white"
@@ -466,10 +576,10 @@ export const CustomerDetail = ({
                             <Square className="w-7 h-7" />
                           </m.button>
 
-                          <div className="flex flex-col gap-1">
-                            <div className="flex items-baseline gap-3">
+                          <div className="flex min-w-0 flex-col gap-1">
+                            <div className="flex min-w-0 flex-wrap items-baseline gap-x-3 gap-y-1">
                               <span
-                                className={`text-3xl font-black font-mono tracking-tighter tabular-nums ${transaction.amount >= 0 ? "text-emerald-600" : "text-indigo-600"}`}
+                                className={`text-2xl sm:text-3xl font-black font-mono tracking-tighter tabular-nums break-all ${transaction.amount >= 0 ? "text-emerald-600" : "text-indigo-600"}`}
                               >
                                 {formatCurrency(Math.abs(transaction.amount))}
                               </span>
@@ -478,8 +588,13 @@ export const CustomerDetail = ({
                               >
                                 {transaction.amount >= 0 ? "পাওনা" : "জমা"}
                               </span>
+                              {isLastJoma(transaction) && (
+                                <span className="text-[9px] font-black uppercase tracking-[0.15em] px-2.5 py-1 rounded-lg bg-indigo-600 text-white">
+                                  শেষ জমা
+                                </span>
+                              )}
                             </div>
-                            <div className="flex items-center gap-4 text-[10px] font-bold text-slate-400">
+                            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[10px] font-bold text-slate-400">
                               <span className="flex items-center gap-1.5 border-r border-slate-200 dark:border-white/10 pr-4">
                                 <Clock className="w-3.5 h-3.5" />
                                 {formatDateTime(transaction.date)}
@@ -491,13 +606,27 @@ export const CustomerDetail = ({
                                 </span>
                               )}
                             </div>
+                            {runningBalances?.[transaction.id] !== undefined && (
+                              <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-500 dark:text-slate-400 mt-1">
+                                <Receipt className="w-3.5 h-3.5" />
+                                <span className="tabular-nums">
+                                  এরপর ব্যালেন্স:{" "}
+                                  {formatCurrency(
+                                    Math.abs(runningBalances[transaction.id])
+                                  )}
+                                  {runningBalances[transaction.id] < 0
+                                    ? " (জমা)"
+                                    : ""}
+                                </span>
+                              </div>
+                            )}
                           </div>
                         </div>
                       </>
                     )}
 
                     {editingId !== transaction.id && (
-                      <div className="flex items-center gap-1 ml-auto sm:opacity-0 sm:group-hover:opacity-100 transition-all duration-300 sm:transform sm:translate-x-2 sm:group-hover:translate-x-0">
+                      <div className="flex shrink-0 items-center gap-1 ml-auto sm:opacity-0 sm:group-hover:opacity-100 transition-all duration-300 sm:transform sm:translate-x-2 sm:group-hover:translate-x-0">
                         <m.button
                           whileHover={{
                             scale: 1.1,
@@ -525,8 +654,18 @@ export const CustomerDetail = ({
                       </div>
                     )}
                   </m.div>
-                ))}
+                  );
+                })}
               </AnimatePresence>
+              {hasCheckpoint && showOlder && olderBills.length > 0 && (
+                <button
+                  onClick={() => setShowOlder(false)}
+                  className="w-full bg-white/80 dark:bg-slate-900/40 backdrop-blur-xl rounded-[2rem] p-4 border border-slate-200/60 dark:border-white/5 text-xs font-black uppercase tracking-widest text-slate-500 dark:text-slate-400 hover:text-primary-500 transition-all flex items-center justify-center gap-2"
+                >
+                  <ChevronDown className="w-4 h-4 rotate-180" />
+                  আগের লেনদেন লুকান
+                </button>
+              )}
             </div>
           </section>
 

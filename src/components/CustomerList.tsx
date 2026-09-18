@@ -36,7 +36,7 @@ export const CustomerList = ({
   baseHref,
 }: CustomerListProps) => {
   const router = useRouter();
-  const [filterStatus, setFilterStatus] = useState<FilterStatus>("all");
+  const [filterStatus, setFilterStatus] = useState<FilterStatus>("unpaid");
   const [sortBy, setSortBy] = useState<SortOption>("recent");
   const [isSortOpen, setIsSortOpen] = useState(false);
   const sortRef = useRef<HTMLDivElement>(null);

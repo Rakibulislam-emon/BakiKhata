@@ -64,11 +64,61 @@ export const CustomerTransactionsView = ({
   const customerTotals = useMemo(() => {
     const unpaid = selectedCustomerData.transactions.filter((t) => !t.isPaid);
     const paid = selectedCustomerData.transactions.filter((t) => t.isPaid);
+
+    // Chronological (oldest-first) order for ledger math. Display stays newest-first.
+    const chronological = [...unpaid].sort(
+      (a, b) =>
+        new Date(a.date).getTime() - new Date(b.date).getTime() ||
+        new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+    );
+
+    // Running balance after each transaction: cumulative sum of unpaid amounts.
+    const runningBalances: Record<string, number> = {};
+    let running = 0;
+    chronological.forEach((t) => {
+      running += t.amount;
+      runningBalances[t.id] = running;
+    });
+
+    // Last joma (payment = negative amount) checkpoint in chronological order.
+    let lastJomaIndex = -1;
+    for (let i = chronological.length - 1; i >= 0; i--) {
+      if (chronological[i].amount < 0) {
+        lastJomaIndex = i;
+        break;
+      }
+    }
+
+    let sinceLastPayment: {
+      amount: number;
+      count: number;
+      lastJomaDate: string;
+      lastJomaAmount: number;
+      lastJomaId: string;
+      balanceAtJoma: number;
+    } | null = null;
+
+    if (lastJomaIndex >= 0) {
+      const after = chronological.slice(lastJomaIndex + 1);
+      if (after.length > 0) {
+        sinceLastPayment = {
+          amount: after.reduce((sum, t) => sum + t.amount, 0),
+          count: after.length,
+          lastJomaDate: chronological[lastJomaIndex].date,
+          lastJomaAmount: chronological[lastJomaIndex].amount,
+          lastJomaId: chronological[lastJomaIndex].id,
+          balanceAtJoma: runningBalances[chronological[lastJomaIndex].id] ?? 0,
+        };
+      }
+    }
+
     return {
       totalBaki: unpaid.reduce((sum, t) => sum + t.amount, 0),
       totalPaid: paid.reduce((sum, t) => sum + t.amount, 0),
       unpaidCount: unpaid.length,
       paidCount: paid.length,
+      runningBalances,
+      sinceLastPayment,
     };
   }, [selectedCustomerData]);
 
@@ -155,15 +205,35 @@ export const CustomerTransactionsView = ({
     );
   };
 
-  const handleToggleAllPaid = async () => {
+  const handleToggleAllPaid = () => {
     const customerData = selectedCustomerData;
+    if (customerData.transactions.length === 0) return;
     const allUnpaid = customerData.transactions.filter((t) => !t.isPaid);
     const shouldBePaid = allUnpaid.length > 0;
 
-    const res = await toggleAllPaidForCustomer(customerName, shouldBePaid);
-    if (res.error) {
-      toast.error("আপডেট করতে সমস্যা হয়েছে");
-    }
+    const message = shouldBePaid
+      ? `সব ${allUnpaid.length}টি লেনদেন পরিশোধিত করা হবে? মোট হিসাব শূন্য দেখাবে।`
+      : "সব লেনদেন আবার চালু (অপরিশোধিত) করা হবে?";
+
+    toast(message, {
+      action: {
+        label: shouldBePaid ? "পরিশোধ করুন" : "চালু করুন",
+        onClick: async () => {
+          const res = await toggleAllPaidForCustomer(
+            customerName,
+            shouldBePaid
+          );
+          if (res.error) {
+            toast.error("আপডেট করতে সমস্যা হয়েছে");
+          } else {
+            toast.success(
+              shouldBePaid ? "সব লেনদেন পরিশোধিত" : "সব লেনদেন আবার চালু হয়েছে"
+            );
+          }
+        },
+      },
+      cancel: { label: "বাতিল", onClick: () => {} },
+    });
   };
 
   const handleUpdateTransaction = async (
@@ -211,6 +281,7 @@ export const CustomerTransactionsView = ({
     <CustomerDetail
       customer={selectedCustomerData}
       totals={customerTotals}
+      runningBalances={customerTotals.runningBalances}
       onBack={() => router.push(backPath)} // Use dynamic back path
       onDeleteAll={handleDeleteAllTransactions}
       onToggleAllPaid={handleToggleAllPaid}

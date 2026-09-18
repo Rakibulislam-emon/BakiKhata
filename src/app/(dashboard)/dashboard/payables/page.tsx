@@ -94,7 +94,7 @@ export default function PayablesPage() {
                 </h1>
               </div>
               <p className="text-slate-500 dark:text-slate-400 max-w-lg leading-relaxed font-medium">
-                কাস্টমাররা আপনাকে যে টাকা পরিশোধ করেছে তার তালিকা। বিস্তারিত দেখতে নামের উপর ক্লিক করুন।
+                যাদের কাছে আপনার অগ্রিম বা অতিরিক্ত জমা আছে তাদের তালিকা। বিস্তারিত দেখতে নামের উপর ক্লিক করুন।
               </p>
             </div>
 
