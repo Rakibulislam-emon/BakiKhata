@@ -32,7 +32,15 @@ interface CustomerDetailProps {
     totalPaid: number;
     unpaidCount: number;
     paidCount: number;
+    sinceLastPayment?: {
+      amount: number;
+      count: number;
+      lastJomaDate: string;
+      lastJomaAmount: number;
+      balanceAtJoma: number;
+    } | null;
   } | null;
+  runningBalances?: Record<string, number>;
   onBack: () => void;
   onDeleteAll: () => void;
   onToggleAllPaid: () => void;
@@ -65,6 +73,7 @@ interface CustomerDetailProps {
 export const CustomerDetail = ({
   customer,
   totals,
+  runningBalances,
   onBack,
   onDeleteAll,
   onToggleAllPaid,
@@ -284,6 +293,34 @@ export const CustomerDetail = ({
           </div>
         </m.div>
 
+        {/* Since last joma summary */}
+        {totals.sinceLastPayment && totals.sinceLastPayment.count > 0 && (
+          <m.div
+            variants={itemVariants}
+            className="max-w-4xl mx-auto px-4 sm:px-6 mt-6"
+          >
+            <div className="bg-emerald-50/80 dark:bg-emerald-950/20 backdrop-blur-xl rounded-[2rem] p-6 border border-emerald-500/20 shadow-xl flex flex-col sm:flex-row sm:items-center gap-4 justify-between">
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-600 dark:text-emerald-400 mb-2">
+                  শেষ জমার পর নতুন বাকি ({totals.sinceLastPayment.count}টি বিল)
+                </p>
+                <p className="text-4xl font-black font-mono tracking-tighter tabular-nums text-emerald-700 dark:text-emerald-300">
+                  {formatCurrency(Math.abs(totals.sinceLastPayment.amount))}
+                </p>
+                <p className="text-[11px] font-bold text-slate-500 dark:text-slate-400 mt-2">
+                  শেষ জমা: {formatCurrency(Math.abs(totals.sinceLastPayment.lastJomaAmount))} (
+                  {formatDateTime(totals.sinceLastPayment.lastJomaDate)}) • জমার
+                  সময় বাকি ছিল:{" "}
+                  {formatCurrency(Math.abs(totals.sinceLastPayment.balanceAtJoma))}
+                </p>
+              </div>
+              <div className="text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400 bg-white/70 dark:bg-slate-900/50 px-4 py-3 rounded-2xl border border-emerald-500/10 text-center">
+                বর্তমান মোট: {formatCurrency(Math.abs(totals.totalBaki))}
+              </div>
+            </div>
+          </m.div>
+        )}
+
         {/* Transaction Lists */}
         <m.div
           variants={itemVariants}
@@ -491,6 +528,20 @@ export const CustomerDetail = ({
                                 </span>
                               )}
                             </div>
+                            {runningBalances?.[transaction.id] !== undefined && (
+                              <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-500 dark:text-slate-400 mt-1">
+                                <Receipt className="w-3.5 h-3.5" />
+                                <span className="tabular-nums">
+                                  এরপর ব্যালেন্স:{" "}
+                                  {formatCurrency(
+                                    Math.abs(runningBalances[transaction.id])
+                                  )}
+                                  {runningBalances[transaction.id] < 0
+                                    ? " (জমা)"
+                                    : ""}
+                                </span>
+                              </div>
+                            )}
                           </div>
                         </div>
                       </>
