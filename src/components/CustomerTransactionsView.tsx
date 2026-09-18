@@ -94,6 +94,7 @@ export const CustomerTransactionsView = ({
       count: number;
       lastJomaDate: string;
       lastJomaAmount: number;
+      lastJomaId: string;
       balanceAtJoma: number;
     } | null = null;
 
@@ -105,6 +106,7 @@ export const CustomerTransactionsView = ({
           count: after.length,
           lastJomaDate: chronological[lastJomaIndex].date,
           lastJomaAmount: chronological[lastJomaIndex].amount,
+          lastJomaId: chronological[lastJomaIndex].id,
           balanceAtJoma: runningBalances[chronological[lastJomaIndex].id] ?? 0,
         };
       }
@@ -203,15 +205,35 @@ export const CustomerTransactionsView = ({
     );
   };
 
-  const handleToggleAllPaid = async () => {
+  const handleToggleAllPaid = () => {
     const customerData = selectedCustomerData;
+    if (customerData.transactions.length === 0) return;
     const allUnpaid = customerData.transactions.filter((t) => !t.isPaid);
     const shouldBePaid = allUnpaid.length > 0;
 
-    const res = await toggleAllPaidForCustomer(customerName, shouldBePaid);
-    if (res.error) {
-      toast.error("আপডেট করতে সমস্যা হয়েছে");
-    }
+    const message = shouldBePaid
+      ? `সব ${allUnpaid.length}টি লেনদেন পরিশোধিত করা হবে? মোট হিসাব শূন্য দেখাবে।`
+      : "সব লেনদেন আবার চালু (অপরিশোধিত) করা হবে?";
+
+    toast(message, {
+      action: {
+        label: shouldBePaid ? "পরিশোধ করুন" : "চালু করুন",
+        onClick: async () => {
+          const res = await toggleAllPaidForCustomer(
+            customerName,
+            shouldBePaid
+          );
+          if (res.error) {
+            toast.error("আপডেট করতে সমস্যা হয়েছে");
+          } else {
+            toast.success(
+              shouldBePaid ? "সব লেনদেন পরিশোধিত" : "সব লেনদেন আবার চালু হয়েছে"
+            );
+          }
+        },
+      },
+      cancel: { label: "বাতিল", onClick: () => {} },
+    });
   };
 
   const handleUpdateTransaction = async (

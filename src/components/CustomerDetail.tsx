@@ -17,6 +17,7 @@ import {
   TrendingUp,
   TrendingDown,
   ChevronLeft,
+  ChevronDown,
   Calendar,
   Settings,
 } from "lucide-react";
@@ -37,6 +38,7 @@ interface CustomerDetailProps {
       count: number;
       lastJomaDate: string;
       lastJomaAmount: number;
+      lastJomaId: string;
       balanceAtJoma: number;
     } | null;
   } | null;
@@ -100,6 +102,36 @@ export const CustomerDetail = ({
     notes: string;
     type: "lend" | "borrow";
   }>({ amount: "", notes: "", type: "lend" });
+
+  // Checkpoint grouping: bills after the last joma stay open, older ones collapse.
+  // No joma yet -> show latest 20 with load-more. Running balances are computed
+  // over the full set upstream, so hiding rows never changes the math.
+  const [showOlder, setShowOlder] = React.useState(false);
+  const [visibleCount, setVisibleCount] = React.useState(20);
+  const lastJomaTime = totals?.sinceLastPayment
+    ? new Date(totals.sinceLastPayment.lastJomaDate).getTime()
+    : null;
+  const hasCheckpoint =
+    lastJomaTime !== null && (totals?.sinceLastPayment?.count ?? 0) > 0;
+  const isAfterJoma = (t: Transaction) =>
+    lastJomaTime !== null && new Date(t.date).getTime() > lastJomaTime;
+  // The last joma itself stays visible (pinned) so its amount is always seen.
+  const isLastJoma = (t: Transaction) =>
+    totals?.sinceLastPayment?.lastJomaId === t.id;
+  const recentBills = hasCheckpoint
+    ? allUnpaid.filter((t) => isAfterJoma(t) || isLastJoma(t))
+    : [];
+  const olderBills = hasCheckpoint
+    ? allUnpaid.filter((t) => !isAfterJoma(t) && !isLastJoma(t))
+    : [];
+  const remainingFallback = !hasCheckpoint
+    ? Math.max(allUnpaid.length - visibleCount, 0)
+    : 0;
+
+  React.useEffect(() => {
+    setShowOlder(false);
+    setVisibleCount(20);
+  }, [customer?.name]);
 
   const startEditing = (transaction: Transaction) => {
     setEditingId(transaction.id);
@@ -224,7 +256,9 @@ export const CustomerDetail = ({
 
               <div className="relative z-10">
                 <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400 mb-6">
-                  বর্তমান মোট বাকি
+                  {totals.totalBaki >= 0
+                    ? "বর্তমান মোট বাকি"
+                    : "অগ্রিম আছে (ফেরতযোগ্য)"}
                 </p>
                 <div className="flex flex-col">
                   <div className="flex items-center gap-8 mb-4">
@@ -347,7 +381,46 @@ export const CustomerDetail = ({
 
             <div className="space-y-4">
               <AnimatePresence mode="popLayout">
-                {allUnpaid.map((transaction, index) => (
+                {allUnpaid.map((transaction, index) => {
+                  // Checkpoint mode: collapse pre-joma bills behind one toggle.
+                  // The last joma itself stays visible (pinned).
+                  if (
+                    hasCheckpoint &&
+                    !showOlder &&
+                    !isAfterJoma(transaction) &&
+                    !isLastJoma(transaction)
+                  ) {
+                    if (index !== recentBills.length) return null;
+                    return (
+                      <m.button
+                        key="older-toggle"
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        onClick={() => setShowOlder(true)}
+                        className="w-full bg-white/80 dark:bg-slate-900/40 backdrop-blur-xl rounded-[2rem] p-5 border border-dashed border-slate-300 dark:border-white/10 text-xs font-black uppercase tracking-widest text-slate-500 dark:text-slate-400 hover:text-primary-500 hover:border-primary-500/50 transition-all flex items-center justify-center gap-2"
+                      >
+                        <ChevronDown className="w-4 h-4" />
+                        আগের {olderBills.length}টি লেনদেন দেখুন
+                      </m.button>
+                    );
+                  }
+                  // No-joma fallback: latest 20 + load more.
+                  if (!hasCheckpoint && index >= visibleCount) {
+                    if (index !== visibleCount) return null;
+                    return (
+                      <m.button
+                        key="load-more"
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        onClick={() => setVisibleCount((c) => c + 20)}
+                        className="w-full bg-white/80 dark:bg-slate-900/40 backdrop-blur-xl rounded-[2rem] p-5 border border-dashed border-slate-300 dark:border-white/10 text-xs font-black uppercase tracking-widest text-slate-500 dark:text-slate-400 hover:text-primary-500 hover:border-primary-500/50 transition-all flex items-center justify-center gap-2"
+                      >
+                        <ChevronDown className="w-4 h-4" />
+                        আরও {remainingFallback}টি দেখুন
+                      </m.button>
+                    );
+                  }
+                  return (
                   <m.div
                     layout
                     key={transaction.id}
@@ -355,7 +428,7 @@ export const CustomerDetail = ({
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.95 }}
                     transition={{
-                      delay: index * 0.05,
+                      delay: Math.min(index, 12) * 0.05,
                       type: "spring",
                       damping: 20,
                       stiffness: 300,
@@ -515,6 +588,11 @@ export const CustomerDetail = ({
                               >
                                 {transaction.amount >= 0 ? "পাওনা" : "জমা"}
                               </span>
+                              {isLastJoma(transaction) && (
+                                <span className="text-[9px] font-black uppercase tracking-[0.15em] px-2.5 py-1 rounded-lg bg-indigo-600 text-white">
+                                  শেষ জমা
+                                </span>
+                              )}
                             </div>
                             <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[10px] font-bold text-slate-400">
                               <span className="flex items-center gap-1.5 border-r border-slate-200 dark:border-white/10 pr-4">
@@ -576,8 +654,18 @@ export const CustomerDetail = ({
                       </div>
                     )}
                   </m.div>
-                ))}
+                  );
+                })}
               </AnimatePresence>
+              {hasCheckpoint && showOlder && olderBills.length > 0 && (
+                <button
+                  onClick={() => setShowOlder(false)}
+                  className="w-full bg-white/80 dark:bg-slate-900/40 backdrop-blur-xl rounded-[2rem] p-4 border border-slate-200/60 dark:border-white/5 text-xs font-black uppercase tracking-widest text-slate-500 dark:text-slate-400 hover:text-primary-500 transition-all flex items-center justify-center gap-2"
+                >
+                  <ChevronDown className="w-4 h-4 rotate-180" />
+                  আগের লেনদেন লুকান
+                </button>
+              )}
             </div>
           </section>
 
