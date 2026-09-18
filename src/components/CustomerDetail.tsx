@@ -360,7 +360,7 @@ export const CustomerDetail = ({
                       damping: 20,
                       stiffness: 300,
                     }}
-                    className="group relative bg-white/90 dark:bg-slate-900/40 backdrop-blur-xl rounded-[2rem] p-5 border border-slate-200/60 dark:border-white/5 flex items-center justify-between gap-6 shadow-sm hover:shadow-xl hover:shadow-slate-200/50 dark:hover:shadow-none transition-all duration-500"
+                    className="group relative bg-white/90 dark:bg-slate-900/40 backdrop-blur-xl rounded-[2rem] p-4 sm:p-5 border border-slate-200/60 dark:border-white/5 flex items-center justify-between gap-3 sm:gap-6 shadow-sm hover:shadow-xl hover:shadow-slate-200/50 dark:hover:shadow-none transition-all duration-500"
                   >
                     {editingId === transaction.id ? (
                       <m.div
@@ -489,11 +489,11 @@ export const CustomerDetail = ({
                       </m.div>
                     ) : (
                       <>
-                        <div className="flex items-center gap-6">
+                        <div className="flex min-w-0 flex-1 items-center gap-3 sm:gap-6">
                           <m.button
                             whileTap={{ scale: 0.8 }}
                             onClick={() => onTogglePaid(transaction.id)}
-                            className={`w-14 h-14 rounded-[1.25rem] flex items-center justify-center transition-all duration-500 shadow-sm ${
+                            className={`w-14 h-14 shrink-0 rounded-[1.25rem] flex items-center justify-center transition-all duration-500 shadow-sm ${
                               transaction.amount >= 0
                                 ? "bg-emerald-50 text-emerald-600 ring-2 ring-emerald-100 hover:bg-emerald-500 hover:text-white"
                                 : "bg-rose-50 text-rose-600 ring-2 ring-rose-100 hover:bg-rose-500 hover:text-white"
@@ -503,10 +503,10 @@ export const CustomerDetail = ({
                             <Square className="w-7 h-7" />
                           </m.button>
 
-                          <div className="flex flex-col gap-1">
-                            <div className="flex items-baseline gap-3">
+                          <div className="flex min-w-0 flex-col gap-1">
+                            <div className="flex min-w-0 flex-wrap items-baseline gap-x-3 gap-y-1">
                               <span
-                                className={`text-3xl font-black font-mono tracking-tighter tabular-nums ${transaction.amount >= 0 ? "text-emerald-600" : "text-indigo-600"}`}
+                                className={`text-2xl sm:text-3xl font-black font-mono tracking-tighter tabular-nums break-all ${transaction.amount >= 0 ? "text-emerald-600" : "text-indigo-600"}`}
                               >
                                 {formatCurrency(Math.abs(transaction.amount))}
                               </span>
@@ -516,7 +516,7 @@ export const CustomerDetail = ({
                                 {transaction.amount >= 0 ? "পাওনা" : "জমা"}
                               </span>
                             </div>
-                            <div className="flex items-center gap-4 text-[10px] font-bold text-slate-400">
+                            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[10px] font-bold text-slate-400">
                               <span className="flex items-center gap-1.5 border-r border-slate-200 dark:border-white/10 pr-4">
                                 <Clock className="w-3.5 h-3.5" />
                                 {formatDateTime(transaction.date)}
@@ -548,7 +548,7 @@ export const CustomerDetail = ({
                     )}
 
                     {editingId !== transaction.id && (
-                      <div className="flex items-center gap-1 ml-auto sm:opacity-0 sm:group-hover:opacity-100 transition-all duration-300 sm:transform sm:translate-x-2 sm:group-hover:translate-x-0">
+                      <div className="flex shrink-0 items-center gap-1 ml-auto sm:opacity-0 sm:group-hover:opacity-100 transition-all duration-300 sm:transform sm:translate-x-2 sm:group-hover:translate-x-0">
                         <m.button
                           whileHover={{
                             scale: 1.1,
